@@ -23,6 +23,8 @@ GameHandler::GameHandler(sf::RenderWindow& window, FontHolder& fonts)
 	mWindow.setView(mWindow.getDefaultView());
 	loadTextures();
 	buildScene();
+
+	loadBoardFromFEN(START_FEN);
 }
 
 void GameHandler::draw() {
@@ -69,13 +71,52 @@ void GameHandler::buildScene() {
 	boardSprite->centerOrigin();
 	mSceneLayers[Background]->attachChild(std::move(boardSprite));
 
-	addPiece(Piece::King | Piece::Black, 0, 0);
+//	addPiece(Piece::King | Piece::Black, 0, 0);
+}
+
+int GameHandler::getPieceFromChar(char ch) {
+	std::cout << ch <<'\n';
+	int piece = std::islower(ch) ? Piece::Black : Piece::White;
+	switch(tolower(ch)) {
+		case 'p':
+			piece |= Piece::Pawn;
+			break;
+		case 'n':
+			piece |= Piece::Knight;
+			break;
+		case 'b':
+			piece |= Piece::Bishop;
+			break;
+		case 'r':
+			piece |= Piece::Rook;
+			break;
+		case 'q':
+			piece |= Piece::Queen;
+			break;
+		case 'k':
+			piece |= Piece::King;
+			break;
+		default:
+			assert(false);
+	}
+	return piece;
+}
+
+void GameHandler::loadBoardFromFEN(const std::string& fen) {
+	int row = 0, col = 0;
+	for(char ch : fen) {
+		if (std::isdigit(ch)) col += ch-'0';
+		else if (ch == '/') row++, col = 0;
+		else if (std::isalpha(ch)) addPiece(getPieceFromChar(ch), row, col++);
+		else break;
+	}
+	// TODO: active, castling, en-passant, half-move, full move
 }
 
 void GameHandler::addPiece(int type, int row, int column) {
 	std::unique_ptr<Piece> piece(new Piece(mTextures.get(Textures::PiecesSet), type));
-	piece->setPosition((float)mWindow.getSize().x / 2 - 340.f + float(row * Piece::SIZE),
-	                   (float)mWindow.getSize().y / 2 - 340.f + float(column * Piece::SIZE));
+	piece->setPosition((float)mWindow.getSize().x / 2 - 340.f + float(column * Piece::SIZE),
+	                   (float)mWindow.getSize().y / 2 - 340.f + float(row * Piece::SIZE));
 	mPieces[row * 8 + column] = piece.get();
 	mSceneLayers[Pieces]->attachChild(std::move(piece));
 }

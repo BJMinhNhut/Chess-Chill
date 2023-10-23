@@ -24,16 +24,22 @@ class Event;
 
 class GameHandler : public sf::NonCopyable {
    public:
+	const std::string START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+   public:
 	explicit GameHandler(sf::RenderWindow& window, FontHolder& fonts);
+
 	void update(sf::Time dt);
 	void draw();
 	void handleEvent(const sf::Event& event);
+
+	void loadBoardFromFEN(const std::string& fen);
 
 	void loadTextures();
 	void buildScene();
 
    private:
 	bool isHoverPiece(int x, int y) const;
+	static int getPieceFromChar(char ch) ;
 
 	void addPiece(int type, int row, int column);
 
