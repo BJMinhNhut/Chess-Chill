@@ -17,7 +17,7 @@ class SpriteNode : public SceneNode {
 	void centerOrigin();
 
    private:
-	virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
+	void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;
 
    private:
 	sf::Sprite mSprite;
