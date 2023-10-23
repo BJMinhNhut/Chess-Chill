@@ -1,21 +1,18 @@
-#include <SFML/Graphics.hpp>
+//
+// Created by MINH NHUT on 6/8/2023.
+//
+#include <iostream>
+
+#include "Template/Application.hpp"
 
 int main()
 {
-    auto window = sf::RenderWindow{ { 1920u, 1080u }, "CMake SFML Project" };
-    window.setFramerateLimit(144);
+	try {
+		Application application;
+		application.run();
+	} catch (std::exception& e) {
+		std::cout << "\nEXCEPTION: " << e.what() << std::endl;
+	}
 
-    while (window.isOpen())
-    {
-        for (auto event = sf::Event{}; window.pollEvent(event);)
-        {
-            if (event.type == sf::Event::Closed)
-            {
-                window.close();
-            }
-        }
-
-        window.clear();
-        window.display();
-    }
+	return 0;
 }

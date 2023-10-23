@@ -4,3 +4,7 @@ out
 .idea
 .vs
 .vscode
+
+# CMake
+cmake-build-debug/
+cmake-build-release/
