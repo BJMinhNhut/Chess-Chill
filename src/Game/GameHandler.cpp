@@ -13,6 +13,10 @@
 #include <cmath>
 #include <iostream>
 
+const int GameHandler::BOARD_SIZE = 680;
+const std::string GameHandler::START_FEN =
+    "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+
 GameHandler::GameHandler(sf::RenderWindow& window, FontHolder& fonts)
     : mWindow(window),
       mFonts(fonts),
@@ -22,6 +26,7 @@ GameHandler::GameHandler(sf::RenderWindow& window, FontHolder& fonts)
       mPieces(64, nullptr),
       mDragging(nullptr) {
 	mWindow.setView(mWindow.getDefaultView());
+
 	loadTextures();
 	buildScene();
 
@@ -137,9 +142,11 @@ void GameHandler::addPiece(int type, int row, int column) {
 }
 
 Piece* GameHandler::checkHoverPiece(int x, int y) const {
-	for (int i = 0; i < 64; ++i) {
-		if (mPieces[i] && mPieces[i]->contains(x, y))
-			return mPieces[i];
-	}
-	return nullptr;
+	static const int midx = mWindow.getSize().x/2, midy = mWindow.getSize().y/2;
+	static const int left = midx - BOARD_SIZE/2, top = midy - BOARD_SIZE/2;
+	if (x < left || y < top) return nullptr;
+	int column = (x - left) / Piece::SIZE;
+	int row = (y - top) / Piece::SIZE;
+	if (row < 0 || row > 7 || column < 0 || column > 7) return nullptr;
+	return mPieces[row * 8 + column];
 }

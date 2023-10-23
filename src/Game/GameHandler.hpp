@@ -24,7 +24,8 @@ class Event;
 
 class GameHandler : public sf::NonCopyable {
    public:
-	const std::string START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+	const static std::string START_FEN;
+	const static int BOARD_SIZE;
    public:
 	explicit GameHandler(sf::RenderWindow& window, FontHolder& fonts);
 
