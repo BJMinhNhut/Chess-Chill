@@ -19,7 +19,8 @@ GameHandler::GameHandler(sf::RenderWindow& window, FontHolder& fonts)
       mTextures(),
       mSceneGraph(),
       mSceneLayers(),
-      mPieces(64, nullptr) {
+      mPieces(64, nullptr),
+      mDragging(nullptr) {
 	mWindow.setView(mWindow.getDefaultView());
 	loadTextures();
 	buildScene();
@@ -38,14 +39,28 @@ void GameHandler::update(sf::Time dt) {
 void GameHandler::handleEvent(const sf::Event& event) {
 	if (event.type == sf::Event::MouseMoved) {
 		//		std::cerr << event.mouseMove.x << ' ' << event.mouseMove.y << '\n';
-		sf::Cursor::Type type = isHoverPiece(event.mouseMove.x, event.mouseMove.y)
-		                            ? sf::Cursor::Hand
-		                            : sf::Cursor::Arrow;
-		sf::Cursor cursor;
-		if (cursor.loadFromSystem(type)) {
-			mWindow.setMouseCursor(cursor);
-		} else
-			throw std::runtime_error("Cannot load hand cursor");
+		if (mDragging) {
+			mDragging->setPosition(event.mouseMove.x - Piece::SIZE / 2,
+			                       event.mouseMove.y - Piece::SIZE / 2);
+		} else {
+			sf::Cursor::Type type = checkHoverPiece(event.mouseMove.x, event.mouseMove.y)
+			                            ? sf::Cursor::Hand
+			                            : sf::Cursor::Arrow;
+			sf::Cursor cursor;
+			if (cursor.loadFromSystem(type)) {
+				mWindow.setMouseCursor(cursor);
+			} else
+				throw std::runtime_error("Cannot load hand cursor");
+		}
+	} else if (event.type == sf::Event::MouseButtonPressed) {
+		mDragging = checkHoverPiece(event.mouseButton.x, event.mouseButton.y);
+		if (mDragging) {
+			mDragging->setPosition(event.mouseButton.x - Piece::SIZE / 2,
+			                       event.mouseButton.y - Piece::SIZE / 2);
+		}
+	} else if (event.type == sf::Event::MouseButtonReleased) {
+		if (mDragging)
+			mDragging = nullptr;
 	}
 }
 
@@ -53,7 +68,6 @@ void GameHandler::loadTextures() {
 	mTextures.load(Textures::Board, Constants::dataPrefix + "resources/images/boards/default.png");
 	mTextures.load(Textures::PiecesSet,
 	               Constants::dataPrefix + "resources/images/pieces/default.png");
-	// load chess pieces from tile map
 }
 
 void GameHandler::buildScene() {
@@ -70,14 +84,11 @@ void GameHandler::buildScene() {
 	boardSprite->setPosition((float)mWindow.getSize().x / 2, (float)mWindow.getSize().y / 2);
 	boardSprite->centerOrigin();
 	mSceneLayers[Background]->attachChild(std::move(boardSprite));
-
-//	addPiece(Piece::King | Piece::Black, 0, 0);
 }
 
 int GameHandler::getPieceFromChar(char ch) {
-	std::cout << ch <<'\n';
 	int piece = std::islower(ch) ? Piece::Black : Piece::White;
-	switch(tolower(ch)) {
+	switch (tolower(ch)) {
 		case 'p':
 			piece |= Piece::Pawn;
 			break;
@@ -104,11 +115,15 @@ int GameHandler::getPieceFromChar(char ch) {
 
 void GameHandler::loadBoardFromFEN(const std::string& fen) {
 	int row = 0, col = 0;
-	for(char ch : fen) {
-		if (std::isdigit(ch)) col += ch-'0';
-		else if (ch == '/') row++, col = 0;
-		else if (std::isalpha(ch)) addPiece(getPieceFromChar(ch), row, col++);
-		else break;
+	for (char ch : fen) {
+		if (std::isdigit(ch))
+			col += ch - '0';
+		else if (ch == '/')
+			row++, col = 0;
+		else if (std::isalpha(ch))
+			addPiece(getPieceFromChar(ch), row, col++);
+		else
+			break;
 	}
 	// TODO: active, castling, en-passant, half-move, full move
 }
@@ -121,10 +136,10 @@ void GameHandler::addPiece(int type, int row, int column) {
 	mSceneLayers[Pieces]->attachChild(std::move(piece));
 }
 
-bool GameHandler::isHoverPiece(int x, int y) const {
+Piece* GameHandler::checkHoverPiece(int x, int y) const {
 	for (int i = 0; i < 64; ++i) {
 		if (mPieces[i] && mPieces[i]->contains(x, y))
-			return true;
+			return mPieces[i];
 	}
-	return false;
+	return nullptr;
 }

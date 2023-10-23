@@ -38,7 +38,7 @@ class GameHandler : public sf::NonCopyable {
 	void buildScene();
 
    private:
-	bool isHoverPiece(int x, int y) const;
+	Piece* checkHoverPiece(int x, int y) const;
 	static int getPieceFromChar(char ch) ;
 
 	void addPiece(int type, int row, int column);
@@ -60,6 +60,8 @@ class GameHandler : public sf::NonCopyable {
 	SceneNode mSceneGraph;
 	std::array<SceneNode*, LayerCount> mSceneLayers;
 	std::vector<Piece*> mPieces;
+
+	Piece* mDragging;
 };
 
 #endif  //CHESS_GAMEHANDLER_HPP
