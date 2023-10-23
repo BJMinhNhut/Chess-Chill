@@ -12,9 +12,11 @@
 class SpriteNode : public SceneNode {
    public:
 	explicit SpriteNode(const sf::Texture& texture);
-	SpriteNode(const sf::Texture& texture, const sf::IntRect& textureRect);
+	explicit SpriteNode(const sf::Texture& texture, const sf::IntRect& textureRect);
 
 	void centerOrigin();
+
+	bool contains(int x, int y) const;
 
    private:
 	void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;

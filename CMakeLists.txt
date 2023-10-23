@@ -22,7 +22,9 @@ add_executable(Chess src/main.cpp
         src/Template/SceneNode.cpp
         src/Template/State.cpp
         src/Template/StateStack.cpp
-        src/Template/Utility.cpp)
+        src/Template/Utility.cpp
+        src/Game/Piece.cpp
+        src/Game/Piece.hpp)
 target_link_libraries(Chess PRIVATE sfml-graphics)
 target_compile_features(Chess PRIVATE cxx_std_17)
 

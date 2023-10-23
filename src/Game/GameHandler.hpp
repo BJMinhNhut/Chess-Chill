@@ -5,6 +5,7 @@
 #ifndef CHESS_GAMEHANDLER_HPP
 #define CHESS_GAMEHANDLER_HPP
 
+#include "Piece.hpp"
 #include "Template/ResourceHolder.hpp"
 #include "Template/ResourceIdentifiers.hpp"
 #include "Template/SceneNode.hpp"
@@ -18,6 +19,7 @@
 
 namespace sf {
 class RenderWindow;
+class Event;
 }
 
 class GameHandler : public sf::NonCopyable {
@@ -25,13 +27,22 @@ class GameHandler : public sf::NonCopyable {
 	explicit GameHandler(sf::RenderWindow& window, FontHolder& fonts);
 	void update(sf::Time dt);
 	void draw();
+	void handleEvent(const sf::Event& event);
+
 	void loadTextures();
 	void buildScene();
 
    private:
+	bool isHoverPiece(int x, int y) const;
+
+	void addPiece(int type, int row, int column);
+
+   private:
 	enum Layer {
 		Background,
-		// Highlight, Pieces, Arrows,
+		// Highlight,
+		Pieces,
+		//Arrows,
 		LayerCount
 	};
 
@@ -42,6 +53,7 @@ class GameHandler : public sf::NonCopyable {
 
 	SceneNode mSceneGraph;
 	std::array<SceneNode*, LayerCount> mSceneLayers;
+	std::vector<Piece*> mPieces;
 };
 
 #endif  //CHESS_GAMEHANDLER_HPP

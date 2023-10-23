@@ -28,6 +28,7 @@ bool GameState::update(sf::Time dt) {
 }
 
 bool GameState::handleEvent(const sf::Event &event) {
+	mGame.handleEvent(event);
 	if (event.type == sf::Event::KeyReleased) {
 		if (event.key.code == sf::Keyboard::Escape) {
 			requestStackPop();
