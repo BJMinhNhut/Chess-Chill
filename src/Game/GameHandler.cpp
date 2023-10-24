@@ -79,15 +79,15 @@ void GameHandler::checkDropPiece(int x, int y) {
 	mDragging = nullptr;
 	const int newBox = getHoverBox(x, y);
 
-	if (newBox > -1) {
+	if (newBox > -1 && newBox != mOldBox) {
 		if (mLastMove > -1) highlightMove(mLastMove, false);
 		highlightMove(newBox << 6 | mOldBox, true);
+		movePiece(mOldBox, newBox);
 	}
 	else {
 		highlightBox(mOldBox, Normal);
 		if (mLastMove > -1) highlightMove(mLastMove, true);
 	}
-	movePiece(mOldBox, newBox);
 }
 
 void GameHandler::checkPickUpPiece(int x, int y) {
@@ -98,6 +98,8 @@ void GameHandler::checkPickUpPiece(int x, int y) {
 		return;
 
 	// dim old position and highlight old box
+	if (mLastMove == -1 && mOldBox != -1)
+		highlightBox(mOldBox, Normal);
 	mOldBox = getHoverBox(x, y);
 	hovering->setOpacity(50);
 	highlightBox(mOldBox, Light);
@@ -234,7 +236,7 @@ void GameHandler::movePiece(int oldBox, int newBox) {
 		mPieces[oldBox] = nullptr;
 		mLastMove = (newBox << 6) | oldBox;
 		oldBox = -1;
-	}
+	} else mLastMove = -1;
 	setPositionToBox(mPieces[newBox], newBox);
 }
 
