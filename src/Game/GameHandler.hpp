@@ -48,6 +48,10 @@ class GameHandler : public sf::NonCopyable {
 	void addPiece(int type, int box);
 	void movePiece(int oldBox, int newBox);
 
+	void checkDropPiece(int x, int y);
+	void checkPickUpPiece(int x, int y);
+	void handleMouseMoved(int x, int y);
+
    private:
 	enum Layer {
 		Background,

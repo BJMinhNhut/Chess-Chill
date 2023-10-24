@@ -46,39 +46,50 @@ void GameHandler::update(sf::Time dt) {
 
 void GameHandler::handleEvent(const sf::Event& event) {
 	if (event.type == sf::Event::MouseMoved) {
-		//		std::cerr << event.mouseMove.x << ' ' << event.mouseMove.y << '\n';
-		if (mDragging) {
-			mDragging->setPosition(event.mouseMove.x - Piece::SIZE / 2,
-			                       event.mouseMove.y - Piece::SIZE / 2);
-		} else {
-			sf::Cursor::Type type = checkHoverPiece(event.mouseMove.x, event.mouseMove.y)
-			                            ? sf::Cursor::Hand
-			                            : sf::Cursor::Arrow;
-			sf::Cursor cursor;
-			if (cursor.loadFromSystem(type)) {
-				mWindow.setMouseCursor(cursor);
-			} else
-				throw std::runtime_error("Cannot load hand cursor");
-		}
+		handleMouseMoved(event.mouseMove.x, event.mouseMove.y);
 	} else if (event.type == sf::Event::MouseButtonPressed) {
-		Piece* hovered = checkHoverPiece(event.mouseButton.x, event.mouseButton.y);
-		if (hovered) {
-			hovered->setOpacity(50);
-			mDragging = hovered->clone();
-			mSceneLayers[PopUp]->attachChild(SceneNode::Ptr(mDragging));
-			oldBox = getHoverBox(event.mouseButton.x, event.mouseButton.y);
-			mDragging->setPosition(event.mouseButton.x - Piece::SIZE / 2,
-			                       event.mouseButton.y - Piece::SIZE / 2);
-		}
+		checkPickUpPiece(event.mouseButton.x, event.mouseButton.y);
 	} else if (event.type == sf::Event::MouseButtonReleased) {
-		if (mDragging) {
-			mPieces[oldBox]->setOpacity(100);
-			mSceneLayers[PopUp]->detachChild(*mDragging);
-			mDragging = nullptr;
-			const int newBox = getHoverBox(event.mouseButton.x, event.mouseButton.y);
-			movePiece(oldBox, newBox);
-		}
+		checkDropPiece(event.mouseButton.x, event.mouseButton.y);
 	}
+}
+
+void GameHandler::handleMouseMoved(int x, int y) {
+	//		std::cerr << event.mouseMove.x << ' ' << event.mouseMove.y << '\n';
+	if (mDragging) {
+		mDragging->snap(x, y);
+	} else {
+		sf::Cursor::Type type = checkHoverPiece(x, y) ? sf::Cursor::Hand : sf::Cursor::Arrow;
+		sf::Cursor cursor;
+		if (cursor.loadFromSystem(type)) {
+			mWindow.setMouseCursor(cursor);
+		} else
+			throw std::runtime_error("Cannot load hand cursor");
+	}
+}
+
+void GameHandler::checkDropPiece(int x, int y) {
+	if (mDragging == nullptr)
+		return;
+	mPieces[oldBox]->setOpacity(100);
+	mSceneLayers[PopUp]->detachChild(*mDragging);
+	mDragging = nullptr;
+	const int newBox = getHoverBox(x, y);
+	movePiece(oldBox, newBox);
+}
+
+void GameHandler::checkPickUpPiece(int x, int y) {
+	assert(mDragging == nullptr);
+	Piece* hovering = checkHoverPiece(x, y);
+
+	if (hovering == nullptr)
+		return;
+
+	hovering->setOpacity(50);
+	mDragging = hovering->clone();
+	mSceneLayers[PopUp]->attachChild(SceneNode::Ptr(mDragging));
+	oldBox = getHoverBox(x, y);
+	mDragging->snap(x, y);
 }
 
 void GameHandler::loadTextures() {
