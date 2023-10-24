@@ -29,7 +29,7 @@ add_executable(Chess src/main.cpp
         src/Template/RectNode.hpp
         src/Template/SoundPlayer.hpp
         src/Template/SoundPlayer.cpp)
-target_link_libraries(Chess PRIVATE sfml-graphics)
+target_link_libraries(Chess PRIVATE sfml-graphics sfml-audio)
 target_compile_features(Chess PRIVATE cxx_std_17)
 
 if(WIN32)

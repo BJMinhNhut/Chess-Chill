@@ -6,12 +6,12 @@
 #define CHESS_GAMEHANDLER_HPP
 
 #include "Piece.hpp"
+#include "Template/RectNode.hpp"
 #include "Template/ResourceHolder.hpp"
 #include "Template/ResourceIdentifiers.hpp"
 #include "Template/SceneNode.hpp"
+#include "Template/SoundPlayer.hpp"
 #include "Template/SpriteNode.hpp"
-#include "Template/RectNode.hpp"
-
 
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/View.hpp>
@@ -30,7 +30,7 @@ class GameHandler : public sf::NonCopyable {
 	const static int BOARD_SIZE;
 
    public:
-	explicit GameHandler(sf::RenderWindow& window, FontHolder& fonts);
+	explicit GameHandler(sf::RenderWindow& window, FontHolder& fonts, SoundPlayer& sounds);
 
 	void update(sf::Time dt);
 	void draw();
@@ -74,6 +74,7 @@ class GameHandler : public sf::NonCopyable {
 	sf::RenderWindow& mWindow;
 	TextureHolder mTextures;
 	FontHolder& mFonts;
+	SoundPlayer& mSounds;
 
 	SceneNode mSceneGraph;
 	std::array<SceneNode*, LayerCount> mSceneLayers;
@@ -82,7 +83,7 @@ class GameHandler : public sf::NonCopyable {
 
 	Piece* mDragging;
 	int mOldBox;
-	int mLastMove; // (newBox << 6) | oldBox;
+	int mLastMove;  // (newBox << 6) | oldBox;
 
 	int mBoardLeft, mBoardTop;
 };

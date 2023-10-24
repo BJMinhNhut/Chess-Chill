@@ -18,6 +18,7 @@ class RenderWindow;
 }
 
 class StateStack;
+class SoundPlayer;
 
 class State {
    public:

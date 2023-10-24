@@ -11,6 +11,7 @@
 #include <SFML/System/NonCopyable.hpp>
 //#include <SFML/System/Vector2.hpp>
 #include <SFML/Audio/Sound.hpp>
+#include <SFML/Audio/SoundBuffer.hpp>
 
 #include <list>
 

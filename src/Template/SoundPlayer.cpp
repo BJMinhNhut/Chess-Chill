@@ -5,11 +5,9 @@
 #include "SoundPlayer.hpp"
 #include "Constants.hpp"
 
-#include <SFML/Audio/SoundBuffer.hpp>
-
 SoundPlayer::SoundPlayer() : mSoundBuffers(), mSounds() {
-	mSoundBuffers.load(SoundEffect::Move, Constants::dataPrefix + "music/standard/Move.mp3");
-	mSoundBuffers.load(SoundEffect::Capture, Constants::dataPrefix + "music/standard/Capture.mp3");
+	mSoundBuffers.load(SoundEffect::Move, Constants::dataPrefix + "resources/music/standard/Move.mp3");
+	mSoundBuffers.load(SoundEffect::Capture, Constants::dataPrefix + "resources/music/standard/Capture.mp3");
 }
 
 void SoundPlayer::play(SoundEffect::ID effect) {

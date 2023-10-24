@@ -9,6 +9,7 @@
 #include "ColorHolder.hpp"
 #include "ResourceIdentifiers.hpp"
 #include "StateStack.hpp"
+#include "SoundPlayer.hpp"
 
 #include "SFML/Graphics/RenderWindow.hpp"
 #include "SFML/Graphics/Text.hpp"
@@ -44,6 +45,7 @@ private:
     TextureHolder mTextures;
     FontHolder mFonts;
     ColorHolder mColors;
+	SoundPlayer mSounds;
 
     StateStack mStateStack;
 

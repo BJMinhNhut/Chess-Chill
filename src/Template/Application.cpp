@@ -24,7 +24,8 @@ Application::Application()
       mTextures(),
       mFonts(),
       mColors(),
-      mStateStack(State::Context(mWindow, mTextures, mFonts, mColors)) {
+      mSounds(),
+      mStateStack(State::Context(mWindow, mTextures, mFonts, mColors, mSounds)) {
 
 	mWindow.setFramerateLimit(60);
 

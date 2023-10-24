@@ -17,9 +17,10 @@ const int GameHandler::BOARD_SIZE = 680;
 const std::string GameHandler::START_FEN =
     "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
-GameHandler::GameHandler(sf::RenderWindow& window, FontHolder& fonts)
+GameHandler::GameHandler(sf::RenderWindow& window, FontHolder& fonts, SoundPlayer& sounds)
     : mWindow(window),
       mFonts(fonts),
+      mSounds(sounds),
       mTextures(),
       mSceneGraph(),
       mSceneLayers(),
@@ -221,8 +222,12 @@ void GameHandler::movePiece(int oldBox, int newBox) {
 
 	// if chang box then remove piece at new box, move piece at old box to new box, and remove old box marking
 	if (newBox != oldBox) {
-		if (mPieces[newBox] != nullptr)
+		if (mPieces[newBox] != nullptr) {
 			capturePiece(newBox);
+			mSounds.play(SoundEffect::Capture);
+		} else {
+			mSounds.play(SoundEffect::Move);
+		}
 
 		mPieces[newBox] = mPieces[oldBox];
 

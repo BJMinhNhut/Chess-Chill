@@ -12,7 +12,7 @@
 #include <SFML/Graphics/View.hpp>
 
 GameState::GameState(StateStack &stack, Context context)
-        : State(stack, context), mGame(*context.window, *context.fonts) {
+        : State(stack, context), mGame(*context.window, *context.fonts, *context.sounds) {
 }
 
 void GameState::draw() {
