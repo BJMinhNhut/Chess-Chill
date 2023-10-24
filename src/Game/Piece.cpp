@@ -20,6 +20,11 @@ sf::IntRect Piece::getRectByType(int type) {
 	return {x, y, SIZE, SIZE};
 }
 
+Piece* Piece::clone() const {
+	auto* clonePiece = new Piece(*mSprite.getTexture(), mType);
+	return clonePiece;
+}
+
 bool Piece::color() const {
 	return (mType >> 3) & 1;
 }

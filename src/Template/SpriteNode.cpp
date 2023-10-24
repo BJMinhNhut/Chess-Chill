@@ -21,6 +21,12 @@ void SpriteNode::centerOrigin() {
 	Utility::centerOrigin(mSprite);
 }
 
+void SpriteNode::setOpacity(int rate) {
+	sf::Color color = mSprite.getColor();
+	color.a = 255*rate/100;
+	mSprite.setColor(color);
+}
+
 bool SpriteNode::contains(int x, int y) const {
 	sf::IntRect bound(getPosition().x, getPosition().y, mSprite.getTextureRect().width,
 	                  mSprite.getTextureRect().height);

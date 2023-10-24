@@ -24,7 +24,10 @@ GameHandler::GameHandler(sf::RenderWindow& window, FontHolder& fonts)
       mSceneGraph(),
       mSceneLayers(),
       mPieces(64, nullptr),
-      mDragging(nullptr) {
+      mDragging(nullptr),
+      mBoardLeft(),
+      mBoardTop(),
+      oldBox(-1) {
 	mWindow.setView(mWindow.getDefaultView());
 
 	loadTextures();
@@ -58,15 +61,22 @@ void GameHandler::handleEvent(const sf::Event& event) {
 				throw std::runtime_error("Cannot load hand cursor");
 		}
 	} else if (event.type == sf::Event::MouseButtonPressed) {
-		mDragging = checkHoverPiece(event.mouseButton.x, event.mouseButton.y);
-		if (mDragging) {
+		Piece* hovered = checkHoverPiece(event.mouseButton.x, event.mouseButton.y);
+		if (hovered) {
+			hovered->setOpacity(50);
+			mDragging = hovered->clone();
+			mSceneLayers[PopUp]->attachChild(SceneNode::Ptr(mDragging));
+			oldBox = getHoverBox(event.mouseButton.x, event.mouseButton.y);
 			mDragging->setPosition(event.mouseButton.x - Piece::SIZE / 2,
 			                       event.mouseButton.y - Piece::SIZE / 2);
 		}
 	} else if (event.type == sf::Event::MouseButtonReleased) {
 		if (mDragging) {
-
+			mPieces[oldBox]->setOpacity(100);
+			mSceneLayers[PopUp]->detachChild(*mDragging);
 			mDragging = nullptr;
+			const int newBox = getHoverBox(event.mouseButton.x, event.mouseButton.y);
+			movePiece(oldBox, newBox);
 		}
 	}
 }
@@ -87,9 +97,11 @@ void GameHandler::buildScene() {
 	}
 
 	// Add the background sprite to the scene
+	mBoardLeft = (int)mWindow.getSize().x / 2 - BOARD_SIZE / 2;
+	mBoardTop = (int)mWindow.getSize().y / 2 - BOARD_SIZE / 2;
+
 	std::unique_ptr<SpriteNode> boardSprite(new SpriteNode(mTextures.get(Textures::Board)));
-	boardSprite->setPosition((float)mWindow.getSize().x / 2 - BOARD_SIZE / 2.f,
-	                         (float)mWindow.getSize().y / 2 - BOARD_SIZE / 2.f);
+	boardSprite->setPosition((float)mBoardLeft, (float)mBoardTop);
 	mSceneLayers[Background]->attachChild(std::move(boardSprite));
 }
 
@@ -120,6 +132,11 @@ int GameHandler::getPieceFromChar(char ch) {
 	return piece;
 }
 
+int GameHandler::getBoxID(int row, int column) {
+	assert(row >= 0 && row < 8 && column >= 0 && column < 8);
+	return (row << 3) | column;
+}
+
 void GameHandler::loadBoardFromFEN(const std::string& fen) {
 	int row = 0, col = 0;
 	for (char ch : fen) {
@@ -128,29 +145,62 @@ void GameHandler::loadBoardFromFEN(const std::string& fen) {
 		else if (ch == '/')
 			row++, col = 0;
 		else if (std::isalpha(ch))
-			addPiece(getPieceFromChar(ch), row, col++);
+			addPiece(getPieceFromChar(ch), getBoxID(row, col++));
 		else
 			break;
 	}
 	// TODO: active, castling, en-passant, half-move, full move
 }
 
-void GameHandler::addPiece(int type, int row, int column) {
+void GameHandler::addPiece(int type, int box) {
 	std::unique_ptr<Piece> piece(new Piece(mTextures.get(Textures::PiecesSet), type));
-	piece->setPosition((float)mWindow.getSize().x / 2 - 340.f + float(column * Piece::SIZE),
-	                   (float)mWindow.getSize().y / 2 - 340.f + float(row * Piece::SIZE));
-	mPieces[row * 8 + column] = piece.get();
+	piece->setPosition(float(mBoardLeft + (box % 8) * Piece::SIZE),
+	                   float(mBoardTop + (box >> 3) * Piece::SIZE));
+	mPieces[box] = piece.get();
 	mSceneLayers[Pieces]->attachChild(std::move(piece));
 }
 
+void GameHandler::movePiece(int oldBox, int newBox) {
+	std::cout << oldBox << ' ' << newBox << '\n';
+	assert(oldBox >= 0 && oldBox < 64);
+
+	// oldBox must be valid
+	assert(mPieces[oldBox] != nullptr);
+
+	// if newBox not valid then move to old position
+	if (!(newBox >= 0 && newBox < 64))
+		newBox = oldBox;
+
+	// if chang box then remove piece at new box, move piece at old box to new box, and remove old box marking
+	if (newBox != oldBox) {
+		if (mPieces[newBox] != nullptr)
+			capturePiece(newBox);
+
+		mPieces[newBox] = mPieces[oldBox];
+
+		mPieces[oldBox] = nullptr;
+		oldBox = -1;
+	}
+	mPieces[newBox]->setPosition(mBoardLeft + (newBox % 8) * Piece::SIZE,
+	                             mBoardTop + (newBox >> 3) * Piece::SIZE);
+}
+
+void GameHandler::capturePiece(int box) {
+	mSceneLayers[Pieces]->detachChild(*mPieces[box]);
+	mPieces[box] = nullptr;
+}
+
+int GameHandler::getHoverBox(int x, int y) const {
+	if (x < mBoardLeft || y < mBoardTop)
+		return -1;
+	int column = (x - mBoardLeft) / Piece::SIZE;
+	int row = (y - mBoardTop) / Piece::SIZE;
+	if (row > 7 || column > 7)
+		return -1;
+	return getBoxID(row, column);
+}
+
 Piece* GameHandler::checkHoverPiece(int x, int y) const {
-	static const int midx = mWindow.getSize().x / 2, midy = mWindow.getSize().y / 2;
-	static const int left = midx - BOARD_SIZE / 2, top = midy - BOARD_SIZE / 2;
-	if (x < left || y < top)
-		return nullptr;
-	int column = (x - left) / Piece::SIZE;
-	int row = (y - top) / Piece::SIZE;
-	if (row < 0 || row > 7 || column < 0 || column > 7)
-		return nullptr;
-	return mPieces[row * 8 + column];
+	int boxID = getHoverBox(x, y);
+	return (boxID < 0) ? nullptr : mPieces[boxID];
 }

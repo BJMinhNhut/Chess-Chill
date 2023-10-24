@@ -16,12 +16,15 @@ class SpriteNode : public SceneNode {
 
 	void centerOrigin();
 
+	// rate from 0 to 100
+	void setOpacity(int rate);
+
 	bool contains(int x, int y) const;
 
    private:
 	void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;
 
-   private:
+   protected:
 	sf::Sprite mSprite;
 };
 

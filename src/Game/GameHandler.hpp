@@ -40,16 +40,19 @@ class GameHandler : public sf::NonCopyable {
 
    private:
 	Piece* checkHoverPiece(int x, int y) const;
-	static int getPieceFromChar(char ch) ;
+	int getHoverBox(int x, int y) const;
 
-	void addPiece(int type, int row, int column);
+	static int getPieceFromChar(char ch);
+	static int getBoxID(int row, int column);
+
+	void addPiece(int type, int box);
+	void movePiece(int oldBox, int newBox);
 
    private:
 	enum Layer {
 		Background,
-		// Highlight,
 		Pieces,
-		//Arrows,
+		PopUp,
 		LayerCount
 	};
 
@@ -63,6 +66,10 @@ class GameHandler : public sf::NonCopyable {
 	std::vector<Piece*> mPieces;
 
 	Piece* mDragging;
+	int oldBox;
+
+	int mBoardLeft, mBoardTop;
+	void capturePiece(int box);
 };
 
 #endif  //CHESS_GAMEHANDLER_HPP

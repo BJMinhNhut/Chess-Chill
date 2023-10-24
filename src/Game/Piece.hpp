@@ -27,6 +27,8 @@ class Piece : public SpriteNode {
    public:
 	Piece(const sf::Texture& textures, int type);
 
+	Piece* clone() const;
+
 	// return 0 for white, 1 for black
 	bool color() const;
 
