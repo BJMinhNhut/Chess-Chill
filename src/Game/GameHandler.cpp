@@ -64,15 +64,17 @@ void GameHandler::handleEvent(const sf::Event& event) {
 			                       event.mouseButton.y - Piece::SIZE / 2);
 		}
 	} else if (event.type == sf::Event::MouseButtonReleased) {
-		if (mDragging)
+		if (mDragging) {
+
 			mDragging = nullptr;
+		}
 	}
 }
 
 void GameHandler::loadTextures() {
 	mTextures.load(Textures::Board, Constants::dataPrefix + "resources/images/boards/default.png");
 	mTextures.load(Textures::PiecesSet,
-	               Constants::dataPrefix + "resources/images/pieces/default.png");
+	               Constants::dataPrefix + "resources/images/pieces/alpha.png");
 }
 
 void GameHandler::buildScene() {
@@ -86,8 +88,8 @@ void GameHandler::buildScene() {
 
 	// Add the background sprite to the scene
 	std::unique_ptr<SpriteNode> boardSprite(new SpriteNode(mTextures.get(Textures::Board)));
-	boardSprite->setPosition((float)mWindow.getSize().x / 2, (float)mWindow.getSize().y / 2);
-	boardSprite->centerOrigin();
+	boardSprite->setPosition((float)mWindow.getSize().x / 2 - BOARD_SIZE / 2.f,
+	                         (float)mWindow.getSize().y / 2 - BOARD_SIZE / 2.f);
 	mSceneLayers[Background]->attachChild(std::move(boardSprite));
 }
 
@@ -142,11 +144,13 @@ void GameHandler::addPiece(int type, int row, int column) {
 }
 
 Piece* GameHandler::checkHoverPiece(int x, int y) const {
-	static const int midx = mWindow.getSize().x/2, midy = mWindow.getSize().y/2;
-	static const int left = midx - BOARD_SIZE/2, top = midy - BOARD_SIZE/2;
-	if (x < left || y < top) return nullptr;
+	static const int midx = mWindow.getSize().x / 2, midy = mWindow.getSize().y / 2;
+	static const int left = midx - BOARD_SIZE / 2, top = midy - BOARD_SIZE / 2;
+	if (x < left || y < top)
+		return nullptr;
 	int column = (x - left) / Piece::SIZE;
 	int row = (y - top) / Piece::SIZE;
-	if (row < 0 || row > 7 || column < 0 || column > 7) return nullptr;
+	if (row < 0 || row > 7 || column < 0 || column > 7)
+		return nullptr;
 	return mPieces[row * 8 + column];
 }
