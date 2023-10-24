@@ -24,10 +24,12 @@ GameHandler::GameHandler(sf::RenderWindow& window, FontHolder& fonts)
       mSceneGraph(),
       mSceneLayers(),
       mPieces(64, nullptr),
+      mHighlights(64, nullptr),
       mDragging(nullptr),
       mBoardLeft(),
       mBoardTop(),
-      oldBox(-1) {
+      mOldBox(-1),
+      mLastMove(-1) {
 	mWindow.setView(mWindow.getDefaultView());
 
 	loadTextures();
@@ -71,11 +73,20 @@ void GameHandler::handleMouseMoved(int x, int y) {
 void GameHandler::checkDropPiece(int x, int y) {
 	if (mDragging == nullptr)
 		return;
-	mPieces[oldBox]->setOpacity(100);
+	mPieces[mOldBox]->setOpacity(100);
 	mSceneLayers[PopUp]->detachChild(*mDragging);
 	mDragging = nullptr;
 	const int newBox = getHoverBox(x, y);
-	movePiece(oldBox, newBox);
+
+	if (newBox > -1) {
+		if (mLastMove > -1) highlightMove(mLastMove, false);
+		highlightMove(newBox << 6 | mOldBox, true);
+	}
+	else {
+		highlightBox(mOldBox, Normal);
+		if (mLastMove > -1) highlightMove(mLastMove, true);
+	}
+	movePiece(mOldBox, newBox);
 }
 
 void GameHandler::checkPickUpPiece(int x, int y) {
@@ -85,17 +96,45 @@ void GameHandler::checkPickUpPiece(int x, int y) {
 	if (hovering == nullptr)
 		return;
 
+	// dim old position and highlight old box
+	mOldBox = getHoverBox(x, y);
 	hovering->setOpacity(50);
+	highlightBox(mOldBox, Light);
+
+	// create a fake piece that following player cursor
 	mDragging = hovering->clone();
-	mSceneLayers[PopUp]->attachChild(SceneNode::Ptr(mDragging));
-	oldBox = getHoverBox(x, y);
 	mDragging->snap(x, y);
+	mSceneLayers[PopUp]->attachChild(SceneNode::Ptr(mDragging));
+}
+
+void GameHandler::highlightBox(int box, GameHandler::HighlightRate rate) {
+	if (mHighlights[box] != nullptr) {
+		mSceneLayers[Background]->detachChild(*mHighlights[box]);
+		mHighlights[box] = nullptr;
+	}
+	if (rate > Normal) {
+		mHighlights[box] = new RectNode(Piece::SIZE, Piece::SIZE, sf::Color::Yellow);
+		mHighlights[box]->setOpacity(rate == Light ? 35 : 70);
+		setPositionToBox(mHighlights[box], box);
+		mSceneLayers[Background]->attachChild(SceneNode::Ptr(mHighlights[box]));
+	}
+}
+
+void GameHandler::highlightMove(int move, bool flag) {
+	int oldBox = move & 0x3f, newBox = move >> 6;
+	if (flag) {
+		highlightBox(newBox, Heavy);
+		highlightBox(oldBox, Light);
+	} else {
+		highlightBox(newBox, Normal);
+		highlightBox(oldBox, Normal);
+	}
 }
 
 void GameHandler::loadTextures() {
 	mTextures.load(Textures::Board, Constants::dataPrefix + "resources/images/boards/default.png");
 	mTextures.load(Textures::PiecesSet,
-	               Constants::dataPrefix + "resources/images/pieces/alpha.png");
+	               Constants::dataPrefix + "resources/images/pieces/default.png");
 }
 
 void GameHandler::buildScene() {
@@ -164,18 +203,16 @@ void GameHandler::loadBoardFromFEN(const std::string& fen) {
 }
 
 void GameHandler::addPiece(int type, int box) {
-	std::unique_ptr<Piece> piece(new Piece(mTextures.get(Textures::PiecesSet), type));
-	piece->setPosition(float(mBoardLeft + (box % 8) * Piece::SIZE),
-	                   float(mBoardTop + (box >> 3) * Piece::SIZE));
-	mPieces[box] = piece.get();
-	mSceneLayers[Pieces]->attachChild(std::move(piece));
+	mPieces[box] = new Piece(mTextures.get(Textures::PiecesSet), type);
+	setPositionToBox(mPieces[box], box);
+	mSceneLayers[Pieces]->attachChild(SceneNode::Ptr(mPieces[box]));
 }
 
 void GameHandler::movePiece(int oldBox, int newBox) {
-	std::cout << oldBox << ' ' << newBox << '\n';
+	std::cout << "move " << oldBox << ' ' << newBox << '\n';
 	assert(oldBox >= 0 && oldBox < 64);
 
-	// oldBox must be valid
+	// mOldBox must be valid
 	assert(mPieces[oldBox] != nullptr);
 
 	// if newBox not valid then move to old position
@@ -190,13 +227,19 @@ void GameHandler::movePiece(int oldBox, int newBox) {
 		mPieces[newBox] = mPieces[oldBox];
 
 		mPieces[oldBox] = nullptr;
+		mLastMove = (newBox << 6) | oldBox;
 		oldBox = -1;
 	}
-	mPieces[newBox]->setPosition(mBoardLeft + (newBox % 8) * Piece::SIZE,
-	                             mBoardTop + (newBox >> 3) * Piece::SIZE);
+	setPositionToBox(mPieces[newBox], newBox);
+}
+
+void GameHandler::setPositionToBox(SceneNode* node, int box) const {
+	node->setPosition((float)mBoardLeft + float((box & 7) * Piece::SIZE),
+	                  (float)mBoardTop + float((box >> 3) * Piece::SIZE));
 }
 
 void GameHandler::capturePiece(int box) {
+	std::cout << "capture " << box << '\n';
 	mSceneLayers[Pieces]->detachChild(*mPieces[box]);
 	mPieces[box] = nullptr;
 }

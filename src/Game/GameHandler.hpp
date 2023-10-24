@@ -10,6 +10,8 @@
 #include "Template/ResourceIdentifiers.hpp"
 #include "Template/SceneNode.hpp"
 #include "Template/SpriteNode.hpp"
+#include "Template/RectNode.hpp"
+
 
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/View.hpp>
@@ -20,12 +22,13 @@
 namespace sf {
 class RenderWindow;
 class Event;
-}
+}  // namespace sf
 
 class GameHandler : public sf::NonCopyable {
    public:
 	const static std::string START_FEN;
 	const static int BOARD_SIZE;
+
    public:
 	explicit GameHandler(sf::RenderWindow& window, FontHolder& fonts);
 
@@ -39,6 +42,15 @@ class GameHandler : public sf::NonCopyable {
 	void buildScene();
 
    private:
+	enum Layer { Background, Pieces, PopUp, LayerCount };
+
+	enum HighlightRate {
+		Normal,
+		Light,
+		Heavy,
+	};
+
+   private:
 	Piece* checkHoverPiece(int x, int y) const;
 	int getHoverBox(int x, int y) const;
 
@@ -47,18 +59,16 @@ class GameHandler : public sf::NonCopyable {
 
 	void addPiece(int type, int box);
 	void movePiece(int oldBox, int newBox);
+	void capturePiece(int box);
 
 	void checkDropPiece(int x, int y);
 	void checkPickUpPiece(int x, int y);
 	void handleMouseMoved(int x, int y);
 
-   private:
-	enum Layer {
-		Background,
-		Pieces,
-		PopUp,
-		LayerCount
-	};
+	void highlightBox(int box, HighlightRate rate);
+	void highlightMove(int move, bool flag);
+
+	void setPositionToBox(SceneNode* node, int box) const;
 
    private:
 	sf::RenderWindow& mWindow;
@@ -68,12 +78,13 @@ class GameHandler : public sf::NonCopyable {
 	SceneNode mSceneGraph;
 	std::array<SceneNode*, LayerCount> mSceneLayers;
 	std::vector<Piece*> mPieces;
+	std::vector<RectNode*> mHighlights;
 
 	Piece* mDragging;
-	int oldBox;
+	int mOldBox;
+	int mLastMove; // (newBox << 6) | oldBox;
 
 	int mBoardLeft, mBoardTop;
-	void capturePiece(int box);
 };
 
 #endif  //CHESS_GAMEHANDLER_HPP
