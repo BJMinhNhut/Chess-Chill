@@ -5,8 +5,8 @@
 #include "State.hpp"
 #include "StateStack.hpp"
 
-State::Context::Context(sf::RenderWindow &window, TextureHolder &textures, FontHolder &fonts, ColorHolder &colors)
-        : window(&window), textures(&textures), fonts(&fonts), colors(&colors) {}
+State::Context::Context(sf::RenderWindow &window, TextureHolder &textures, FontHolder &fonts, ColorHolder &colors, SoundPlayer& sounds)
+        : window(&window), textures(&textures), fonts(&fonts), colors(&colors), sounds(&sounds) {}
 
 State::State(StateStack &stack, Context context) : mStack(&stack), mContext(context) {}
 

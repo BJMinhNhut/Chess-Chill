@@ -26,7 +26,9 @@ add_executable(Chess src/main.cpp
         src/Game/Piece.cpp
         src/Game/Piece.hpp
         src/Template/RectNode.cpp
-        src/Template/RectNode.hpp)
+        src/Template/RectNode.hpp
+        src/Template/SoundPlayer.hpp
+        src/Template/SoundPlayer.cpp)
 target_link_libraries(Chess PRIVATE sfml-graphics)
 target_compile_features(Chess PRIVATE cxx_std_17)
 

@@ -7,8 +7,8 @@
 
 namespace sf {
 class Texture;
-
 class Font;
+class SoundBuffer;
 }  // namespace sf
 
 namespace Textures {
@@ -30,10 +30,18 @@ enum ID {
 };
 }
 
+namespace SoundEffect {
+enum ID {
+	Move,
+	Capture,
+};
+}
+
 template <typename Resource, typename Identifier>
 class ResourceHolder;
 
 typedef ResourceHolder<sf::Texture, Textures::ID> TextureHolder;
 typedef ResourceHolder<sf::Font, Fonts::ID> FontHolder;
+typedef ResourceHolder<sf::SoundBuffer, SoundEffect::ID> SoundBufferHolder;
 
 #endif  //NATUREOFCODE_RESOURCEIDENTIFIERS_HPP
