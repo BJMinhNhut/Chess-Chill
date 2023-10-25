@@ -79,8 +79,12 @@ void GameHandler::checkDropPiece(int x, int y) {
 	mDragging = nullptr;
 	const int newBox = getHoverBox(x, y);
 
-	bool pieceMoved = newBox > -1 && newBox != mOldBox;
-	if (pieceMoved) {
+	bool isValidMoved =
+	    newBox > -1 && newBox != mOldBox &&
+	    (mPieces[newBox] == nullptr || mPieces[mOldBox]->color() != mPieces[newBox]->color());
+
+	// if valid move, then highlight new move, make that move, un-highlight old move
+	if (isValidMoved) {
 		if (mLastMove > -1)
 			highlightMove(mLastMove, false);
 		highlightMove(newBox << 6 | mOldBox, true);
@@ -118,8 +122,8 @@ void GameHandler::highlightBox(int box, GameHandler::HighlightRate rate) {
 		mHighlights[box] = nullptr;
 	}
 	if (rate > Normal) {
-		mHighlights[box] =
-		    new RectNode(Piece::SIZE, Piece::SIZE, sf::Color(0,150, 150, rate == Click ? 50 : 100));
+		mHighlights[box] = new RectNode(Piece::SIZE, Piece::SIZE,
+		                                sf::Color(0, 150, 150, rate == Click ? 50 : 100));
 		setPositionToBox(mHighlights[box], box);
 		mSceneLayers[Background]->attachChild(SceneNode::Ptr(mHighlights[box]));
 	}
