@@ -46,8 +46,8 @@ class GameHandler : public sf::NonCopyable {
 
 	enum HighlightRate {
 		Normal,
-		Light,
-		Heavy,
+		Move,
+		Click,
 	};
 
    private:

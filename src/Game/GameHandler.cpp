@@ -79,14 +79,16 @@ void GameHandler::checkDropPiece(int x, int y) {
 	mDragging = nullptr;
 	const int newBox = getHoverBox(x, y);
 
-	if (newBox > -1 && newBox != mOldBox) {
-		if (mLastMove > -1) highlightMove(mLastMove, false);
+	bool pieceMoved = newBox > -1 && newBox != mOldBox;
+	if (pieceMoved) {
+		if (mLastMove > -1)
+			highlightMove(mLastMove, false);
 		highlightMove(newBox << 6 | mOldBox, true);
 		movePiece(mOldBox, newBox);
-	}
-	else {
-		highlightBox(mOldBox, Normal);
-		if (mLastMove > -1) highlightMove(mLastMove, true);
+	} else {
+		highlightBox(mOldBox, Click);
+		if (mLastMove > -1)
+			highlightMove(mLastMove, true);
 	}
 }
 
@@ -102,7 +104,7 @@ void GameHandler::checkPickUpPiece(int x, int y) {
 		highlightBox(mOldBox, Normal);
 	mOldBox = getHoverBox(x, y);
 	hovering->setOpacity(50);
-	highlightBox(mOldBox, Light);
+	highlightBox(mOldBox, Click);
 
 	// create a fake piece that following player cursor
 	mDragging = hovering->clone();
@@ -116,8 +118,8 @@ void GameHandler::highlightBox(int box, GameHandler::HighlightRate rate) {
 		mHighlights[box] = nullptr;
 	}
 	if (rate > Normal) {
-		mHighlights[box] = new RectNode(Piece::SIZE, Piece::SIZE, sf::Color::Yellow);
-		mHighlights[box]->setOpacity(rate == Light ? 35 : 70);
+		mHighlights[box] =
+		    new RectNode(Piece::SIZE, Piece::SIZE, sf::Color(0,150, 150, rate == Click ? 50 : 100));
 		setPositionToBox(mHighlights[box], box);
 		mSceneLayers[Background]->attachChild(SceneNode::Ptr(mHighlights[box]));
 	}
@@ -126,8 +128,8 @@ void GameHandler::highlightBox(int box, GameHandler::HighlightRate rate) {
 void GameHandler::highlightMove(int move, bool flag) {
 	int oldBox = move & 0x3f, newBox = move >> 6;
 	if (flag) {
-		highlightBox(newBox, Heavy);
-		highlightBox(oldBox, Light);
+		highlightBox(newBox, Move);
+		highlightBox(oldBox, Move);
 	} else {
 		highlightBox(newBox, Normal);
 		highlightBox(oldBox, Normal);
@@ -236,7 +238,8 @@ void GameHandler::movePiece(int oldBox, int newBox) {
 		mPieces[oldBox] = nullptr;
 		mLastMove = (newBox << 6) | oldBox;
 		oldBox = -1;
-	} else mLastMove = -1;
+	} else
+		mLastMove = -1;
 	setPositionToBox(mPieces[newBox], newBox);
 }
 
