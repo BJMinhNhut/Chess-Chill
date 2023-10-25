@@ -53,7 +53,9 @@ void GameHandler::handleEvent(const sf::Event& event) {
 	} else if (event.type == sf::Event::MouseButtonPressed) {
 		checkPickUpPiece(event.mouseButton.x, event.mouseButton.y);
 	} else if (event.type == sf::Event::MouseButtonReleased) {
-		checkDropPiece(event.mouseButton.x, event.mouseButton.y);
+		if (mDragging == nullptr && mOldBox > -1 && mPieces[mOldBox] != nullptr) {
+			handleMove(mOldBox, getHoverBox(event.mouseButton.x, event.mouseButton.y));
+		} else checkDropPiece(event.mouseButton.x, event.mouseButton.y);
 	}
 }
 
@@ -75,20 +77,24 @@ void GameHandler::checkDropPiece(int x, int y) {
 	if (mDragging == nullptr)
 		return;
 	mPieces[mOldBox]->setOpacity(100);
+	const int newBox = getHoverBox(x, y);
+	handleMove(mOldBox, newBox);
+
 	mSceneLayers[PopUp]->detachChild(*mDragging);
 	mDragging = nullptr;
-	const int newBox = getHoverBox(x, y);
+}
 
+void GameHandler::handleMove(int start, int target) {
 	bool isValidMoved =
-	    newBox > -1 && newBox != mOldBox &&
-	    (mPieces[newBox] == nullptr || mPieces[mOldBox]->color() != mPieces[newBox]->color());
+	    target > -1 && target != mOldBox &&
+	    (mPieces[target] == nullptr || mPieces[start]->color() != mPieces[target]->color());
 
 	// if valid move, then highlight new move, make that move, un-highlight old move
 	if (isValidMoved) {
 		if (mLastMove > -1)
 			highlightMove(mLastMove, false);
-		highlightMove(newBox << 6 | mOldBox, true);
-		movePiece(mOldBox, newBox);
+		highlightMove(target << 6 | start, true);
+		movePiece(start, target);
 	} else {
 		highlightBox(mOldBox, Click);
 		if (mLastMove > -1)
@@ -104,7 +110,7 @@ void GameHandler::checkPickUpPiece(int x, int y) {
 		return;
 
 	// dim old position and highlight old box
-	if (mLastMove == -1 && mOldBox != -1)
+	if ((mLastMove == -1 || (mLastMove & 0x3f) != mOldBox) && mOldBox != -1)
 		highlightBox(mOldBox, Normal);
 	mOldBox = getHoverBox(x, y);
 	hovering->setOpacity(50);
@@ -124,7 +130,7 @@ void GameHandler::highlightBox(int box, GameHandler::HighlightRate rate) {
 	if (rate > Normal) {
 		mHighlights[box] = new RectNode(Piece::SIZE, Piece::SIZE,
 		                                sf::Color(0, 150, 150, rate == Click ? 50 : 100));
-		setPositionToBox(mHighlights[box], box);
+		mHighlights[box]->setPosition(getBoxPosition(box));
 		mSceneLayers[Background]->attachChild(SceneNode::Ptr(mHighlights[box]));
 	}
 }
@@ -213,7 +219,8 @@ void GameHandler::loadBoardFromFEN(const std::string& fen) {
 
 void GameHandler::addPiece(int type, int box) {
 	mPieces[box] = new Piece(mTextures.get(Textures::PiecesSet), type);
-	setPositionToBox(mPieces[box], box);
+	mPieces[box]->setPosition(getBoxPosition(box), false);
+	mPieces[box]->updateTargetPosition();
 	mSceneLayers[Pieces]->attachChild(SceneNode::Ptr(mPieces[box]));
 }
 
@@ -244,12 +251,7 @@ void GameHandler::movePiece(int oldBox, int newBox) {
 		oldBox = -1;
 	} else
 		mLastMove = -1;
-	setPositionToBox(mPieces[newBox], newBox);
-}
-
-void GameHandler::setPositionToBox(SceneNode* node, int box) const {
-	node->setPosition((float)mBoardLeft + float((box & 7) * Piece::SIZE),
-	                  (float)mBoardTop + float((box >> 3) * Piece::SIZE));
+	mPieces[newBox]->setPosition(getBoxPosition(newBox), mDragging == nullptr);
 }
 
 void GameHandler::capturePiece(int box) {
@@ -271,4 +273,9 @@ int GameHandler::getHoverBox(int x, int y) const {
 Piece* GameHandler::checkHoverPiece(int x, int y) const {
 	int boxID = getHoverBox(x, y);
 	return (boxID < 0) ? nullptr : mPieces[boxID];
+}
+
+sf::Vector2f GameHandler::getBoxPosition(int box) const {
+	return {(float)mBoardLeft + float((box & 7) * Piece::SIZE),
+	                    (float)mBoardTop + float((box >> 3) * Piece::SIZE)};
 }

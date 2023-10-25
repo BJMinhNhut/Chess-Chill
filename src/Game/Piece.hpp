@@ -28,6 +28,9 @@ class Piece : public SpriteNode {
 	Piece(const sf::Texture& textures, int type);
 
 	void snap(int x, int y);
+	void setPosition(sf::Vector2f position, bool smooth = false);
+	void setPosition(float x, float y, bool smooth = false);
+	void updateTargetPosition();
 
 	Piece* clone() const;
 
@@ -35,10 +38,14 @@ class Piece : public SpriteNode {
 	bool color() const;
 
    private:
+	void updateCurrent(sf::Time dt) override;
+
 	// assume that the textures is 510 x 170
 	static sf::IntRect getRectByType(int type);
 
    private:
+	sf::Vector2f mVelocity;
+	sf::Vector2f mTargetPosition;
 	int mType;
 };
 

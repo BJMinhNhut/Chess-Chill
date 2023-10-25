@@ -40,6 +40,7 @@ class GameHandler : public sf::NonCopyable {
 
 	void loadTextures();
 	void buildScene();
+	void handleMove(int start, int target);
 
    private:
 	enum Layer { Background, Pieces, PopUp, LayerCount };
@@ -53,6 +54,7 @@ class GameHandler : public sf::NonCopyable {
    private:
 	Piece* checkHoverPiece(int x, int y) const;
 	int getHoverBox(int x, int y) const;
+	sf::Vector2f getBoxPosition(int box) const;
 
 	static int getPieceFromChar(char ch);
 	static int getBoxID(int row, int column);
@@ -67,8 +69,6 @@ class GameHandler : public sf::NonCopyable {
 
 	void highlightBox(int box, HighlightRate rate);
 	void highlightMove(int move, bool flag);
-
-	void setPositionToBox(SceneNode* node, int box) const;
 
    private:
 	sf::RenderWindow& mWindow;
