@@ -12,6 +12,7 @@
 #include "Template/SceneNode.hpp"
 #include "Template/SoundPlayer.hpp"
 #include "Template/SpriteNode.hpp"
+#include "GameLogic.hpp"
 
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/View.hpp>
@@ -36,10 +37,9 @@ class GameHandler : public sf::NonCopyable {
 	void draw();
 	void handleEvent(const sf::Event& event);
 
-	void loadBoardFromFEN(const std::string& fen);
-
 	void loadTextures();
 	void buildScene();
+	void loadPieces();
 	void handleMove(int start, int target);
 
    private:
@@ -55,9 +55,6 @@ class GameHandler : public sf::NonCopyable {
 	Piece* checkHoverPiece(int x, int y) const;
 	int getHoverBox(int x, int y) const;
 	sf::Vector2f getBoxPosition(int box) const;
-
-	static int getPieceFromChar(char ch);
-	static int getBoxID(int row, int column);
 
 	void addPiece(int type, int box);
 	void movePiece(int oldBox, int newBox);
@@ -84,6 +81,8 @@ class GameHandler : public sf::NonCopyable {
 	Piece* mDragging;
 	int mOldBox;
 	int mLastMove;  // (newBox << 6) | oldBox;
+
+	GameLogic mLogic;
 
 	int mBoardLeft, mBoardTop;
 };

@@ -32,6 +32,9 @@ bool GameState::handleEvent(const sf::Event &event) {
 	if (event.type == sf::Event::KeyReleased) {
 		if (event.key.code == sf::Keyboard::Escape) {
 			requestStackPop();
+		} else if (event.key.code == sf::Keyboard::R) {
+			requestStackPop();
+			requestStackPush(States::Game);
 		}
 	}
     return false;

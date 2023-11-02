@@ -30,13 +30,13 @@ GameHandler::GameHandler(sf::RenderWindow& window, FontHolder& fonts, SoundPlaye
       mBoardLeft(),
       mBoardTop(),
       mOldBox(-1),
-      mLastMove(-1) {
+      mLastMove(-1),
+      mLogic(START_FEN) {
 	mWindow.setView(mWindow.getDefaultView());
 
 	loadTextures();
 	buildScene();
-
-	loadBoardFromFEN(START_FEN);
+	loadPieces();
 }
 
 void GameHandler::draw() {
@@ -56,6 +56,16 @@ void GameHandler::handleEvent(const sf::Event& event) {
 		if (mDragging == nullptr && mOldBox > -1 && mPieces[mOldBox] != nullptr) {
 			handleMove(mOldBox, getHoverBox(event.mouseButton.x, event.mouseButton.y));
 		} else checkDropPiece(event.mouseButton.x, event.mouseButton.y);
+	}
+}
+
+void GameHandler::loadPieces() {
+	for (int i = 0; i < 64; ++i) {
+		int piece = mLogic.getPiece(i);
+		std::cout << piece << ' ' << i << '\n';
+		if (piece != 0) {
+			addPiece(piece, i);
+		}
 	}
 }
 
@@ -85,12 +95,11 @@ void GameHandler::checkDropPiece(int x, int y) {
 }
 
 void GameHandler::handleMove(int start, int target) {
-	bool isValidMoved =
-	    target > -1 && target != mOldBox &&
-	    (mPieces[target] == nullptr || mPieces[start]->color() != mPieces[target]->color());
+	bool isLegalMove = start >= 0 && start < 64 && target >= 0 && target < 64 &&
+	                    mLogic.isLegalMove((target << 6) | start);
 
-	// if valid move, then highlight new move, make that move, un-highlight old move
-	if (isValidMoved) {
+	// if legal move, then highlight new move, make that move, un-highlight old move
+	if (isLegalMove) {
 		if (mLastMove > -1)
 			highlightMove(mLastMove, false);
 		highlightMove(target << 6 | start, true);
@@ -170,53 +179,6 @@ void GameHandler::buildScene() {
 	mSceneLayers[Background]->attachChild(std::move(boardSprite));
 }
 
-int GameHandler::getPieceFromChar(char ch) {
-	int piece = std::islower(ch) ? Piece::Black : Piece::White;
-	switch (tolower(ch)) {
-		case 'p':
-			piece |= Piece::Pawn;
-			break;
-		case 'n':
-			piece |= Piece::Knight;
-			break;
-		case 'b':
-			piece |= Piece::Bishop;
-			break;
-		case 'r':
-			piece |= Piece::Rook;
-			break;
-		case 'q':
-			piece |= Piece::Queen;
-			break;
-		case 'k':
-			piece |= Piece::King;
-			break;
-		default:
-			assert(false);
-	}
-	return piece;
-}
-
-int GameHandler::getBoxID(int row, int column) {
-	assert(row >= 0 && row < 8 && column >= 0 && column < 8);
-	return (row << 3) | column;
-}
-
-void GameHandler::loadBoardFromFEN(const std::string& fen) {
-	int row = 0, col = 0;
-	for (char ch : fen) {
-		if (std::isdigit(ch))
-			col += ch - '0';
-		else if (ch == '/')
-			row++, col = 0;
-		else if (std::isalpha(ch))
-			addPiece(getPieceFromChar(ch), getBoxID(row, col++));
-		else
-			break;
-	}
-	// TODO: active, castling, en-passant, half-move, full move
-}
-
 void GameHandler::addPiece(int type, int box) {
 	mPieces[box] = new Piece(mTextures.get(Textures::PiecesSet), type);
 	mPieces[box]->setPosition(getBoxPosition(box), false);
@@ -226,15 +188,6 @@ void GameHandler::addPiece(int type, int box) {
 
 void GameHandler::movePiece(int oldBox, int newBox) {
 	std::cout << "move " << oldBox << ' ' << newBox << '\n';
-	assert(oldBox >= 0 && oldBox < 64);
-
-	// mOldBox must be valid
-	assert(mPieces[oldBox] != nullptr);
-
-	// if newBox not valid then move to old position
-	if (!(newBox >= 0 && newBox < 64))
-		newBox = oldBox;
-
 	// if chang box then remove piece at new box, move piece at old box to new box, and remove old box marking
 	if (newBox != oldBox) {
 		if (mPieces[newBox] != nullptr) {
@@ -244,8 +197,8 @@ void GameHandler::movePiece(int oldBox, int newBox) {
 			mSounds.play(SoundEffect::Move);
 		}
 
+		mLogic.makeMove((newBox << 6) | oldBox);
 		mPieces[newBox] = mPieces[oldBox];
-
 		mPieces[oldBox] = nullptr;
 		mLastMove = (newBox << 6) | oldBox;
 		oldBox = -1;
@@ -263,11 +216,11 @@ void GameHandler::capturePiece(int box) {
 int GameHandler::getHoverBox(int x, int y) const {
 	if (x < mBoardLeft || y < mBoardTop)
 		return -1;
-	int column = (x - mBoardLeft) / Piece::SIZE;
-	int row = (y - mBoardTop) / Piece::SIZE;
-	if (row > 7 || column > 7)
+	int column = 7 - (x - mBoardLeft) / Piece::SIZE;
+	int row = 7 - (y - mBoardTop) / Piece::SIZE;
+	if (row >= 8 || column >= 8 || row < 0 || column < 0)
 		return -1;
-	return getBoxID(row, column);
+	return GameLogic::getBoxID(row, column);
 }
 
 Piece* GameHandler::checkHoverPiece(int x, int y) const {
@@ -276,6 +229,6 @@ Piece* GameHandler::checkHoverPiece(int x, int y) const {
 }
 
 sf::Vector2f GameHandler::getBoxPosition(int box) const {
-	return {(float)mBoardLeft + float((box & 7) * Piece::SIZE),
-	                    (float)mBoardTop + float((box >> 3) * Piece::SIZE)};
+	return {(float)mBoardLeft + float((7-(box & 7)) * Piece::SIZE),
+	                    (float)mBoardTop + float((7-(box >> 3)) * Piece::SIZE)};
 }

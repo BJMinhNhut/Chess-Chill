@@ -12,7 +12,7 @@ const int Piece::SIZE = 85;
 
 Piece::Piece(const sf::Texture& textures, int type)
     : SpriteNode(textures, getRectByType(type)), mType(type), mVelocity(), mTargetPosition() {
-	assert(type <= (Pawn | Black) && type >= 0 && (type & NAME) <= Pawn);
+	assert((type >> 3) < 2 && type >= 0 && (type & NAME) <= Pawn);
 }
 
 void Piece::updateCurrent(sf::Time dt) {
@@ -47,7 +47,7 @@ void Piece::updateTargetPosition() {
 }
 
 sf::IntRect Piece::getRectByType(int type) {
-	int x = (type & 7) * SIZE;
+	int x = ((type & 7) - 1) * SIZE;
 	int y = ((type >> 3) & 1) * SIZE;
 	return {x, y, SIZE, SIZE};
 }
