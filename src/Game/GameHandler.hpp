@@ -28,7 +28,7 @@ class Event;
 class GameHandler : public sf::NonCopyable {
    public:
 	const static std::string START_FEN;
-	const static int BOARD_SIZE;
+	const static int BOARD_DRAW_SIZE;
 
    public:
 	explicit GameHandler(sf::RenderWindow& window, FontHolder& fonts, SoundPlayer& sounds);
@@ -37,35 +37,38 @@ class GameHandler : public sf::NonCopyable {
 	void draw();
 	void handleEvent(const sf::Event& event);
 
-	void loadTextures();
-	void buildScene();
-	void loadPieces();
-	void handleMove(int start, int target);
-
    private:
 	enum Layer { Background, Pieces, PopUp, LayerCount };
 
 	enum HighlightRate {
 		Normal,
-		Move,
 		Click,
+		Move,
+		Target,
 	};
 
    private:
+	void loadTextures();
+	void buildScene();
+	void loadPieces();
+	void handleMove(int start, int target, bool drop = false);
+
 	Piece* checkHoverPiece(int x, int y) const;
-	int getHoverBox(int x, int y) const;
+	int getHoverSquare(int x, int y) const;
 	sf::Vector2f getBoxPosition(int box) const;
 
 	void addPiece(int type, int box);
-	void movePiece(int oldBox, int newBox);
+	void movePiece(int oldBox, int newBox, bool drop = false);
 	void capturePiece(int box);
 
-	void checkDropPiece(int x, int y);
+	void checkDropPiece(int square);
+	void checkClick(int square);
 	void checkPickUpPiece(int x, int y);
 	void handleMouseMoved(int x, int y);
 
 	void highlightBox(int box, HighlightRate rate);
 	void highlightMove(int move, bool flag);
+	void clearCandidates();
 
    private:
 	sf::RenderWindow& mWindow;
@@ -77,9 +80,10 @@ class GameHandler : public sf::NonCopyable {
 	std::array<SceneNode*, LayerCount> mSceneLayers;
 	std::vector<Piece*> mPieces;
 	std::vector<RectNode*> mHighlights;
+	std::vector<int> moveCandidates;
 
 	Piece* mDragging;
-	int mOldBox;
+	int mOldSquare;
 	int mLastMove;  // (newBox << 6) | oldBox;
 
 	GameLogic mLogic;

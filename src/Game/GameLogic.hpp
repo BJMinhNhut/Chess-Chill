@@ -9,6 +9,8 @@
 
 class GameLogic {
    public:
+	static const int BOARD_SIZE;
+   public:
 	GameLogic(const std::string& fen);
 
 	bool isLegalMove(int move) const;
@@ -36,8 +38,7 @@ class GameLogic {
 	bool isKingInCheck(bool turn) const;
 
    private:
-	static const int BOARD_SIZE = 64;
-	int mBoard[BOARD_SIZE];
+	int mBoard[64];
 	bool mTurn;
 	int mCastling;
 	int mEnPassant;

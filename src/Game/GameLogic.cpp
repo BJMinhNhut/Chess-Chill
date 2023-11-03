@@ -7,6 +7,8 @@
 
 #include <cassert>
 
+const int GameLogic::BOARD_SIZE = 64;
+
 GameLogic::GameLogic(const std::string& fen):
 	mTurn(false), mCastling(0), mEnPassant(0), mHalfMove(0), mFullMove(0) {
 	loadFEN(fen);
@@ -15,8 +17,23 @@ GameLogic::GameLogic(const std::string& fen):
 bool GameLogic::isLegalMove(int move) const {
 	int piece = mBoard[move & 63];
 	if (piece == 0 || getColor(piece) != mTurn) return false;
-	return isLegalBishopMove(move) || isLegalKingMove(move) || isLegalKnightMove(move) ||
-	       isLegalPawnMove(move) || isLegalQueenMove(move) || isLegalRookMove(move);
+	switch (piece & 7) {
+		case Piece::Pawn:
+			return isLegalPawnMove(move);
+		case Piece::Knight:
+			return isLegalKnightMove(move);
+		case Piece::Bishop:
+			return isLegalBishopMove(move);
+		case Piece::Rook:
+			return isLegalRookMove(move);
+		case Piece::Queen:
+			return isLegalQueenMove(move);
+		case Piece::King:
+			return isLegalKingMove(move);
+		default:
+			assert(false);
+	};
+	return false;
 }
 
 bool GameLogic::isKingInCheck() const {
