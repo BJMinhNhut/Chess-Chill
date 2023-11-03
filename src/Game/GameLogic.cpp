@@ -84,6 +84,10 @@ int GameLogic::getBoxID(int row, int column) {
 	return (row << 3) | column;
 }
 
+bool GameLogic::getTurn() const {
+	return mTurn;
+}
+
 void GameLogic::getMovePositions(int move, int& start, int& target) {
 	start = move & 63;
 	target = (move >> 6) & 63;

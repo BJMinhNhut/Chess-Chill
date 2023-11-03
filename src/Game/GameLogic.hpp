@@ -16,6 +16,7 @@ class GameLogic {
 	bool isLegalMove(int move) const;
 	bool isKingInCheck() const;
 	int getPiece(int box) const;
+	bool getTurn() const;
 
 	static int getColor(int piece);
 	static int getPieceFromChar(char ch);

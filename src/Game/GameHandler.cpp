@@ -175,7 +175,7 @@ void GameHandler::highlightBox(int box, GameHandler::HighlightRate rate) {
 
 void GameHandler::highlightMove(int move, bool flag) {
 	if (move == -1)
-		return;	// no move
+		return;  // no move
 	int oldBox = move & 0x3f, newBox = move >> 6;
 	if (flag) {
 		highlightBox(newBox, Move);
@@ -262,7 +262,9 @@ int GameHandler::getHoverSquare(int x, int y) const {
 
 Piece* GameHandler::checkHoverPiece(int x, int y) const {
 	int boxID = getHoverSquare(x, y);
-	return (boxID < 0) ? nullptr : mPieces[boxID];
+	if (boxID < 0 || mPieces[boxID] == nullptr || mPieces[boxID]->color() != mLogic.getTurn())
+		return nullptr;
+	return mPieces[boxID];
 }
 
 sf::Vector2f GameHandler::getBoxPosition(int box) const {
