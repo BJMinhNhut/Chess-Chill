@@ -9,14 +9,18 @@
 
 const int GameLogic::BOARD_SIZE = 64;
 
-GameLogic::GameLogic(const std::string& fen):
-	mTurn(false), mCastling(0), mEnPassant(0), mHalfMove(0), mFullMove(0) {
+GameLogic::GameLogic(const std::string& fen)
+    : mTurn(false), mCastling(0), mEnPassant(0), mHalfMove(0), mFullMove(0) {
 	loadFEN(fen);
 }
 
 bool GameLogic::isLegalMove(int move) const {
 	int piece = mBoard[move & 63];
-	if (piece == 0 || getColor(piece) != mTurn) return false;
+	int capture = mBoard[(move >> 6) & 63];
+	if (piece == 0 || getColor(piece) != mTurn)
+		return false;
+	if (capture != 0 && getColor(capture) == mTurn)
+		return false;
 	switch (piece & 7) {
 		case Piece::Pawn:
 			return isLegalPawnMove(move);
@@ -109,52 +113,51 @@ void GameLogic::loadFEN(const std::string& fen) {
 }
 
 bool GameLogic::isLegalPawnMove(int move) const {
-//	int from = move & 63;
-//	int to = (move >> 6) & 63;
-//	int piece = mBoard[from];
-//	int capture = mBoard[to];
-//	int isBlack = piece & 8;
-//	int diff = to - from;
-//	int absDiff = diff < 0 ? -diff : diff;
-//	int dir = isBlack ? -8 : 8;
-//	int start = isBlack ? 48 : 8;
-//	int end = isBlack ? 55 : 15;
-//	int ep = mEnPassant;
-//	int epDiff = ep - from;
-//	int epAbsDiff = epDiff < 0 ? -epDiff : epDiff;
-//	int epDir = isBlack ? -7 : 9;
-//	int epCapture = mBoard[ep];
-//
-//	if (capture == 0) {
-//		if (diff == dir) {
-//			if (to < start || to > end) return false;
-//			if (ep != -1 && epAbsDiff == 1 && epCapture == (Piece::Pawn | !isBlack)) return true;
-//			return true;
-//		}
-//		if (diff == 2 * dir && from >= start && from <= end) {
-//			if (mBoard[from + dir] != 0) return false;
-//			if (mBoard[to] != 0) return false;
-//			return true;
-//		}
-//		return false;
-//	}
-//	if (getColor(capture) == isBlack) return false;
-//	if (diff == dir + 1 || diff == dir - 1) return true;
-//	if (ep != -1 && epAbsDiff == 1 && epCapture == (Piece::Pawn | !isBlack)) return true;
+	//	int from = move & 63;
+	//	int to = (move >> 6) & 63;
+	//	int piece = mBoard[from];
+	//	int capture = mBoard[to];
+	//	int isBlack = piece & 8;
+	//	int diff = to - from;
+	//	int absDiff = diff < 0 ? -diff : diff;
+	//	int dir = isBlack ? -8 : 8;
+	//	int start = isBlack ? 48 : 8;
+	//	int end = isBlack ? 55 : 15;
+	//	int ep = mEnPassant;
+	//	int epDiff = ep - from;
+	//	int epAbsDiff = epDiff < 0 ? -epDiff : epDiff;
+	//	int epDir = isBlack ? -7 : 9;
+	//	int epCapture = mBoard[ep];
+	//
+	//	if (capture == 0) {
+	//		if (diff == dir) {
+	//			if (to < start || to > end) return false;
+	//			if (ep != -1 && epAbsDiff == 1 && epCapture == (Piece::Pawn | !isBlack)) return true;
+	//			return true;
+	//		}
+	//		if (diff == 2 * dir && from >= start && from <= end) {
+	//			if (mBoard[from + dir] != 0) return false;
+	//			if (mBoard[to] != 0) return false;
+	//			return true;
+	//		}
+	//		return false;
+	//	}
+	//	if (getColor(capture) == isBlack) return false;
+	//	if (diff == dir + 1 || diff == dir - 1) return true;
+	//	if (ep != -1 && epAbsDiff == 1 && epCapture == (Piece::Pawn | !isBlack)) return true;
 	return false;
 }
 
 bool GameLogic::isLegalKnightMove(int move) const {
 	int from = move & 63;
 	int to = (move >> 6) & 63;
-	int piece = mBoard[from];
-	int capture = mBoard[to];
-	int color = piece & 8;
-	int diff = to - from;
-	int absDiff = diff < 0 ? -diff : diff;
-
-	if (capture != 0 && getColor(capture) == color) return false;
-	if (absDiff == 6 || absDiff == 10 || absDiff == 15 || absDiff == 17) return true;
+	int r1 = from >> 3, c1 = from & 7;
+	int r2 = to >> 3, c2 = to & 7;
+	int dr = r2 - r1, dc = c2 - c1;
+	int absDr = dr < 0 ? -dr : dr;
+	int absDc = dc < 0 ? -dc : dc;
+	if (absDr == 2 && absDc == 1) return true;
+	if (absDr == 1 && absDc == 2) return true;
 	return false;
 }
 
@@ -171,32 +174,32 @@ bool GameLogic::isLegalQueenMove(int move) const {
 }
 
 bool GameLogic::isLegalKingMove(int move) const {
-//	int from = move & 63;
-//	int to = (move >> 6) & 63;
-//	int piece = mBoard[from];
-//	int capture = mBoard[to];
-//	int isBlack = piece & 8;
-//	int diff = to - from;
-//	int absDiff = diff < 0 ? -diff : diff;
-//	int dir = isBlack ? -8 : 8;
-//	int start = isBlack ? 60 : 4;
-//	int end = isBlack ? 63 : 7;
-//	int castle = mCastling;
-//	int castleDiff = castle - from;
-//	int castleAbsDiff = castleDiff < 0 ? -castleDiff : castleDiff;
-//	int castleDir = castleDiff < 0 ? -1 : 1;
-//	int castleRook = mBoard[castle];
-//	int castleTo = from + castleDir;
-//	int castleCapture = mBoard[castleTo];
-//
-//	if (capture != 0 && getColor(capture) == isBlack) return false;
-//	if (absDiff == 1 || absDiff == 8 || absDiff == 9) return true;
-//	if (castle != -1 && castleAbsDiff == 2 && castleRook == (Piece::Rook | isBlack) &&
-//	    castleCapture == 0) {
-//		if (isKingInCheck()) return false;
-//		if (isKingInCheck(isBlack)) return false;
-//		return true;
-//	}
+	//	int from = move & 63;
+	//	int to = (move >> 6) & 63;
+	//	int piece = mBoard[from];
+	//	int capture = mBoard[to];
+	//	int isBlack = piece & 8;
+	//	int diff = to - from;
+	//	int absDiff = diff < 0 ? -diff : diff;
+	//	int dir = isBlack ? -8 : 8;
+	//	int start = isBlack ? 60 : 4;
+	//	int end = isBlack ? 63 : 7;
+	//	int castle = mCastling;
+	//	int castleDiff = castle - from;
+	//	int castleAbsDiff = castleDiff < 0 ? -castleDiff : castleDiff;
+	//	int castleDir = castleDiff < 0 ? -1 : 1;
+	//	int castleRook = mBoard[castle];
+	//	int castleTo = from + castleDir;
+	//	int castleCapture = mBoard[castleTo];
+	//
+	//	if (capture != 0 && getColor(capture) == isBlack) return false;
+	//	if (absDiff == 1 || absDiff == 8 || absDiff == 9) return true;
+	//	if (castle != -1 && castleAbsDiff == 2 && castleRook == (Piece::Rook | isBlack) &&
+	//	    castleCapture == 0) {
+	//		if (isKingInCheck()) return false;
+	//		if (isKingInCheck(isBlack)) return false;
+	//		return true;
+	//	}
 	return false;
 }
 
