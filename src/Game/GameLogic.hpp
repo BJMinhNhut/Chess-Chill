@@ -29,7 +29,7 @@ class GameLogic {
 	std::string getFEN() const;
 
 	bool isLegalPawnMove(int move) const;
-	bool isLegalKnightMove(int move) const;
+	static bool isLegalKnightMove(int move) ;
 	bool isLegalBishopMove(int move) const;
 	bool isLegalRookMove(int move) const;
 	bool isLegalQueenMove(int move) const;

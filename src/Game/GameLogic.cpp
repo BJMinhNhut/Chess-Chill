@@ -113,42 +113,33 @@ void GameLogic::loadFEN(const std::string& fen) {
 }
 
 bool GameLogic::isLegalPawnMove(int move) const {
-	//	int from = move & 63;
-	//	int to = (move >> 6) & 63;
-	//	int piece = mBoard[from];
-	//	int capture = mBoard[to];
-	//	int isBlack = piece & 8;
-	//	int diff = to - from;
-	//	int absDiff = diff < 0 ? -diff : diff;
-	//	int dir = isBlack ? -8 : 8;
-	//	int start = isBlack ? 48 : 8;
-	//	int end = isBlack ? 55 : 15;
-	//	int ep = mEnPassant;
-	//	int epDiff = ep - from;
-	//	int epAbsDiff = epDiff < 0 ? -epDiff : epDiff;
-	//	int epDir = isBlack ? -7 : 9;
-	//	int epCapture = mBoard[ep];
-	//
-	//	if (capture == 0) {
-	//		if (diff == dir) {
-	//			if (to < start || to > end) return false;
-	//			if (ep != -1 && epAbsDiff == 1 && epCapture == (Piece::Pawn | !isBlack)) return true;
-	//			return true;
-	//		}
-	//		if (diff == 2 * dir && from >= start && from <= end) {
-	//			if (mBoard[from + dir] != 0) return false;
-	//			if (mBoard[to] != 0) return false;
-	//			return true;
-	//		}
-	//		return false;
-	//	}
-	//	if (getColor(capture) == isBlack) return false;
-	//	if (diff == dir + 1 || diff == dir - 1) return true;
-	//	if (ep != -1 && epAbsDiff == 1 && epCapture == (Piece::Pawn | !isBlack)) return true;
+	int from = move & 63;
+	int to = (move >> 6) & 63;
+	int piece = mBoard[from];
+	int capture = mBoard[to];
+	int color = getColor(piece);
+	int diff = to - from;
+	int absDiff = diff < 0 ? -diff : diff;
+	int dir = color ? -8 : 8;
+	int start = color ? 48 : 8;
+	int end = color ? 55 : 15;
+	int enPassant = mEnPassant;
+	int enPassantDiff = enPassant - from;
+	int enPassantAbsDiff = enPassantDiff < 0 ? -enPassantDiff : enPassantDiff;
+	int enPassantDir = enPassantDiff < 0 ? -1 : 1;
+	int enPassantCapture = mBoard[enPassant];
+	if (absDiff == 8) return capture == 0 && diff == dir;
+	if (absDiff == 16 && from >= start && from <= end) return capture == 0 && mBoard[from + dir] == 0;
+	if (absDiff == 7 && capture != 0) return getColor(capture) != color;
+	if (absDiff == 9 && capture != 0) return getColor(capture) != color;
+//	if (enPassant != -1 && enPassantAbsDiff == 8 && enPassantCapture == (Piece::Pawn | !color) &&
+//	    capture == 0) {
+//		return true;
+//	}
 	return false;
 }
 
-bool GameLogic::isLegalKnightMove(int move) const {
+bool GameLogic::isLegalKnightMove(int move) {
 	int from = move & 63;
 	int to = (move >> 6) & 63;
 	int r1 = from >> 3, c1 = from & 7;
