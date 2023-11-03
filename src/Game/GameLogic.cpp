@@ -6,17 +6,20 @@
 #include "Piece.hpp"
 
 #include <cassert>
+#include <iostream>
 
 const int GameLogic::BOARD_SIZE = 64;
 
 GameLogic::GameLogic(const std::string& fen)
-    : mTurn(false), mCastling(0), mEnPassant(0), mHalfMove(0), mFullMove(0) {
+    : mTurn(false), mCastling(0), mEnPassant(-1), mHalfMove(0), mFullMove(0) {
 	loadFEN(fen);
 }
 
 bool GameLogic::isLegalMove(int move) const {
 	int piece = mBoard[move & 63];
 	int capture = mBoard[(move >> 6) & 63];
+
+	std::cout << piece << ' ' << mTurn << '\n';
 	if (piece == 0 || getColor(piece) != mTurn)
 		return false;
 	if (capture != 0 && getColor(capture) == mTurn)
@@ -49,7 +52,7 @@ int GameLogic::getPiece(int box) const {
 }
 
 int GameLogic::getColor(int piece) {
-	return piece & 8;
+	return (piece >> 3) & 1;
 }
 
 int GameLogic::getPieceFromChar(char ch) {
@@ -97,23 +100,39 @@ void GameLogic::makeMove(int move) {
 	assert(isLegalMove(move));
 	int from, to;
 	getMovePositions(move, from, to);
+	checkEnPassant(move);
 	mBoard[to] = mBoard[from];
 	mBoard[from] = 0;
+	mTurn ^= 1;
 }
 
 void GameLogic::loadFEN(const std::string& fen) {
 	std::fill(mBoard, mBoard + BOARD_SIZE, 0);
-	int row = 7, col = 7;
+	int row = 7, col = 0;
 	for (char ch : fen) {
 		if (std::isdigit(ch))
-			col -= ch - '0';
+			col += ch - '0';
 		else if (ch == '/')
-			row--, col = 7;
+			row--, col = 0;
 		else if (std::isalpha(ch)) {
-			mBoard[getBoxID(row, col--)] = getPieceFromChar(ch);
+			mBoard[getBoxID(row, col++)] = getPieceFromChar(ch);
 		} else
 			break;
 	}
+}
+
+void GameLogic::checkEnPassant(int move) {
+	// check and update mEnPassant when pawn move 2 square
+	int from = move & 63;
+	int to = (move >> 6) & 63;
+	int piece = mBoard[from];
+	int diff = to - from;
+	int absDiff = diff < 0 ? -diff : diff;
+	int dir = getColor(piece) ? -8 : 8;
+	if ((piece & 7) == Piece::Pawn && absDiff == 16) {
+		mEnPassant = from + dir;
+	} else mEnPassant = -1;
+	std::cout << from << ' ' << to << ' ' << mEnPassant << '\n';
 }
 
 bool GameLogic::isLegalPawnMove(int move) const {
@@ -127,19 +146,20 @@ bool GameLogic::isLegalPawnMove(int move) const {
 	int dir = color ? -8 : 8;
 	int start = color ? 48 : 8;
 	int end = color ? 55 : 15;
-	int enPassant = mEnPassant;
-	int enPassantDiff = enPassant - from;
-	int enPassantAbsDiff = enPassantDiff < 0 ? -enPassantDiff : enPassantDiff;
-	int enPassantDir = enPassantDiff < 0 ? -1 : 1;
-	int enPassantCapture = mBoard[enPassant];
-	if (absDiff == 8) return capture == 0 && diff == dir;
+
+	if (diff * dir <= 0) return false;
+	if (absDiff == 8) return capture == 0;
 	if (absDiff == 16 && from >= start && from <= end) return capture == 0 && mBoard[from + dir] == 0;
 	if (absDiff == 7 && capture != 0) return getColor(capture) != color;
 	if (absDiff == 9 && capture != 0) return getColor(capture) != color;
-//	if (enPassant != -1 && enPassantAbsDiff == 8 && enPassantCapture == (Piece::Pawn | !color) &&
-//	    capture == 0) {
-//		return true;
-//	}
+
+	// check for enpassant
+	if (mEnPassant != -1) {
+		if (to == mEnPassant) {
+			int enPassantCapture = mBoard[mEnPassant + dir];
+			if (enPassantCapture != 0 && getColor(enPassantCapture) != color) return true;
+		}
+	}
 	return false;
 }
 

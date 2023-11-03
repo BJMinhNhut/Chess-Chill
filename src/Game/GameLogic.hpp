@@ -29,6 +29,8 @@ class GameLogic {
 	void loadFEN(const std::string& fen);
 	std::string getFEN() const;
 
+	void checkEnPassant(int move);
+
 	bool isLegalPawnMove(int move) const;
 	static bool isLegalKnightMove(int move) ;
 	bool isLegalBishopMove(int move) const;

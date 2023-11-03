@@ -253,7 +253,7 @@ void GameHandler::capturePiece(int box) {
 int GameHandler::getHoverSquare(int x, int y) const {
 	if (x < mBoardLeft || y < mBoardTop)
 		return -1;
-	int column = 7 - (x - mBoardLeft) / Piece::SIZE;
+	int column = (x - mBoardLeft) / Piece::SIZE;
 	int row = 7 - (y - mBoardTop) / Piece::SIZE;
 	if (row >= 8 || column >= 8 || row < 0 || column < 0)
 		return -1;
@@ -268,6 +268,9 @@ Piece* GameHandler::checkHoverPiece(int x, int y) const {
 }
 
 sf::Vector2f GameHandler::getBoxPosition(int box) const {
-	return {(float)mBoardLeft + float((7 - (box & 7)) * Piece::SIZE),
-	        (float)mBoardTop + float((7 - (box >> 3)) * Piece::SIZE)};
+	int row, column;
+ 	row = box >> 3;
+	column = box & 7;
+	return {(float)mBoardLeft + float(column * Piece::SIZE),
+	        (float)mBoardTop + float((7 - row) * Piece::SIZE)};
 }
