@@ -227,32 +227,12 @@ bool GameLogic::isLegalQueenMove(int from, int to) const {
 }
 
 bool GameLogic::isLegalKingMove(int from, int to) const {
-	//	int from = move & 63;
-	//	int to = (move >> 6) & 63;
-	//	int piece = mBoard[from];
-	//	int capture = mBoard[to];
-	//	int isBlack = piece & 8;
-	//	int diff = to - from;
-	//	int absDiff = diff < 0 ? -diff : diff;
-	//	int dir = isBlack ? -8 : 8;
-	//	int start = isBlack ? 60 : 4;
-	//	int end = isBlack ? 63 : 7;
-	//	int castle = mCastling;
-	//	int castleDiff = castle - from;
-	//	int castleAbsDiff = castleDiff < 0 ? -castleDiff : castleDiff;
-	//	int castleDir = castleDiff < 0 ? -1 : 1;
-	//	int castleRook = mBoard[castle];
-	//	int castleTo = from + castleDir;
-	//	int castleCapture = mBoard[castleTo];
-	//
-	//	if (capture != 0 && getColor(capture) == isBlack) return false;
-	//	if (absDiff == 1 || absDiff == 8 || absDiff == 9) return true;
-	//	if (castle != -1 && castleAbsDiff == 2 && castleRook == (Piece::Rook | isBlack) &&
-	//	    castleCapture == 0) {
-	//		if (isKingInCheck()) return false;
-	//		if (isKingInCheck(isBlack)) return false;
-	//		return true;
-	//	}
+	int diffRow = (to >> 3) - (from >> 3);
+	int diffCol = (to & 7) - (from & 7);
+	int absDiffRow = diffRow < 0 ? -diffRow : diffRow;
+	int absDiffCol = diffCol < 0 ? -diffCol : diffCol;
+	if (absDiffRow <= 1 && absDiffCol <= 1)
+		return true;
 	return false;
 }
 
