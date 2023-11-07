@@ -19,7 +19,7 @@ bool GameLogic::validSquare(int square) {
 }
 
 bool GameLogic::isLegalMove(int from, int to) const {
-	if (!validSquare(from) || !validSquare(to))
+	if (from == to || !validSquare(from) || !validSquare(to))
 		return false;
 	int piece = mBoard[from];
 	int capture = mBoard[to];
@@ -236,7 +236,23 @@ bool GameLogic::isLegalBishopMove(int from, int to) const {
 }
 
 bool GameLogic::isLegalRookMove(int from, int to) const {
-	return false;
+	// check for straight
+	int diffRow = (to >> 3) - (from >> 3);
+	int diffCol = (to & 7) - (from & 7);
+	int absDiffRow = diffRow < 0 ? -diffRow : diffRow;
+	int absDiffCol = diffCol < 0 ? -diffCol : diffCol;
+	if (absDiffRow != 0 && absDiffCol != 0) return false;
+
+	// check for block
+	int dirRow = diffRow != 0 ? diffRow/absDiffRow : 0;
+	int dirCol = diffCol != 0 ? diffCol/absDiffCol : 0;
+	int row = from >> 3, col = from & 7;
+	for (int i = 1; i < absDiffRow + absDiffCol; i++) {
+		row += dirRow;
+		col += dirCol;
+		if (mBoard[getBoxID(row, col)] != 0) return false;
+	}
+	return true;
 }
 
 bool GameLogic::isLegalQueenMove(int from, int to) const {
