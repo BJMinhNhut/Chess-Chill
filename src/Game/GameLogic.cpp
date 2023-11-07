@@ -256,6 +256,8 @@ bool GameLogic::isLegalRookMove(int from, int to) const {
 }
 
 bool GameLogic::isLegalQueenMove(int from, int to) const {
+	if (isLegalBishopMove(from, to)) return true;
+	if (isLegalRookMove(from, to)) return true;
 	return false;
 }
 
