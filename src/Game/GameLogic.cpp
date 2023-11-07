@@ -215,7 +215,24 @@ bool GameLogic::isLegalKnightMove(int from, int to) {
 }
 
 bool GameLogic::isLegalBishopMove(int from, int to) const {
-	return false;
+	// check for diagonal
+	int diffRow = (to >> 3) - (from >> 3);
+	int diffCol = (to & 7) - (from & 7);
+	int absDiffRow = diffRow < 0 ? -diffRow : diffRow;
+	int absDiffCol = diffCol < 0 ? -diffCol : diffCol;
+	if (absDiffRow != absDiffCol) return false;
+
+	// check for blocking
+	int dirRow = diffRow < 0 ? -1 : 1;
+	int dirCol = diffCol < 0 ? -1 : 1;
+	int row = from >> 3, col = from & 7;
+	for (int i = 1; i < absDiffRow; i++) {
+		row += dirRow;
+		col += dirCol;
+		if (mBoard[getBoxID(row, col)] != 0) return false;
+	}
+
+	return true;
 }
 
 bool GameLogic::isLegalRookMove(int from, int to) const {
