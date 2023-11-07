@@ -11,32 +11,39 @@ class GameLogic {
    public:
 	static const int BOARD_SIZE;
    public:
-	GameLogic(const std::string& fen);
+	GameLogic();
 
-	bool isLegalMove(int move) const;
+	bool isLegalMove(int from, int to) const;
 	bool isKingInCheck() const;
 	int getPiece(int box) const;
 	bool getTurn() const;
 
 	static int getColor(int piece);
+	static int getType(int piece);
 	static int getPieceFromChar(char ch);
 	static int getBoxID(int row, int column);
-	static void getMovePositions(int move, int& start, int& target);
 
-	void makeMove(int move);
+	void makeMove(int from, int to);
 
-   private:
+   protected:
+	virtual void addPiece(int piece, int square);
+	virtual void capturePiece(int square);
+	virtual void movePiece(int from, int to, bool captured);
+
 	void loadFEN(const std::string& fen);
 	std::string getFEN() const;
 
-	void checkEnPassant(int move);
+   private:
 
-	bool isLegalPawnMove(int move) const;
-	static bool isLegalKnightMove(int move) ;
-	bool isLegalBishopMove(int move) const;
-	bool isLegalRookMove(int move) const;
-	bool isLegalQueenMove(int move) const;
-	bool isLegalKingMove(int move) const;
+	void updateEnPassant(int from, int to);
+
+	bool isLegalPawnMove(int from, int to) const;
+	bool isEnPassant(int from, int to) const;
+	static bool isLegalKnightMove(int from, int to) ;
+	bool isLegalBishopMove(int from, int to) const;
+	bool isLegalRookMove(int from, int to) const;
+	bool isLegalQueenMove(int from, int to) const;
+	bool isLegalKingMove(int from, int to) const;
 
 	bool isKingInCheck(bool turn) const;
 

@@ -10,9 +10,9 @@
 const int Piece::NAME = 7;
 const int Piece::SIZE = 85;
 
-Piece::Piece(const sf::Texture& textures, int type)
-    : SpriteNode(textures, getRectByType(type)), mType(type), mVelocity(), mTargetPosition() {
-	assert((type >> 3) < 2 && type >= 0 && (type & NAME) <= Pawn);
+Piece::Piece(const sf::Texture& textures, int piece)
+    : SpriteNode(textures, getRectByType(piece)), mType(piece), mVelocity(), mTargetPosition() {
+	assert((piece >> 3) < 2 && piece >= 0 && (piece & NAME) <= Pawn);
 }
 
 void Piece::updateCurrent(sf::Time dt) {

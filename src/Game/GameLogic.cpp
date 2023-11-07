@@ -10,33 +10,32 @@
 
 const int GameLogic::BOARD_SIZE = 64;
 
-GameLogic::GameLogic(const std::string& fen)
+GameLogic::GameLogic()
     : mTurn(false), mCastling(0), mEnPassant(-1), mHalfMove(0), mFullMove(0) {
-	loadFEN(fen);
 }
 
-bool GameLogic::isLegalMove(int move) const {
-	int piece = mBoard[move & 63];
-	int capture = mBoard[(move >> 6) & 63];
+bool GameLogic::isLegalMove(int from, int to) const {
+	int piece = mBoard[from];
+	int capture = mBoard[to];
 
-	std::cout << piece << ' ' << mTurn << '\n';
+//	std::cout << piece << ' ' << mTurn << '\n';
 	if (piece == 0 || getColor(piece) != mTurn)
 		return false;
 	if (capture != 0 && getColor(capture) == mTurn)
 		return false;
 	switch (piece & 7) {
 		case Piece::Pawn:
-			return isLegalPawnMove(move);
+			return isLegalPawnMove(from, to);
 		case Piece::Knight:
-			return isLegalKnightMove(move);
+			return isLegalKnightMove(from, to);
 		case Piece::Bishop:
-			return isLegalBishopMove(move);
+			return isLegalBishopMove(from, to);
 		case Piece::Rook:
-			return isLegalRookMove(move);
+			return isLegalRookMove(from, to);
 		case Piece::Queen:
-			return isLegalQueenMove(move);
+			return isLegalQueenMove(from, to);
 		case Piece::King:
-			return isLegalKingMove(move);
+			return isLegalKingMove(from, to);
 		default:
 			assert(false);
 	};
@@ -53,6 +52,10 @@ int GameLogic::getPiece(int box) const {
 
 int GameLogic::getColor(int piece) {
 	return (piece >> 3) & 1;
+}
+
+int GameLogic::getType(int piece) {
+	return piece & 7;
 }
 
 int GameLogic::getPieceFromChar(char ch) {
@@ -91,19 +94,39 @@ bool GameLogic::getTurn() const {
 	return mTurn;
 }
 
-void GameLogic::getMovePositions(int move, int& start, int& target) {
-	start = move & 63;
-	target = (move >> 6) & 63;
+void GameLogic::makeMove(int from, int to) {
+	assert(isLegalMove(from, to));
+
+	bool captured = false;
+
+	if (isEnPassant(from, to)) {
+		capturePiece(mEnPassant + (mTurn ? 8 : -8));
+		captured = true;
+	}
+
+	if (mBoard[to] != 0) {
+		capturePiece(to);
+		captured = true;
+	}
+
+	updateEnPassant(from, to);
+	movePiece(from, to, captured);
+	mTurn ^= 1;
 }
 
-void GameLogic::makeMove(int move) {
-	assert(isLegalMove(move));
-	int from, to;
-	getMovePositions(move, from, to);
-	checkEnPassant(move);
+void GameLogic::addPiece(int piece, int square) {
+	std::cout << "add " << piece << ' ' << square << '\n';
+	mBoard[square] = piece;
+}
+
+void GameLogic::capturePiece(int square) {
+	std::cout << "capture " << square << '\n';
+	mBoard[square] = 0;
+}
+
+void GameLogic::movePiece(int from, int to, bool captured) {
 	mBoard[to] = mBoard[from];
 	mBoard[from] = 0;
-	mTurn ^= 1;
 }
 
 void GameLogic::loadFEN(const std::string& fen) {
@@ -115,29 +138,40 @@ void GameLogic::loadFEN(const std::string& fen) {
 		else if (ch == '/')
 			row--, col = 0;
 		else if (std::isalpha(ch)) {
-			mBoard[getBoxID(row, col++)] = getPieceFromChar(ch);
+			addPiece(getPieceFromChar(ch), getBoxID(row, col++));
 		} else
 			break;
 	}
 }
 
-void GameLogic::checkEnPassant(int move) {
+void GameLogic::updateEnPassant(int from, int to) {
 	// check and update mEnPassant when pawn move 2 square
-	int from = move & 63;
-	int to = (move >> 6) & 63;
 	int piece = mBoard[from];
 	int diff = to - from;
 	int absDiff = diff < 0 ? -diff : diff;
 	int dir = getColor(piece) ? -8 : 8;
-	if ((piece & 7) == Piece::Pawn && absDiff == 16) {
+	if (getType(piece) == Piece::Pawn && absDiff == 16) {
 		mEnPassant = from + dir;
 	} else mEnPassant = -1;
 	std::cout << from << ' ' << to << ' ' << mEnPassant << '\n';
 }
 
-bool GameLogic::isLegalPawnMove(int move) const {
-	int from = move & 63;
-	int to = (move >> 6) & 63;
+bool GameLogic::isEnPassant(int from, int to) const {
+	int piece = mBoard[from];
+	int diff = to - from;
+	int absDiff = diff < 0 ? -diff : diff;
+	int dir = getColor(piece) ? -8 : 8;
+	int targetRow = to >> 3;
+	int startRow = from >> 3;
+	if (mEnPassant != to) return false;
+	if (diff * dir < 0) return false;
+	if (targetRow != startRow + (dir >> 3)) return false;
+	if (getType(piece) != Piece::Pawn) return false;
+//	std::cout <<"yay " << mEnPassant << ' ' << from << ' ' << to << ' ' << to+dir << '\n';
+	return (absDiff == 7 || absDiff == 9);
+}
+
+bool GameLogic::isLegalPawnMove(int from, int to) const {
 	int piece = mBoard[from];
 	int capture = mBoard[to];
 	int color = getColor(piece);
@@ -146,26 +180,24 @@ bool GameLogic::isLegalPawnMove(int move) const {
 	int dir = color ? -8 : 8;
 	int start = color ? 48 : 8;
 	int end = color ? 55 : 15;
+	int targetRow = to >> 3;
+	int startRow = from >> 3;
 
 	if (diff * dir <= 0) return false;
 	if (absDiff == 8) return capture == 0;
 	if (absDiff == 16 && from >= start && from <= end) return capture == 0 && mBoard[from + dir] == 0;
+	if (targetRow != startRow + (dir >> 3)) return false;
 	if (absDiff == 7 && capture != 0) return getColor(capture) != color;
 	if (absDiff == 9 && capture != 0) return getColor(capture) != color;
 
 	// check for enpassant
-	if (mEnPassant != -1) {
-		if (to == mEnPassant) {
-			int enPassantCapture = mBoard[mEnPassant + dir];
-			if (enPassantCapture != 0 && getColor(enPassantCapture) != color) return true;
-		}
-	}
+	if (isEnPassant(from, to)) return true;
+
 	return false;
 }
 
-bool GameLogic::isLegalKnightMove(int move) {
-	int from = move & 63;
-	int to = (move >> 6) & 63;
+
+bool GameLogic::isLegalKnightMove(int from, int to) {
 	int r1 = from >> 3, c1 = from & 7;
 	int r2 = to >> 3, c2 = to & 7;
 	int dr = r2 - r1, dc = c2 - c1;
@@ -176,19 +208,19 @@ bool GameLogic::isLegalKnightMove(int move) {
 	return false;
 }
 
-bool GameLogic::isLegalBishopMove(int move) const {
+bool GameLogic::isLegalBishopMove(int from, int to) const {
 	return false;
 }
 
-bool GameLogic::isLegalRookMove(int move) const {
+bool GameLogic::isLegalRookMove(int from, int to) const {
 	return false;
 }
 
-bool GameLogic::isLegalQueenMove(int move) const {
+bool GameLogic::isLegalQueenMove(int from, int to) const {
 	return false;
 }
 
-bool GameLogic::isLegalKingMove(int move) const {
+bool GameLogic::isLegalKingMove(int from, int to) const {
 	//	int from = move & 63;
 	//	int to = (move >> 6) & 63;
 	//	int piece = mBoard[from];

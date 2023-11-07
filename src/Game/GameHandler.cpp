@@ -31,13 +31,13 @@ GameHandler::GameHandler(sf::RenderWindow& window, FontHolder& fonts, SoundPlaye
       mBoardTop(),
       mOldSquare(-1),
       mLastMove(-1),
-      mLogic(START_FEN),
+      GameLogic(),
       moveCandidates() {
 	mWindow.setView(mWindow.getDefaultView());
 
 	loadTextures();
 	buildScene();
-	loadPieces();
+	loadFEN(START_FEN);
 }
 
 void GameHandler::draw() {
@@ -64,8 +64,8 @@ void GameHandler::handleEvent(const sf::Event& event) {
 
 void GameHandler::loadPieces() {
 	for (int i = 0; i < 64; ++i) {
-		int piece = mLogic.getPiece(i);
-		std::cout << piece << ' ' << i << '\n';
+		int piece = getPiece(i);
+//		std::cout << piece << ' ' << i << '\n';
 		if (piece != 0) {
 			addPiece(piece, i);
 		}
@@ -121,8 +121,7 @@ void GameHandler::checkPickUpPiece(int x, int y) {
 	mSceneLayers[PopUp]->attachChild(SceneNode::Ptr(mDragging));
 
 	for (int square = 0; square < GameLogic::BOARD_SIZE; ++square) {
-		int move = (square << 6) | mOldSquare;
-		if (mLogic.isLegalMove(move)) {
+		if (isLegalMove(mOldSquare, square)) {
 			moveCandidates.push_back(square);
 			highlightBox(square, Target);
 		}
@@ -130,16 +129,16 @@ void GameHandler::checkPickUpPiece(int x, int y) {
 }
 
 void GameHandler::handleMove(int start, int target, bool drop) {
-	bool isLegalMove = start != target && start >= 0 && start < 64 && target >= 0 && target < 64 &&
-	                   mLogic.isLegalMove((target << 6) | start);
+	bool legal = start != target && start >= 0 && start < 64 && target >= 0 && target < 64 &&
+	                   isLegalMove(start, target);
 
 	clearCandidates();
 
 	// if legal move, then highlight new move, make that move, un-highlight old move, and target squares
-	if (isLegalMove) {
+	if (legal) {
 		highlightMove(mLastMove, false);
 		highlightMove(target << 6 | start, true);
-		movePiece(start, target, drop);
+		makeMove(start, target);
 		mOldSquare = -1;
 	} else {
 		highlightMove(mLastMove, true);
@@ -161,7 +160,7 @@ void GameHandler::highlightBox(int box, GameHandler::HighlightRate rate) {
 				color = sf::Color(0, 150, 150, 100);
 				break;
 			case Target:
-				color = sf::Color(20, 105, 225, 150);
+				color = sf::Color(205, 175, 0, 155);
 				break;
 			default:
 				color = sf::Color(0, 150, 150, 100);
@@ -210,33 +209,34 @@ void GameHandler::buildScene() {
 	mSceneLayers[Background]->attachChild(std::move(boardSprite));
 }
 
-void GameHandler::addPiece(int type, int box) {
-	mPieces[box] = new Piece(mTextures.get(Textures::PiecesSet), type);
-	mPieces[box]->setPosition(getBoxPosition(box), false);
-	mPieces[box]->updateTargetPosition();
-	mSceneLayers[Pieces]->attachChild(SceneNode::Ptr(mPieces[box]));
+void GameHandler::addPiece(int piece, int square) {
+	GameLogic::addPiece(piece, square);
+	mPieces[square] = new Piece(mTextures.get(Textures::PiecesSet), piece);
+	mPieces[square]->setPosition(getBoxPosition(square), false);
+	mPieces[square]->updateTargetPosition();
+	mSceneLayers[Pieces]->attachChild(SceneNode::Ptr(mPieces[square]));
 }
 
-void GameHandler::movePiece(int oldBox, int newBox, bool drop) {
-	std::cout << "move " << oldBox << ' ' << newBox << '\n';
-	// if chang box then remove piece at new box, move piece at old box to new box, and remove old box marking
-	if (newBox != oldBox) {
-		if (mPieces[newBox] != nullptr) {
-			capturePiece(newBox);
-			mSounds.play(SoundEffect::Capture);
-		} else {
-			mSounds.play(SoundEffect::Move);
-		}
-
-		mLogic.makeMove((newBox << 6) | oldBox);
-		mPieces[newBox] = mPieces[oldBox];
-		mPieces[oldBox] = nullptr;
-		mLastMove = (newBox << 6) | oldBox;
-		oldBox = -1;
-	} else
-		mLastMove = -1;
-	mPieces[newBox]->setPosition(getBoxPosition(newBox), drop ? Piece::None : Piece::Smooth);
-}
+//void GameHandler::movePiece(int oldBox, int newBox, bool drop) {
+//	std::cout << "move " << oldBox << ' ' << newBox << '\n';
+//	// if chang box then remove piece at new box, move piece at old box to new box, and remove old box marking
+//	if (newBox != oldBox) {
+//		if (mPieces[newBox] != nullptr) {
+//			capturePiece(newBox);
+//
+//		} else {
+//			mSounds.play(SoundEffect::Move);
+//		}
+//
+//		makeMove(oldBox, newBox);
+//		mPieces[newBox] = mPieces[oldBox];
+//		mPieces[oldBox] = nullptr;
+//		mLastMove = (newBox << 6) | oldBox;
+//		oldBox = -1;
+//	} else
+//		mLastMove = -1;
+//	mPieces[newBox]->setPosition(getBoxPosition(newBox), drop ? Piece::None : Piece::Smooth);
+//}
 
 void GameHandler::clearCandidates() {
 	for (int square : moveCandidates)
@@ -244,10 +244,22 @@ void GameHandler::clearCandidates() {
 	std::vector<int>().swap(moveCandidates);
 }
 
-void GameHandler::capturePiece(int box) {
-	std::cout << "capture " << box << '\n';
-	mSceneLayers[Pieces]->detachChild(*mPieces[box]);
-	mPieces[box] = nullptr;
+void GameHandler::capturePiece(int square) {
+	GameLogic::capturePiece(square);
+	mSceneLayers[Pieces]->detachChild(*mPieces[square]);
+	mPieces[square] = nullptr;
+}
+
+void GameHandler::movePiece(int from, int to, bool captured) {
+	GameLogic::movePiece(from, to, captured);
+	mPieces[to] = mPieces[from];
+	mPieces[from] = nullptr;
+	mLastMove = (to << 6) | from;
+	mPieces[to]->setPosition(getBoxPosition(to), Piece::None);
+	if (captured) {
+		mSounds.play(SoundEffect::Capture);
+	} else
+		mSounds.play(SoundEffect::Move);
 }
 
 int GameHandler::getHoverSquare(int x, int y) const {
@@ -262,7 +274,7 @@ int GameHandler::getHoverSquare(int x, int y) const {
 
 Piece* GameHandler::checkHoverPiece(int x, int y) const {
 	int boxID = getHoverSquare(x, y);
-	if (boxID < 0 || mPieces[boxID] == nullptr || mPieces[boxID]->color() != mLogic.getTurn())
+	if (boxID < 0 || mPieces[boxID] == nullptr || mPieces[boxID]->color() != getTurn())
 		return nullptr;
 	return mPieces[boxID];
 }

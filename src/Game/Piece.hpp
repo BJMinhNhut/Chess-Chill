@@ -25,7 +25,7 @@ class Piece : public SpriteNode {
 	typedef std::unique_ptr<Piece> Ptr;
 
    public:
-	Piece(const sf::Texture& textures, int type);
+	Piece(const sf::Texture& textures, int piece);
 
 	void snap(int x, int y);
 	void setPosition(sf::Vector2f position, bool smooth = false);

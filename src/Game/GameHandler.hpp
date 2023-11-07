@@ -25,7 +25,7 @@ class RenderWindow;
 class Event;
 }  // namespace sf
 
-class GameHandler : public sf::NonCopyable {
+class GameHandler : public sf::NonCopyable, public GameLogic {
    public:
 	const static std::string START_FEN;
 	const static int BOARD_DRAW_SIZE;
@@ -57,9 +57,10 @@ class GameHandler : public sf::NonCopyable {
 	int getHoverSquare(int x, int y) const;
 	sf::Vector2f getBoxPosition(int box) const;
 
-	void addPiece(int type, int box);
-	void movePiece(int oldBox, int newBox, bool drop = false);
-	void capturePiece(int box);
+	// TODO: inherit from GameLogic
+	void addPiece(int piece, int square) override;
+	void movePiece(int from, int to, bool captured) override;
+	void capturePiece(int square) override;
 
 	void checkDropPiece(int square);
 	void checkClick(int square);
@@ -85,8 +86,6 @@ class GameHandler : public sf::NonCopyable {
 	Piece* mDragging;
 	int mOldSquare;
 	int mLastMove;  // (newBox << 6) | oldBox;
-
-	GameLogic mLogic;
 
 	int mBoardLeft, mBoardTop;
 };
