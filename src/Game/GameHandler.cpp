@@ -62,16 +62,6 @@ void GameHandler::handleEvent(const sf::Event& event) {
 	}
 }
 
-void GameHandler::loadPieces() {
-	for (int i = 0; i < 64; ++i) {
-		int piece = getPiece(i);
-//		std::cout << piece << ' ' << i << '\n';
-		if (piece != 0) {
-			addPiece(piece, i);
-		}
-	}
-}
-
 void GameHandler::handleMouseMoved(int x, int y) {
 	//		std::cerr << event.mouseMove.x << ' ' << event.mouseMove.y << '\n';
 	if (mDragging) {
@@ -107,12 +97,12 @@ void GameHandler::checkPickUpPiece(int x, int y) {
 
 	// dim old position and highlight old box
 	if ((mLastMove == -1 || (mLastMove & 0x3f) != mOldSquare) && mOldSquare != -1)
-		highlightBox(mOldSquare, Normal);
+		highlightSquare(mOldSquare, Normal);
 	clearCandidates();
 
 	mOldSquare = getHoverSquare(x, y);
 	hovering->setOpacity(50);
-	highlightBox(mOldSquare, Click);
+	highlightSquare(mOldSquare, Click);
 	highlightMove(mLastMove, true);
 
 	// create a fake piece that following player cursor
@@ -123,32 +113,31 @@ void GameHandler::checkPickUpPiece(int x, int y) {
 	for (int square = 0; square < GameLogic::BOARD_SIZE; ++square) {
 		if (isLegalMove(mOldSquare, square)) {
 			moveCandidates.push_back(square);
-			highlightBox(square, Target);
+			highlightSquare(square, Target);
 		}
 	}
 }
 
-void GameHandler::handleMove(int start, int target, bool drop) {
-	bool legal = start != target && start >= 0 && start < 64 && target >= 0 && target < 64 &&
-	                   isLegalMove(start, target);
+void GameHandler::handleMove(int from, int to, bool drop) {
+	bool legal = isLegalMove(from, to);
 
 	clearCandidates();
 
-	// if legal move, then highlight new move, make that move, un-highlight old move, and target squares
-	if (legal) {
+	// if legal move, then highlight new move, make that move, un-highlight old move, and to squares
+	if (legal && from != to) {
 		highlightMove(mLastMove, false);
-		highlightMove(target << 6 | start, true);
-		makeMove(start, target);
+		highlightMove(to << 6 | from, true);
+		makeMove(from, to);
 		mOldSquare = -1;
 	} else {
 		highlightMove(mLastMove, true);
 	}
 }
 
-void GameHandler::highlightBox(int box, GameHandler::HighlightRate rate) {
-	if (mHighlights[box] != nullptr) {
-		mSceneLayers[Background]->detachChild(*mHighlights[box]);
-		mHighlights[box] = nullptr;
+void GameHandler::highlightSquare(int square, HighlightRate rate) {
+	if (mHighlights[square] != nullptr) {
+		mSceneLayers[Background]->detachChild(*mHighlights[square]);
+		mHighlights[square] = nullptr;
 	}
 	if (rate > Normal) {
 		sf::Color color;
@@ -166,9 +155,9 @@ void GameHandler::highlightBox(int box, GameHandler::HighlightRate rate) {
 				color = sf::Color(0, 150, 150, 100);
 				break;
 		}
-		mHighlights[box] = new RectNode(Piece::SIZE, Piece::SIZE, color);
-		mHighlights[box]->setPosition(getBoxPosition(box));
-		mSceneLayers[Background]->attachChild(SceneNode::Ptr(mHighlights[box]));
+		mHighlights[square] = new RectNode(Piece::SIZE, Piece::SIZE, color);
+		mHighlights[square]->setPosition(getBoxPosition(square));
+		mSceneLayers[Background]->attachChild(SceneNode::Ptr(mHighlights[square]));
 	}
 }
 
@@ -177,11 +166,11 @@ void GameHandler::highlightMove(int move, bool flag) {
 		return;  // no move
 	int oldBox = move & 0x3f, newBox = move >> 6;
 	if (flag) {
-		highlightBox(newBox, Move);
-		highlightBox(oldBox, Move);
+		highlightSquare(newBox, Move);
+		highlightSquare(oldBox, Move);
 	} else {
-		highlightBox(newBox, Normal);
-		highlightBox(oldBox, Normal);
+		highlightSquare(newBox, Normal);
+		highlightSquare(oldBox, Normal);
 	}
 }
 
@@ -217,30 +206,9 @@ void GameHandler::addPiece(int piece, int square) {
 	mSceneLayers[Pieces]->attachChild(SceneNode::Ptr(mPieces[square]));
 }
 
-//void GameHandler::movePiece(int oldBox, int newBox, bool drop) {
-//	std::cout << "move " << oldBox << ' ' << newBox << '\n';
-//	// if chang box then remove piece at new box, move piece at old box to new box, and remove old box marking
-//	if (newBox != oldBox) {
-//		if (mPieces[newBox] != nullptr) {
-//			capturePiece(newBox);
-//
-//		} else {
-//			mSounds.play(SoundEffect::Move);
-//		}
-//
-//		makeMove(oldBox, newBox);
-//		mPieces[newBox] = mPieces[oldBox];
-//		mPieces[oldBox] = nullptr;
-//		mLastMove = (newBox << 6) | oldBox;
-//		oldBox = -1;
-//	} else
-//		mLastMove = -1;
-//	mPieces[newBox]->setPosition(getBoxPosition(newBox), drop ? Piece::None : Piece::Smooth);
-//}
-
 void GameHandler::clearCandidates() {
 	for (int square : moveCandidates)
-		highlightBox(square, Normal);
+		highlightSquare(square, Normal);
 	std::vector<int>().swap(moveCandidates);
 }
 

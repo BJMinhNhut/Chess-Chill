@@ -22,6 +22,7 @@ class GameLogic {
 	static int getType(int piece);
 	static int getPieceFromChar(char ch);
 	static int getBoxID(int row, int column);
+	static bool validSquare(int square);
 
 	void makeMove(int from, int to);
 

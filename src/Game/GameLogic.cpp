@@ -14,7 +14,13 @@ GameLogic::GameLogic()
     : mTurn(false), mCastling(0), mEnPassant(-1), mHalfMove(0), mFullMove(0) {
 }
 
+bool GameLogic::validSquare(int square) {
+	return square >= 0 && square < 64;
+}
+
 bool GameLogic::isLegalMove(int from, int to) const {
+	if (!validSquare(from) || !validSquare(to))
+		return false;
 	int piece = mBoard[from];
 	int capture = mBoard[to];
 

@@ -50,14 +50,12 @@ class GameHandler : public sf::NonCopyable, public GameLogic {
    private:
 	void loadTextures();
 	void buildScene();
-	void loadPieces();
-	void handleMove(int start, int target, bool drop = false);
+	void handleMove(int from, int to, bool drop = false);
 
 	Piece* checkHoverPiece(int x, int y) const;
 	int getHoverSquare(int x, int y) const;
 	sf::Vector2f getBoxPosition(int box) const;
 
-	// TODO: inherit from GameLogic
 	void addPiece(int piece, int square) override;
 	void movePiece(int from, int to, bool captured) override;
 	void capturePiece(int square) override;
@@ -67,7 +65,7 @@ class GameHandler : public sf::NonCopyable, public GameLogic {
 	void checkPickUpPiece(int x, int y);
 	void handleMouseMoved(int x, int y);
 
-	void highlightBox(int box, HighlightRate rate);
+	void highlightSquare(int square, HighlightRate rate);
 	void highlightMove(int move, bool flag);
 	void clearCandidates();
 
