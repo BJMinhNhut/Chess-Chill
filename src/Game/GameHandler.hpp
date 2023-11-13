@@ -12,6 +12,7 @@
 #include "Template/SceneNode.hpp"
 #include "Template/SoundPlayer.hpp"
 #include "Template/SpriteNode.hpp"
+#include "GameLogic.hpp"
 
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/View.hpp>
@@ -24,10 +25,10 @@ class RenderWindow;
 class Event;
 }  // namespace sf
 
-class GameHandler : public sf::NonCopyable {
+class GameHandler : public sf::NonCopyable, public GameLogic {
    public:
 	const static std::string START_FEN;
-	const static int BOARD_SIZE;
+	const static int BOARD_DRAW_SIZE;
 
    public:
 	explicit GameHandler(sf::RenderWindow& window, FontHolder& fonts, SoundPlayer& sounds);
@@ -36,39 +37,40 @@ class GameHandler : public sf::NonCopyable {
 	void draw();
 	void handleEvent(const sf::Event& event);
 
-	void loadBoardFromFEN(const std::string& fen);
-
-	void loadTextures();
-	void buildScene();
-
    private:
 	enum Layer { Background, Pieces, PopUp, LayerCount };
 
 	enum HighlightRate {
 		Normal,
-		Light,
-		Heavy,
+		Click,
+		Move,
+		Target,
+		Debug,
 	};
 
    private:
+	void loadTextures();
+	void buildScene();
+	void handleMove(int from, int to, bool drop = false);
+
 	Piece* checkHoverPiece(int x, int y) const;
-	int getHoverBox(int x, int y) const;
+	int getHoverSquare(int x, int y) const;
+	sf::Vector2f getBoxPosition(int box) const;
 
-	static int getPieceFromChar(char ch);
-	static int getBoxID(int row, int column);
+	void addPiece(int piece, int square) override;
+	void movePiece(int from, int to) override;
+	void capturePiece(int square) override;
+	void postMove(bool captured) override;
+	void promotePiece(int square, int piece) override;
 
-	void addPiece(int type, int box);
-	void movePiece(int oldBox, int newBox);
-	void capturePiece(int box);
-
-	void checkDropPiece(int x, int y);
+	void checkDropPiece(int square);
+	void checkClick(int square);
 	void checkPickUpPiece(int x, int y);
 	void handleMouseMoved(int x, int y);
 
-	void highlightBox(int box, HighlightRate rate);
+	void highlightSquare(int square, HighlightRate rate);
 	void highlightMove(int move, bool flag);
-
-	void setPositionToBox(SceneNode* node, int box) const;
+	void clearCandidates();
 
    private:
 	sf::RenderWindow& mWindow;
@@ -80,9 +82,10 @@ class GameHandler : public sf::NonCopyable {
 	std::array<SceneNode*, LayerCount> mSceneLayers;
 	std::vector<Piece*> mPieces;
 	std::vector<RectNode*> mHighlights;
+	std::vector<int> moveCandidates;
 
 	Piece* mDragging;
-	int mOldBox;
+	int mOldSquare;
 	int mLastMove;  // (newBox << 6) | oldBox;
 
 	int mBoardLeft, mBoardTop;

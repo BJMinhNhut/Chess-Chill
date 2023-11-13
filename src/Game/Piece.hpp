@@ -13,7 +13,7 @@ class Piece : public SpriteNode {
 	const static int NAME;
 	const static int SIZE;
 	enum Type {
-		King,
+		King = 1,
 		Queen,
 		Bishop,
 		Knight,
@@ -25,9 +25,17 @@ class Piece : public SpriteNode {
 	typedef std::unique_ptr<Piece> Ptr;
 
    public:
-	Piece(const sf::Texture& textures, int type);
+	Piece(const sf::Texture& textures, int piece);
+
+	static int getPieceFromChar(char ch);
+	static int getColor(int piece);
+	static int getType(int piece);
+	static bool valid(int piece);
 
 	void snap(int x, int y);
+	void setPosition(sf::Vector2f position, bool smooth = false);
+	void setPosition(float x, float y, bool smooth = false);
+	void updateTargetPosition();
 
 	Piece* clone() const;
 
@@ -35,10 +43,14 @@ class Piece : public SpriteNode {
 	bool color() const;
 
    private:
+	void updateCurrent(sf::Time dt) override;
+
 	// assume that the textures is 510 x 170
 	static sf::IntRect getRectByType(int type);
 
    private:
+	sf::Vector2f mVelocity;
+	sf::Vector2f mTargetPosition;
 	int mType;
 };
 

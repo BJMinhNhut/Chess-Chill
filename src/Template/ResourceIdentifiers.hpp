@@ -34,6 +34,7 @@ namespace SoundEffect {
 enum ID {
 	Move,
 	Capture,
+	Check,
 };
 }
 
