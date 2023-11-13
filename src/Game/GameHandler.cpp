@@ -37,7 +37,7 @@ GameHandler::GameHandler(sf::RenderWindow& window, FontHolder& fonts, SoundPlaye
 
 	loadTextures();
 	buildScene();
-	loadFEN("8/pppp4/8/8/8/8/4PPPP/8 w KQkq - 0 1");
+	loadFEN(START_FEN);
 }
 
 void GameHandler::draw() {

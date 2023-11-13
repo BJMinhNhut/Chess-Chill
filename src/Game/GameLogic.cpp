@@ -99,8 +99,7 @@ void GameLogic::makeMove(int from, int to) {
 		int rook = dir < 0 ? from - 4 : from + 3;
 		movePiece(rook, from + dir);
 	}
-	if (mBoard.getType(from) == Piece::Pawn)
-		updateEnPassant(from, to);
+	updateEnPassant(from, to);
 	if (mBoard.getType(from) == Piece::King || mBoard.getType(from) == Piece::Rook)
 		updateCastling(from);
 
