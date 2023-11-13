@@ -188,7 +188,7 @@ void GameHandler::highlightMove(int move, bool flag) {
 void GameHandler::loadTextures() {
 	mTextures.load(Textures::Board, Constants::dataPrefix + "resources/images/boards/default.png");
 	mTextures.load(Textures::PiecesSet,
-	               Constants::dataPrefix + "resources/images/pieces/default.png");
+	               Constants::dataPrefix + "resources/images/pieces/alpha.png");
 }
 
 void GameHandler::buildScene() {
