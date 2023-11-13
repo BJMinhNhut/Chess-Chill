@@ -30,6 +30,8 @@ class GameLogic {
 	void loadFEN(const std::string& fen);
 	std::string getFEN() const;
 
+	[[nodiscard]] bool isAttacked(int square) const;
+
    private:
 	void updateEnPassant(int from, int to);
 	void updateAttacks(bool turn);
@@ -42,7 +44,6 @@ class GameLogic {
 	bool isLegalQueenMove(int from, int to) const;
 	bool isLegalKingMove(int from, int to) const;
 	bool isKingInCheck(bool turn) const;
-	bool isAttacked(int square, bool turn) const;
 
    private:
 	Board mBoard;

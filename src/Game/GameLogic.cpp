@@ -249,7 +249,7 @@ bool GameLogic::isLegalKingMove(int from, int to) const {
 	int diffFile = (to & 7) - (from & 7);
 	int absDiffRank = diffRank < 0 ? -diffRank : diffRank;
 	int absDiffFile = diffFile < 0 ? -diffFile : diffFile;
-	if (absDiffRank <= 1 && absDiffFile <= 1 && !isAttacked(to, mTurn))
+	if (absDiffRank <= 1 && absDiffFile <= 1 && !isAttacked(to))
 		return true;
 	return false;
 }
@@ -258,6 +258,6 @@ bool GameLogic::isKingInCheck(bool turn) const {
 	return false;
 }
 
-bool GameLogic::isAttacked(int square, bool turn) const {
-	return mAttackBoard[(!turn)] & (1LL << square);
+bool GameLogic::isAttacked(int square) const {
+	return mAttackBoard[(!mTurn)] & (1LL << square);
 }
