@@ -15,6 +15,16 @@ GameLogic::GameLogic()
     : mTurn(false), mCastling(0), mEnPassant(-1), mHalfMove(0), mFullMove(0), mBoard() {
 }
 
+GameLogic::GameLogic(const GameLogic& other): mBoard(other.mBoard) {
+	mTurn = other.mTurn;
+	mCastling = other.mCastling;
+	mEnPassant = other.mEnPassant;
+	mHalfMove = other.mHalfMove;
+	mFullMove = other.mFullMove;
+	mAttackBoard[0] = other.mAttackBoard[0];
+	mAttackBoard[1] = other.mAttackBoard[1];
+}
+
 bool GameLogic::isLegalMove(int from, int to) const {
 	if (from == to || !Board::validSquare(from) || !Board::validSquare(to))
 		return false;
@@ -26,23 +36,37 @@ bool GameLogic::isLegalMove(int from, int to) const {
 		return false;
 	if (capture != 0 && Piece::getColor(capture) == mTurn)
 		return false;
+	bool legal = true;
 	switch (piece & 7) {
 		case Piece::Pawn:
-			return isLegalPawnMove(from, to);
+			legal = isLegalPawnMove(from, to);
+			break;
 		case Piece::Knight:
-			return isLegalKnightMove(from, to);
+			legal = isLegalKnightMove(from, to);
+			break;
 		case Piece::Bishop:
-			return isLegalBishopMove(from, to);
+			legal = isLegalBishopMove(from, to);
+			break;
 		case Piece::Rook:
-			return isLegalRookMove(from, to);
+			legal = isLegalRookMove(from, to);
+			break;
 		case Piece::Queen:
-			return isLegalQueenMove(from, to);
+			legal = isLegalQueenMove(from, to);
+			break;
 		case Piece::King:
-			return isLegalKingMove(from, to);
+			legal = isLegalKingMove(from, to);
+			break;
 		default:
 			assert(false);
 	};
-	return false;
+
+	if (legal) {
+		GameLogic copy(*this);
+		copy.makeMove(from, to);
+		legal = !copy.isKingInCheck(mTurn);
+	}
+
+	return legal;
 }
 
 bool GameLogic::isKingInCheck() const {
@@ -54,7 +78,7 @@ bool GameLogic::getTurn() const {
 }
 
 void GameLogic::makeMove(int from, int to) {
-	assert(isLegalMove(from, to));
+//	assert(isLegalMove(from, to));
 
 	bool captured = false;
 
@@ -80,6 +104,7 @@ void GameLogic::addPiece(int piece, int square) {
 
 void GameLogic::capturePiece(int square) {
 	std::cout << "capture " << square << '\n';
+	assert(mBoard.getType(square) != Piece::King);
 	mBoard.set(square, 0);
 }
 
@@ -90,6 +115,7 @@ void GameLogic::movePiece(int from, int to) {
 void GameLogic::postMove(bool captured) {
 	if (mTurn) mFullMove++;
 	updateAttacks(mTurn);
+	updateAttacks(!mTurn);
 	mTurn ^= 1;
 }
 

@@ -8,6 +8,7 @@
 class Board {
    public:
 	Board();
+	Board(const Board &other);
 
 	static int getRank(int square);
 	static int getFile(int square);

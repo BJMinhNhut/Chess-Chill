@@ -15,6 +15,7 @@ class GameLogic {
 
    public:
 	GameLogic();
+	GameLogic(const GameLogic &other);
 
 	[[nodiscard]] bool isLegalMove(int from, int to) const;
 	[[nodiscard]] bool isKingInCheck() const;

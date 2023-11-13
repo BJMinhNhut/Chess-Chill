@@ -12,6 +12,10 @@ Board::Board() {
 	clear();
 }
 
+Board::Board(const Board& other) {
+	std::memcpy(mBoard, other.mBoard, sizeof mBoard);
+}
+
 int Board::getRank(int square) {
 	return square >> 3;
 }
