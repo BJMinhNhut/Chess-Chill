@@ -58,8 +58,9 @@ class GameHandler : public sf::NonCopyable, public GameLogic {
 	sf::Vector2f getBoxPosition(int box) const;
 
 	void addPiece(int piece, int square) override;
-	void movePiece(int from, int to, bool captured) override;
+	void movePiece(int from, int to) override;
 	void capturePiece(int square) override;
+	void postMove(bool captured) override;
 
 	void checkDropPiece(int square);
 	void checkClick(int square);

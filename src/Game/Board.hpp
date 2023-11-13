@@ -14,10 +14,6 @@ class Board {
 	static int getSquareID(int rank, int file);
 	static bool validSquare(int square);
 
-	void clear();
-	void set(int square, int piece);
-	void set(int rank, int file, int piece);
-
 	[[nodiscard]] int get(int square) const;
 	[[nodiscard]] int get(int rank, int file) const;
 
@@ -27,6 +23,11 @@ class Board {
 	[[nodiscard]] int getType(int square) const;
 	[[nodiscard]] int getType(int rank, int file) const;
 
+	int getKing(bool turn) const;
+
+	void clear();
+	void set(int square, int piece);
+	void set(int rank, int file, int piece);
 	void move(int from, int to);
 
    private:

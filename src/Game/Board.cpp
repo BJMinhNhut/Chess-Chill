@@ -57,29 +57,40 @@ int Board::get(int rank, int file) const {
 bool Board::getColor(int square) const {
 	assert(validSquare(square));
 	// if empty then return -1
-	if (mBoard[square] == 0) return -1;
+	if (mBoard[square] == 0)
+		return -1;
 	return Piece::getColor(mBoard[square]);
 }
 
 bool Board::getColor(int rank, int file) const {
 	assert(rank >= 0 && rank < 8 && file >= 0 && file < 8);
 	// if empty then return -1
-	if (mBoard[getSquareID(rank, file)] == 0) return -1;
+	if (mBoard[getSquareID(rank, file)] == 0)
+		return -1;
 	return Piece::getColor(mBoard[getSquareID(rank, file)]);
 }
 
 int Board::getType(int square) const {
 	assert(validSquare(square));
 	// if empty then return -1
-	if (mBoard[square] == 0) return -1;
+	if (mBoard[square] == 0)
+		return -1;
 	return Piece::getType(mBoard[square]);
 }
 
 int Board::getType(int rank, int file) const {
 	assert(rank >= 0 && rank < 8 && file >= 0 && file < 8);
 	// if empty then return -1
-	if (mBoard[getSquareID(rank, file)] == 0) return -1;
+	if (mBoard[getSquareID(rank, file)] == 0)
+		return -1;
 	return Piece::getType(mBoard[getSquareID(rank, file)]);
+}
+
+int Board::getKing(bool turn) const {
+	for (int i = 0; i < 64; ++i)
+		if (getType(i) == Piece::King && getColor(i) == turn)
+			return i;
+	assert(false);
 }
 
 void Board::move(int from, int to) {
@@ -87,4 +98,3 @@ void Board::move(int from, int to) {
 	mBoard[to] = mBoard[from];
 	mBoard[from] = 0;
 }
-

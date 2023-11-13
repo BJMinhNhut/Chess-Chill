@@ -229,16 +229,21 @@ void GameHandler::capturePiece(int square) {
 	mPieces[square] = nullptr;
 }
 
-void GameHandler::movePiece(int from, int to, bool captured) {
-	GameLogic::movePiece(from, to, captured);
+void GameHandler::movePiece(int from, int to) {
+	GameLogic::movePiece(from, to);
 	mPieces[to] = mPieces[from];
 	mPieces[from] = nullptr;
 	mLastMove = (to << 6) | from;
 	mPieces[to]->setPosition(getBoxPosition(to), Piece::None);
-	if (captured) {
+}
+
+void GameHandler::postMove(bool captured) {
+	GameLogic::postMove(captured);
+	if (isKingInCheck()) {
+		mSounds.play(SoundEffect::Check);
+	} else if (captured) {
 		mSounds.play(SoundEffect::Capture);
-	} else
-		mSounds.play(SoundEffect::Move);
+	} else mSounds.play(SoundEffect::Move);
 }
 
 int GameHandler::getHoverSquare(int x, int y) const {

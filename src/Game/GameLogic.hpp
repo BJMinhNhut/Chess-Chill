@@ -25,25 +25,27 @@ class GameLogic {
    protected:
 	virtual void addPiece(int piece, int square);
 	virtual void capturePiece(int square);
-	virtual void movePiece(int from, int to, bool captured);
+	virtual void movePiece(int from, int to);
+	virtual void postMove(bool captured);
 
 	void loadFEN(const std::string& fen);
 	std::string getFEN() const;
 
 	[[nodiscard]] bool isAttacked(int square) const;
+	[[nodiscard]] bool isAttacked(int square, bool turn) const;
+	[[nodiscard]] bool isKingInCheck(bool turn) const;
 
    private:
 	void updateEnPassant(int from, int to);
 	void updateAttacks(bool turn);
 
-	bool isLegalPawnMove(int from, int to) const;
-	bool isEnPassant(int from, int to) const;
+	[[nodiscard]] bool isLegalPawnMove(int from, int to) const;
+	[[nodiscard]] bool isEnPassant(int from, int to) const;
 	static bool isLegalKnightMove(int from, int to);
-	bool isLegalBishopMove(int from, int to) const;
-	bool isLegalRookMove(int from, int to) const;
-	bool isLegalQueenMove(int from, int to) const;
-	bool isLegalKingMove(int from, int to) const;
-	bool isKingInCheck(bool turn) const;
+	[[nodiscard]] bool isLegalBishopMove(int from, int to) const;
+	[[nodiscard]] bool isLegalRookMove(int from, int to) const;
+	[[nodiscard]] bool isLegalQueenMove(int from, int to) const;
+	[[nodiscard]] bool isLegalKingMove(int from, int to) const;
 
    private:
 	Board mBoard;

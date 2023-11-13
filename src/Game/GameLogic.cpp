@@ -69,9 +69,8 @@ void GameLogic::makeMove(int from, int to) {
 	}
 
 	updateEnPassant(from, to);
-	movePiece(from, to, captured);
-	updateAttacks(mTurn);
-	mTurn ^= 1;
+	movePiece(from, to);
+	postMove(captured);
 }
 
 void GameLogic::addPiece(int piece, int square) {
@@ -84,8 +83,14 @@ void GameLogic::capturePiece(int square) {
 	mBoard.set(square, 0);
 }
 
-void GameLogic::movePiece(int from, int to, bool captured) {
+void GameLogic::movePiece(int from, int to) {
 	mBoard.move(from, to);
+}
+
+void GameLogic::postMove(bool captured) {
+	if (mTurn) mFullMove++;
+	updateAttacks(mTurn);
+	mTurn ^= 1;
 }
 
 void GameLogic::loadFEN(const std::string& fen) {
@@ -255,9 +260,14 @@ bool GameLogic::isLegalKingMove(int from, int to) const {
 }
 
 bool GameLogic::isKingInCheck(bool turn) const {
-	return false;
+	int king = mBoard.getKing(turn);
+	return isAttacked(king, turn);
 }
 
 bool GameLogic::isAttacked(int square) const {
 	return mAttackBoard[(!mTurn)] & (1LL << square);
+}
+
+bool GameLogic::isAttacked(int square, bool turn) const {
+	return mAttackBoard[!turn] & (1LL << square);
 }
