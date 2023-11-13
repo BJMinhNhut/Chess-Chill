@@ -27,6 +27,11 @@ class Piece : public SpriteNode {
    public:
 	Piece(const sf::Texture& textures, int piece);
 
+	static int getPieceFromChar(char ch);
+	static int getColor(int piece);
+	static int getType(int piece);
+	static bool valid(int piece);
+
 	void snap(int x, int y);
 	void setPosition(sf::Vector2f position, bool smooth = false);
 	void setPosition(float x, float y, bool smooth = false);

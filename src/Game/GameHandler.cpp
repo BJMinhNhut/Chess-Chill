@@ -237,7 +237,7 @@ int GameHandler::getHoverSquare(int x, int y) const {
 	int row = 7 - (y - mBoardTop) / Piece::SIZE;
 	if (row >= 8 || column >= 8 || row < 0 || column < 0)
 		return -1;
-	return GameLogic::getBoxID(row, column);
+	return Board::getSquareID(row, column);
 }
 
 Piece* GameHandler::checkHoverPiece(int x, int y) const {

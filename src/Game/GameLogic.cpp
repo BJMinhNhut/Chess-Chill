@@ -4,6 +4,7 @@
 
 #include "GameLogic.hpp"
 #include "Piece.hpp"
+#include "AttackGenerator.hpp"
 
 #include <cassert>
 #include <iostream>
@@ -11,23 +12,19 @@
 const int GameLogic::BOARD_SIZE = 64;
 
 GameLogic::GameLogic()
-    : mTurn(false), mCastling(0), mEnPassant(-1), mHalfMove(0), mFullMove(0) {
-}
-
-bool GameLogic::validSquare(int square) {
-	return square >= 0 && square < 64;
+    : mTurn(false), mCastling(0), mEnPassant(-1), mHalfMove(0), mFullMove(0), mBoard() {
 }
 
 bool GameLogic::isLegalMove(int from, int to) const {
-	if (from == to || !validSquare(from) || !validSquare(to))
+	if (from == to || !Board::validSquare(from) || !Board::validSquare(to))
 		return false;
-	int piece = mBoard[from];
-	int capture = mBoard[to];
+	int piece = mBoard.get(from);
+	int capture = mBoard.get(to);
 
 //	std::cout << piece << ' ' << mTurn << '\n';
-	if (piece == 0 || getColor(piece) != mTurn)
+	if (piece == 0 || Piece::getColor(piece) != mTurn)
 		return false;
-	if (capture != 0 && getColor(capture) == mTurn)
+	if (capture != 0 && Piece::getColor(capture) == mTurn)
 		return false;
 	switch (piece & 7) {
 		case Piece::Pawn:
@@ -52,50 +49,6 @@ bool GameLogic::isKingInCheck() const {
 	return isKingInCheck(mTurn);
 }
 
-int GameLogic::getPiece(int box) const {
-	return mBoard[box];
-}
-
-int GameLogic::getColor(int piece) {
-	return (piece >> 3) & 1;
-}
-
-int GameLogic::getType(int piece) {
-	return piece & 7;
-}
-
-int GameLogic::getPieceFromChar(char ch) {
-	int piece = std::islower(ch) ? Piece::Black : Piece::White;
-	switch (tolower(ch)) {
-		case 'p':
-			piece |= Piece::Pawn;
-			break;
-		case 'n':
-			piece |= Piece::Knight;
-			break;
-		case 'b':
-			piece |= Piece::Bishop;
-			break;
-		case 'r':
-			piece |= Piece::Rook;
-			break;
-		case 'q':
-			piece |= Piece::Queen;
-			break;
-		case 'k':
-			piece |= Piece::King;
-			break;
-		default:
-			assert(false);
-	}
-	return piece;
-}
-
-int GameLogic::getBoxID(int row, int column) {
-	assert(row >= 0 && row < 8 && column >= 0 && column < 8);
-	return (row << 3) | column;
-}
-
 bool GameLogic::getTurn() const {
 	return mTurn;
 }
@@ -110,41 +63,41 @@ void GameLogic::makeMove(int from, int to) {
 		captured = true;
 	}
 
-	if (mBoard[to] != 0) {
+	if (mBoard.get(to) != 0) {
 		capturePiece(to);
 		captured = true;
 	}
 
 	updateEnPassant(from, to);
 	movePiece(from, to, captured);
+	updateAttacks(mTurn);
 	mTurn ^= 1;
 }
 
 void GameLogic::addPiece(int piece, int square) {
 	std::cout << "add " << piece << ' ' << square << '\n';
-	mBoard[square] = piece;
+	mBoard.set(square, piece);
 }
 
 void GameLogic::capturePiece(int square) {
 	std::cout << "capture " << square << '\n';
-	mBoard[square] = 0;
+	mBoard.set(square, 0);
 }
 
 void GameLogic::movePiece(int from, int to, bool captured) {
-	mBoard[to] = mBoard[from];
-	mBoard[from] = 0;
+	mBoard.move(from, to);
 }
 
 void GameLogic::loadFEN(const std::string& fen) {
-	std::fill(mBoard, mBoard + BOARD_SIZE, 0);
-	int row = 7, col = 0;
+	mBoard.clear();
+	int rank = 7, file = 0;
 	for (char ch : fen) {
 		if (std::isdigit(ch))
-			col += ch - '0';
+			file += ch - '0';
 		else if (ch == '/')
-			row--, col = 0;
+			rank--, file = 0;
 		else if (std::isalpha(ch)) {
-			addPiece(getPieceFromChar(ch), getBoxID(row, col++));
+			addPiece(Piece::getPieceFromChar(ch), Board::getSquareID(rank, file++));
 		} else
 			break;
 	}
@@ -152,35 +105,65 @@ void GameLogic::loadFEN(const std::string& fen) {
 
 void GameLogic::updateEnPassant(int from, int to) {
 	// check and update mEnPassant when pawn move 2 square
-	int piece = mBoard[from];
+	int piece = mBoard.get(from);
 	int diff = to - from;
 	int absDiff = diff < 0 ? -diff : diff;
-	int dir = getColor(piece) ? -8 : 8;
-	if (getType(piece) == Piece::Pawn && absDiff == 16) {
+	int dir = Piece::getColor(piece) ? -8 : 8;
+	if (Piece::getType(piece) == Piece::Pawn && absDiff == 16) {
 		mEnPassant = from + dir;
 	} else mEnPassant = -1;
 	std::cout << from << ' ' << to << ' ' << mEnPassant << '\n';
 }
 
+void GameLogic::updateAttacks(bool turn) {
+	mAttackBoard[turn] = 0;
+	for (int i = 0; i < 64; i++) {
+		int piece = mBoard.get(i);
+		if (piece == 0 || Piece::getColor(piece) != turn) continue;
+		switch (Piece::getType(piece)) {
+			case Piece::Pawn:
+				mAttackBoard[turn] |= AttackGenerator::generatePawnAttacks(i, turn);
+				break;
+			case Piece::Knight:
+				mAttackBoard[turn] |= AttackGenerator::generateKnightAttacks(i);
+				break;
+			case Piece::Bishop:
+				mAttackBoard[turn] |= AttackGenerator::generateBishopAttacks(i, mBoard);
+				break;
+			case Piece::Rook:
+				mAttackBoard[turn] |= AttackGenerator::generateRookAttacks(i, mBoard);
+				break;
+			case Piece::Queen:
+				mAttackBoard[turn] |= AttackGenerator::generateQueenAttacks(i, mBoard);
+				break;
+			case Piece::King:
+				mAttackBoard[turn] |= AttackGenerator::generateKingAttacks(i);
+				break;
+			default:
+				assert(false);
+		}
+	}
+}
+
 bool GameLogic::isEnPassant(int from, int to) const {
-	int piece = mBoard[from];
+	int piece = mBoard.get(from);
 	int diff = to - from;
 	int absDiff = diff < 0 ? -diff : diff;
-	int dir = getColor(piece) ? -8 : 8;
+	int dir = Piece::getColor(piece) ? -8 : 8;
 	int targetRow = to >> 3;
 	int startRow = from >> 3;
 	if (mEnPassant != to) return false;
 	if (diff * dir < 0) return false;
 	if (targetRow != startRow + (dir >> 3)) return false;
-	if (getType(piece) != Piece::Pawn) return false;
+	if (Piece::getType(piece) != Piece::Pawn) return false;
 //	std::cout <<"yay " << mEnPassant << ' ' << from << ' ' << to << ' ' << to+dir << '\n';
 	return (absDiff == 7 || absDiff == 9);
 }
 
 bool GameLogic::isLegalPawnMove(int from, int to) const {
-	int piece = mBoard[from];
-	int capture = mBoard[to];
-	int color = getColor(piece);
+	int piece = mBoard.get(from);
+	int capture = mBoard.get(to);
+	int color = Piece::getColor(piece);
 	int diff = to - from;
 	int absDiff = diff < 0 ? -diff : diff;
 	int dir = color ? -8 : 8;
@@ -191,10 +174,10 @@ bool GameLogic::isLegalPawnMove(int from, int to) const {
 
 	if (diff * dir <= 0) return false;
 	if (absDiff == 8) return capture == 0;
-	if (absDiff == 16 && from >= start && from <= end) return capture == 0 && mBoard[from + dir] == 0;
+	if (absDiff == 16 && from >= start && from <= end) return capture == 0 && mBoard.get(from + dir) == 0;
 	if (targetRow != startRow + (dir >> 3)) return false;
-	if (absDiff == 7 && capture != 0) return getColor(capture) != color;
-	if (absDiff == 9 && capture != 0) return getColor(capture) != color;
+	if (absDiff == 7 && capture != 0) return Piece::getColor(capture) != color;
+	if (absDiff == 9 && capture != 0) return Piece::getColor(capture) != color;
 
 	// check for enpassant
 	if (isEnPassant(from, to)) return true;
@@ -216,20 +199,20 @@ bool GameLogic::isLegalKnightMove(int from, int to) {
 
 bool GameLogic::isLegalBishopMove(int from, int to) const {
 	// check for diagonal
-	int diffRow = (to >> 3) - (from >> 3);
-	int diffCol = (to & 7) - (from & 7);
-	int absDiffRow = diffRow < 0 ? -diffRow : diffRow;
-	int absDiffCol = diffCol < 0 ? -diffCol : diffCol;
-	if (absDiffRow != absDiffCol) return false;
+	int diffRank = (to >> 3) - (from >> 3);
+	int diffFile = (to & 7) - (from & 7);
+	int absDiffRank = diffRank < 0 ? -diffRank : diffRank;
+	int absDiffFile = diffFile < 0 ? -diffFile : diffFile;
+	if (absDiffRank != absDiffFile) return false;
 
 	// check for blocking
-	int dirRow = diffRow < 0 ? -1 : 1;
-	int dirCol = diffCol < 0 ? -1 : 1;
-	int row = from >> 3, col = from & 7;
-	for (int i = 1; i < absDiffRow; i++) {
-		row += dirRow;
-		col += dirCol;
-		if (mBoard[getBoxID(row, col)] != 0) return false;
+	int dirRow = diffRank < 0 ? -1 : 1;
+	int dirCol = diffFile < 0 ? -1 : 1;
+	int rank = from >> 3, file = from & 7;
+	for (int i = 1; i < absDiffRank; i++) {
+		rank += dirRow;
+		file += dirCol;
+		if (mBoard.get(rank, file) != 0) return false;
 	}
 
 	return true;
@@ -237,20 +220,20 @@ bool GameLogic::isLegalBishopMove(int from, int to) const {
 
 bool GameLogic::isLegalRookMove(int from, int to) const {
 	// check for straight
-	int diffRow = (to >> 3) - (from >> 3);
-	int diffCol = (to & 7) - (from & 7);
-	int absDiffRow = diffRow < 0 ? -diffRow : diffRow;
-	int absDiffCol = diffCol < 0 ? -diffCol : diffCol;
-	if (absDiffRow != 0 && absDiffCol != 0) return false;
+	int diffRank = (to >> 3) - (from >> 3);
+	int diffFile = (to & 7) - (from & 7);
+	int absDiffRank = diffRank < 0 ? -diffRank : diffRank;
+	int absDiffFile = diffFile < 0 ? -diffFile : diffFile;
+	if (absDiffRank != 0 && absDiffFile != 0) return false;
 
 	// check for block
-	int dirRow = diffRow != 0 ? diffRow/absDiffRow : 0;
-	int dirCol = diffCol != 0 ? diffCol/absDiffCol : 0;
-	int row = from >> 3, col = from & 7;
-	for (int i = 1; i < absDiffRow + absDiffCol; i++) {
-		row += dirRow;
-		col += dirCol;
-		if (mBoard[getBoxID(row, col)] != 0) return false;
+	int dirRow = diffRank != 0 ? diffRank/absDiffRank : 0;
+	int dirCol = diffFile != 0 ? diffFile/absDiffFile : 0;
+	int rank = from >> 3, file = from & 7;
+	for (int i = 1; i < absDiffRank + absDiffFile; i++) {
+		rank += dirRow;
+		file += dirCol;
+		if (mBoard.get(rank, file) != 0) return false;
 	}
 	return true;
 }
@@ -262,15 +245,19 @@ bool GameLogic::isLegalQueenMove(int from, int to) const {
 }
 
 bool GameLogic::isLegalKingMove(int from, int to) const {
-	int diffRow = (to >> 3) - (from >> 3);
-	int diffCol = (to & 7) - (from & 7);
-	int absDiffRow = diffRow < 0 ? -diffRow : diffRow;
-	int absDiffCol = diffCol < 0 ? -diffCol : diffCol;
-	if (absDiffRow <= 1 && absDiffCol <= 1)
+	int diffRank = (to >> 3) - (from >> 3);
+	int diffFile = (to & 7) - (from & 7);
+	int absDiffRank = diffRank < 0 ? -diffRank : diffRank;
+	int absDiffFile = diffFile < 0 ? -diffFile : diffFile;
+	if (absDiffRank <= 1 && absDiffFile <= 1 && !isAttacked(to, mTurn))
 		return true;
 	return false;
 }
 
 bool GameLogic::isKingInCheck(bool turn) const {
 	return false;
+}
+
+bool GameLogic::isAttacked(int square, bool turn) const {
+	return mAttackBoard[(!turn)] & (1LL << square);
 }

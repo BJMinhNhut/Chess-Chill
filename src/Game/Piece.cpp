@@ -6,14 +6,55 @@
 
 #include <cassert>
 #include <cmath>
+#include <locale>
 
 const int Piece::NAME = 7;
 const int Piece::SIZE = 85;
 
 Piece::Piece(const sf::Texture& textures, int piece)
     : SpriteNode(textures, getRectByType(piece)), mType(piece), mVelocity(), mTargetPosition() {
-	assert((piece >> 3) < 2 && piece >= 0 && (piece & NAME) <= Pawn);
+	assert(valid(piece));
 }
+
+bool Piece::valid(int piece) {
+	return (piece >> 3) < 2 && piece >= 0 && (piece & NAME) <= Pawn;
+}
+
+int Piece::getColor(int piece) {
+	return (piece >> 3) & 1;
+}
+
+int Piece::getType(int piece) {
+	return piece & 7;
+}
+
+int Piece::getPieceFromChar(char ch) {
+	int piece = std::islower(ch) ? Black : White;
+	switch (tolower(ch)) {
+		case 'p':
+			piece |= Pawn;
+			break;
+		case 'n':
+			piece |= Knight;
+			break;
+		case 'b':
+			piece |= Bishop;
+			break;
+		case 'r':
+			piece |= Rook;
+			break;
+		case 'q':
+			piece |= Queen;
+			break;
+		case 'k':
+			piece |= King;
+			break;
+		default:
+			assert(false);
+	}
+	return piece;
+}
+
 
 void Piece::updateCurrent(sf::Time dt) {
 	// move piece to target position with static velocity (40 frames)

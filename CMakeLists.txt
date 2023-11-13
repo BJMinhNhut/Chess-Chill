@@ -30,7 +30,11 @@ add_executable(Chess src/main.cpp
         src/Template/SoundPlayer.hpp
         src/Template/SoundPlayer.cpp
         src/Game/GameLogic.cpp
-        src/Game/GameLogic.hpp)
+        src/Game/GameLogic.hpp
+        src/Game/AttackGenerator.cpp
+        src/Game/AttackGenerator.hpp
+        src/Game/Board.cpp
+        src/Game/Board.hpp)
 target_link_libraries(Chess PRIVATE sfml-graphics sfml-audio)
 target_compile_features(Chess PRIVATE cxx_std_17)
 

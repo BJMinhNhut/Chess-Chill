@@ -5,24 +5,20 @@
 #ifndef CHESS_GAMELOGIC_HPP
 #define CHESS_GAMELOGIC_HPP
 
+#include "Board.hpp"
+
 #include <string>
 
 class GameLogic {
    public:
 	static const int BOARD_SIZE;
+
    public:
 	GameLogic();
 
-	bool isLegalMove(int from, int to) const;
-	bool isKingInCheck() const;
-	int getPiece(int box) const;
-	bool getTurn() const;
-
-	static int getColor(int piece);
-	static int getType(int piece);
-	static int getPieceFromChar(char ch);
-	static int getBoxID(int row, int column);
-	static bool validSquare(int square);
+	[[nodiscard]] bool isLegalMove(int from, int to) const;
+	[[nodiscard]] bool isKingInCheck() const;
+	[[nodiscard]] bool getTurn() const;
 
 	void makeMove(int from, int to);
 
@@ -35,21 +31,22 @@ class GameLogic {
 	std::string getFEN() const;
 
    private:
-
 	void updateEnPassant(int from, int to);
+	void updateAttacks(bool turn);
 
 	bool isLegalPawnMove(int from, int to) const;
 	bool isEnPassant(int from, int to) const;
-	static bool isLegalKnightMove(int from, int to) ;
+	static bool isLegalKnightMove(int from, int to);
 	bool isLegalBishopMove(int from, int to) const;
 	bool isLegalRookMove(int from, int to) const;
 	bool isLegalQueenMove(int from, int to) const;
 	bool isLegalKingMove(int from, int to) const;
-
 	bool isKingInCheck(bool turn) const;
+	bool isAttacked(int square, bool turn) const;
 
    private:
-	int mBoard[64];
+	Board mBoard;
+	int64_t mAttackBoard[2];
 	bool mTurn;
 	int mCastling;
 	int mEnPassant;
