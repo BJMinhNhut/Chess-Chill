@@ -94,7 +94,7 @@ int Board::getKing(bool turn) const {
 	for (int i = 0; i < 64; ++i)
 		if (getType(i) == Piece::King && getColor(i) == turn)
 			return i;
-	assert(false);
+	return -1;
 }
 
 void Board::move(int from, int to) {

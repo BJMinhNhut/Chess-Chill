@@ -28,6 +28,9 @@ class GameLogic {
 	virtual void capturePiece(int square);
 	virtual void movePiece(int from, int to);
 	virtual void postMove(bool captured);
+	virtual void promotePiece(int square, int piece);
+
+   public:
 
 	void loadFEN(const std::string& fen);
 	std::string getFEN() const;

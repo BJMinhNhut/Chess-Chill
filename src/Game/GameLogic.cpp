@@ -103,7 +103,12 @@ void GameLogic::makeMove(int from, int to) {
 		updateEnPassant(from, to);
 	if (mBoard.getType(from) == Piece::King || mBoard.getType(from) == Piece::Rook)
 		updateCastling(from);
+
 	movePiece(from, to);
+	// check for promotion
+	if (mBoard.getType(to) == Piece::Pawn && (Board::getRank(to) == 0 || Board::getRank(to) == 7)) {
+		promotePiece(to, Piece::Queen|(Piece::getColor(mBoard.get(to)) << 3));
+	}
 	postMove(captured);
 }
 
@@ -128,6 +133,11 @@ void GameLogic::postMove(bool captured) {
 	updateAttacks(false);
 	updateAttacks(true);
 	mTurn ^= 1;
+}
+
+void GameLogic::promotePiece(int square, int piece) {
+	assert(mBoard.getType(square) == Piece::Pawn);
+	mBoard.set(square, piece);
 }
 
 void GameLogic::loadFEN(const std::string& fen) {
@@ -385,6 +395,10 @@ bool GameLogic::isLegalCastling(int from, int to) const {
 
 bool GameLogic::isKingInCheck(bool turn) const {
 	int king = mBoard.getKing(turn);
+	if (king == -1) {
+		std::cout << "king not found\n";
+		return false;
+	}
 	return isAttacked(king, turn);
 }
 

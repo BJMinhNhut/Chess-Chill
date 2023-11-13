@@ -37,7 +37,7 @@ GameHandler::GameHandler(sf::RenderWindow& window, FontHolder& fonts, SoundPlaye
 
 	loadTextures();
 	buildScene();
-	loadFEN(START_FEN);
+	loadFEN("8/pppp4/8/8/8/8/4PPPP/8 w KQkq - 0 1");
 }
 
 void GameHandler::draw() {
@@ -244,6 +244,12 @@ void GameHandler::postMove(bool captured) {
 	} else if (captured) {
 		mSounds.play(SoundEffect::Capture);
 	} else mSounds.play(SoundEffect::Move);
+}
+
+void GameHandler::promotePiece(int square, int piece) {
+	GameLogic::promotePiece(square, piece);
+	capturePiece(square);
+	addPiece(piece, square);
 }
 
 int GameHandler::getHoverSquare(int x, int y) const {

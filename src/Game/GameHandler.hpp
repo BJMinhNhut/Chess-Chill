@@ -61,6 +61,7 @@ class GameHandler : public sf::NonCopyable, public GameLogic {
 	void movePiece(int from, int to) override;
 	void capturePiece(int square) override;
 	void postMove(bool captured) override;
+	void promotePiece(int square, int piece) override;
 
 	void checkDropPiece(int square);
 	void checkClick(int square);

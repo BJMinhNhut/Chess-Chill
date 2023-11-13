@@ -24,7 +24,7 @@ class Board {
 	[[nodiscard]] int getType(int square) const;
 	[[nodiscard]] int getType(int rank, int file) const;
 
-	int getKing(bool turn) const;
+	[[nodiscard]] int getKing(bool turn) const; // if not found return -1
 
 	void clear();
 	void set(int square, int piece);
