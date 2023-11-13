@@ -45,6 +45,7 @@ class GameHandler : public sf::NonCopyable, public GameLogic {
 		Click,
 		Move,
 		Target,
+		Debug,
 	};
 
    private:

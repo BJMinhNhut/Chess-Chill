@@ -128,6 +128,14 @@ void GameHandler::handleMove(int from, int to, bool drop) {
 		highlightMove(mLastMove, false);
 		highlightMove(to << 6 | from, true);
 		makeMove(from, to);
+#ifdef DEBUG_ATTACK
+		for(int i = 0; i < 64; ++i) {
+			if (isAttacked(i))
+				highlightSquare(i, Debug);
+			else
+				highlightSquare(i, Normal);
+		}
+#endif // DEBUG_ATTACK
 		mOldSquare = -1;
 	} else {
 		highlightMove(mLastMove, true);
@@ -150,6 +158,9 @@ void GameHandler::highlightSquare(int square, HighlightRate rate) {
 				break;
 			case Target:
 				color = sf::Color(205, 175, 0, 155);
+				break;
+			case Debug:
+				color = sf::Color(255, 0, 0, 100);
 				break;
 			default:
 				color = sf::Color(0, 150, 150, 100);

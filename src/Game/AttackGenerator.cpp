@@ -147,9 +147,9 @@ int64_t generateKingAttacks(int square) {
 	int file = Board::getFile(square);
 
 	for (int dr = -1; dr <= 1; ++dr)
-		if (rank + dr >= 0 && rank + dr < 7) {
+		if (rank + dr >= 0 && rank + dr < 8) {
 			for (int df = -1; df <= 1; ++df)
-				if (file + df >= 0 && file + df < 7) {
+				if (file + df >= 0 && file + df < 8) {
 					if (dr == 0 && df == 0)
 						continue;
 					attacks |= 1LL << Board::getSquareID(rank + dr, file + df);
