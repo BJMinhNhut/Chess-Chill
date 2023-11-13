@@ -38,6 +38,7 @@ class GameLogic {
 
    private:
 	void updateEnPassant(int from, int to);
+	void updateCastling(int from);
 	void updateAttacks(bool turn);
 
 	[[nodiscard]] bool isLegalPawnMove(int from, int to) const;
@@ -47,6 +48,7 @@ class GameLogic {
 	[[nodiscard]] bool isLegalRookMove(int from, int to) const;
 	[[nodiscard]] bool isLegalQueenMove(int from, int to) const;
 	[[nodiscard]] bool isLegalKingMove(int from, int to) const;
+	[[nodiscard]] bool isLegalCastling(int from, int to) const;
 
    private:
 	Board mBoard;
