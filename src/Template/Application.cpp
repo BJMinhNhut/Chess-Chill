@@ -14,7 +14,7 @@
 const sf::Time Application::TimePerFrame = sf::seconds(1.f / 60.f);
 
 Application::Application()
-    : mWindow(sf::VideoMode(1600, 900), "Chess", sf::Style::Close,
+    : mWindow(sf::VideoMode(1600, 900), "Chess & Chill", sf::Style::Close,
               sf::ContextSettings(0, 0, 8)),
 #ifdef SFML_DEBUG
       mStatisticsText(),
@@ -34,7 +34,7 @@ Application::Application()
 	mFonts.load(Fonts::Mono,
 	            Constants::dataPrefix + "resources/fonts/intelone-mono-font-family-regular.ttf");
 
-//	loadIcon();
+	loadIcon();
 
 //	if (getSettings().theme == Settings::Themes::Light)
 //		Utility::loadLightTheme(mTextures, mColors);
