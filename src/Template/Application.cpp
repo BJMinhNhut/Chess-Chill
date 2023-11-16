@@ -77,6 +77,8 @@ void Application::loadImages() {
 	// Gameplay
 	Settings settings;
 	mTextures.load(Textures::PieceSet, settings.getPieceSetPath());
+	mTextures.load(Textures::Board, settings.getBoardPath());
+
 	// Buttons
 	mTextures.load(Textures::MenuButtonNormal,
 	               Constants::DATA_PREFIX + "resources/images/buttons/menu_normal.png");

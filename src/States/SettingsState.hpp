@@ -24,14 +24,16 @@ class SettingsState : public State {
 
    private:
 	void loadBasicGUI();
-	void loadSettingsGUI();
+	void loadPieceSetGUI();
+	void loadBoardGUI();
 
 	void updatePieceSet();
+	void updateBoard();
 
    private:
 	GUI::Container mGUIContainer;
 
-	GUI::Sprite::Ptr mPieceSet;
+	GUI::Sprite::Ptr mPieceSet, mBoard;
 	Settings mSettings;
 };
 

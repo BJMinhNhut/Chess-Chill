@@ -20,11 +20,18 @@ bool Sprite::isSelectable() const {
 
 void Sprite::setTexture(const sf::Texture& texture) {
 	mSprite.setTexture(texture, true);
-	Utility::centerOrigin(mSprite);
+}
+
+void Sprite::crop(int width, int height) {
+	mSprite.setTextureRect(sf::IntRect(0, 0, width, height));
 }
 
 void Sprite::setSize(float x, float y) {
 	mSprite.setScale(x / mSprite.getLocalBounds().width, y / mSprite.getLocalBounds().height);
+}
+
+void Sprite::centerOrigin() {
+	Utility::centerOrigin(mSprite);
 }
 
 void Sprite::handleEvent(const sf::Event& event) {}

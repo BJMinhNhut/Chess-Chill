@@ -13,22 +13,31 @@
 
 class Settings {
    public:
+	static const std::string SETTINGS_FILE;
+
 	static const std::vector<std::string> PIECESET_NAMES;
 	static const std::string PIECESET_PATH;
-	static const std::string SETTINGS_FILE;
+
+	static const std::vector<std::string> BOARD_NAMES;
+	static const std::string BOARD_PATH;
 
    public:
 	Settings();
 
+	void save();
+
 	void nextPieceSet();
 	void previousPieceSet();
 
+	void nextBoard();
+	void previousBoard();
+
 	[[nodiscard]] std::string getPieceSetPath() const;
+	[[nodiscard]] std::string getBoardPath() const;
 
    private:
 	void print();
 	void load();
-	void save();
 
    public:
 	bool operator==(const Settings& settings) const;
@@ -36,6 +45,7 @@ class Settings {
 
    private:
 	int mPieceSetID;
+	int mBoardID;
 
 };
 

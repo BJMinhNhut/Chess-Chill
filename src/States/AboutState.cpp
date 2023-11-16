@@ -34,6 +34,7 @@ AboutState::AboutState(StateStack &stack, Context context)
 	auto titleBar = std::make_shared<GUI::Sprite>(
 	    context.textures->get(Textures::TitleBar));
 	titleBar->setPosition(800.f, 53.f);
+	titleBar->centerOrigin();
 	mGUIContainer.pack(titleBar);
 
 	auto titleLabel = std::make_shared<GUI::Label>(
@@ -44,7 +45,7 @@ AboutState::AboutState(StateStack &stack, Context context)
 
 	auto aboutPanel = std::make_shared<GUI::Sprite>(
 	    context.textures->get(Textures::AboutPanel));
-	aboutPanel->setPosition(482.f + 636.f/2, 236.f + 468.f/2);
+	aboutPanel->setPosition(482.f, 236.f);
 	mGUIContainer.pack(aboutPanel);
 }
 

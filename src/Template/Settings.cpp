@@ -9,30 +9,46 @@
 #include <iostream>
 
 const std::vector<std::string> Settings::PIECESET_NAMES = {
-    "alpha", "anarcandy", "cardinal", "chessnut", "default", "kiwen-suwi", "maestro", "tatiana"};
+    "default", "alpha", "anarcandy", "cardinal", "chessnut", "kiwen-suwi", "maestro", "tatiana"};
 const std::string Settings::PIECESET_PATH = Constants::DATA_PREFIX + "resources/images/pieces/";
+
+const std::vector<std::string> Settings::BOARD_NAMES = {
+    "default", "blackwhite", "blue",         "green_plastic", "maple",
+    "metal",   "newspaper",  "pink_pyramid", "purple_diag",   "wood"};
+const std::string Settings::BOARD_PATH = Constants::DATA_PREFIX + "resources/images/boards/";
+
 const std::string Settings::SETTINGS_FILE = "settings.bin";
 
-Settings::Settings(): mPieceSetID(4) {
+Settings::Settings() : mPieceSetID(0), mBoardID(0) {
 	load();
 }
 
 void Settings::nextPieceSet() {
 	mPieceSetID = (mPieceSetID + 1) % PIECESET_NAMES.size();
 	std::cout << "Next piece set: " << PIECESET_NAMES[mPieceSetID] << "\n";
-	save();
 }
 
 void Settings::previousPieceSet() {
 	mPieceSetID = (mPieceSetID - 1 + PIECESET_NAMES.size()) % PIECESET_NAMES.size();
 	std::cout << "Previous piece set: " << PIECESET_NAMES[mPieceSetID] << "\n";
-	save();
+}
+
+void Settings::nextBoard() {
+	mBoardID = (mBoardID + 1) % BOARD_NAMES.size();
+	std::cout << "Next board: " << BOARD_NAMES[mBoardID] << "\n";
+}
+
+void Settings::previousBoard() {
+	mBoardID = (mBoardID - 1 + BOARD_NAMES.size()) % BOARD_NAMES.size();
+	std::cout << "Previous board: " << BOARD_NAMES[mBoardID] << "\n";
 }
 
 void Settings::print() {
 	std::cout << "==Settings==\n";
 	std::cout << "Piece set: ";
 	std::cout << PIECESET_NAMES[mPieceSetID] << "\n";
+	std::cout << "Board: ";
+	std::cout << BOARD_NAMES[mBoardID] << "\n";
 	std::cout << "==End==\n";
 }
 
@@ -68,4 +84,8 @@ void Settings::save() {
 
 std::string Settings::getPieceSetPath() const {
 	return PIECESET_PATH + PIECESET_NAMES[mPieceSetID] + ".png";
+}
+
+std::string Settings::getBoardPath() const {
+	return BOARD_PATH + BOARD_NAMES[mBoardID] + ".png";
 }
