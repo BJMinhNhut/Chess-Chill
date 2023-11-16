@@ -7,5 +7,6 @@
 
 #include "MenuState.hpp"
 #include "GameState.hpp"
+#include "AboutState.hpp"
 
 #endif //CHESS_STATESLIST_HPP

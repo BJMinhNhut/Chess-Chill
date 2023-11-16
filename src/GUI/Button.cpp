@@ -14,8 +14,7 @@
 
 namespace GUI {
 
-Button::Button(Type type, const FontHolder& fonts, const TextureHolder& textures,
-               const ColorHolder& colors)
+Button::Button(Type type, const FontHolder& fonts, const TextureHolder& textures)
     : mCallback(),
       mIsToggle(false),
       mNormalTexture(textures.get(getNormalTextureID(type))),
@@ -23,129 +22,51 @@ Button::Button(Type type, const FontHolder& fonts, const TextureHolder& textures
       mPressedTexture(textures.get(getPressedTextureID(type))),
       mSprite(mNormalTexture),
       mText() {
-	setFont(type, fonts, colors);
+	setFont(type, fonts);
 	Utility::centerOrigin(mSprite);
 }
 
 Textures::ID Button::getNormalTextureID(Type type) {
 	switch (type) {
-		case Small:
-			return Textures::SmallButtonNormal;
-		case Big:
-			return Textures::BigButtonNormal;
-		case Command:
-			return Textures::CommandNormal;
+		case Menu:
+			return Textures::MenuButtonNormal;
 		case Home:
-			return Textures::HomeNormal;
-		case Checkbox:
-			return Textures::CheckBoxNormal;
+			return Textures::HomeButtonNormal;
 		case Back:
-			return Textures::BackNormal;
-		case Play:
-			return Textures::PlayNormal;
-		case Pause:
-			return Textures::PauseNormal;
-		case Replay:
-			return Textures::ReplayNormal;
-		case SmallArrow:
-			return Textures::ArrowDownNormal;
-		case Arrow:
-			return Textures::ArrowNormal;
-		case DoubleArrow:
-			return Textures::DoubleArrowNormal;
-		case MenuHash:
-			return Textures::MenuHashNormal;
-		case MenuAVL:
-			return Textures::MenuAVLNormal;
-		case Menu234:
-			return Textures::Menu234Normal;
-		case MenuMinHeap:
-			return Textures::MenuMinHeapNormal;
-		case MenuMaxHeap:
-			return Textures::MenuMaxHeapNormal;
-		case MenuTrie:
-			return Textures::MenuTrieNormal;
-		case MenuGraph:
-			return Textures::MenuGraphNormal;
+			return Textures::BackButtonNormal;
 		default:
-			return Textures::SmallButtonNormal;
+			return Textures::Background;
 	}
 }
 
 Textures::ID Button::getSelectedTextureID(Type type) {
 	switch (type) {
-		case Small:
-			return Textures::SmallButtonSelected;
-		case Big:
-			return Textures::BigButtonSelected;
-		case Command:
-			return Textures::CommandSelected;
+		case Menu:
+			return Textures::MenuButtonSelected;
 		case Home:
-			return Textures::HomeSelected;
-		case Checkbox:
-			return Textures::CheckBoxSelected;
+			return Textures::HomeButtonSelected;
 		case Back:
-			return Textures::BackSelected;
-		case Play:
-			return Textures::PlaySelected;
-		case Pause:
-			return Textures::PauseSelected;
-		case Replay:
-			return Textures::ReplaySelected;
-		case SmallArrow:
-			return Textures::ArrowDownSelected;
-		case Arrow:
-			return Textures::ArrowSelected;
-		case DoubleArrow:
-			return Textures::DoubleArrowSelected;
-		case MenuHash:
-			return Textures::MenuHashSelected;
-		case MenuAVL:
-			return Textures::MenuAVLSelected;
-		case Menu234:
-			return Textures::Menu234Selected;
-		case MenuMinHeap:
-			return Textures::MenuMinHeapSelected;
-		case MenuMaxHeap:
-			return Textures::MenuMaxHeapSelected;
-		case MenuTrie:
-			return Textures::MenuTrieSelected;
-		case MenuGraph:
-			return Textures::MenuGraphSelected;
+			return Textures::BackButtonSelected;
 		default:
-			return Textures::SmallButtonSelected;
+			return Textures::Background;
 	}
 }
 
 Textures::ID Button::getPressedTextureID(Type type) {
 	switch (type) {
-		case Command:
-			return Textures::CommandActivated;
-		case Checkbox:
-			return Textures::CheckBoxActivated;
 		default:
 			return getSelectedTextureID(type);
 	}
 }
 
-void Button::setFont(Type type, const FontHolder& fonts, const ColorHolder& colors) {
+void Button::setFont(Type type, const FontHolder& fonts) {
 	switch (type) {
-		case Small:
-			mText.setFont(fonts.get(Fonts::Main));
-			mText.setCharacterSize(16u);
-			mText.setFillColor(colors.get(Colors::Text));
-			break;
-
-		case Big:
-			mText.setFont(fonts.get(Fonts::Bold));
-			mText.setCharacterSize(18u);
-			mText.setFillColor(sf::Color::White);
-			break;
-
+		case Menu:
+			mText.setPosition(0.f, -3.f);
 		default:
 			mText.setFont(fonts.get(Fonts::Main));
-			mText.setCharacterSize(16u);
-			mText.setFillColor(colors.get(Colors::Text));
+			mText.setCharacterSize(24u);
+			mText.setFillColor(sf::Color::White);
 			break;
 	}
 }

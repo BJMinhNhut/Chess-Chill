@@ -13,10 +13,19 @@ class SoundBuffer;
 
 namespace Textures {
 enum ID {
-//	Background,
-//	Title,
-//
-    Board,
+	Background,
+	Title,
+	TitleBar,
+	AboutPanel,
+
+	BackButtonNormal,
+	BackButtonSelected,
+	HomeButtonNormal,
+	HomeButtonSelected,
+	MenuButtonNormal,
+	MenuButtonSelected,
+
+	Board,
 	PiecesSet,
 	NumTextures,
 };

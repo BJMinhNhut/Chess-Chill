@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-set(TARGET_NAME ${TARGET_NAME}Chill)
+set(TARGET_NAME Chess-Chill)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 project(${TARGET_NAME} LANGUAGES CXX)
@@ -42,7 +42,15 @@ add_executable(${TARGET_NAME}
         src/Game/AttackGenerator.cpp
         src/Game/AttackGenerator.hpp
         src/Game/Board.cpp
-        src/Game/Board.hpp)
+        src/Game/Board.hpp
+        src/States/MenuState.cpp
+        src/GUI/Component.cpp
+        src/GUI/Container.cpp
+        src/GUI/Button.cpp
+        src/States/AboutState.cpp
+        src/States/AboutState.hpp
+        src/GUI/Label.cpp
+        src/GUI/Sprite.cpp)
 target_link_libraries(${TARGET_NAME} PRIVATE sfml-graphics sfml-audio)
 target_compile_features(${TARGET_NAME} PRIVATE cxx_std_17)
 

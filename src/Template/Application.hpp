@@ -5,53 +5,49 @@
 #ifndef NATUREOFCODE_APPLICATION_HPP
 #define NATUREOFCODE_APPLICATION_HPP
 
-#include "ResourceHolder.hpp"
 #include "ColorHolder.hpp"
+#include "ResourceHolder.hpp"
 #include "ResourceIdentifiers.hpp"
-#include "StateStack.hpp"
 #include "SoundPlayer.hpp"
+#include "StateStack.hpp"
 
 #include "SFML/Graphics/RenderWindow.hpp"
 #include "SFML/Graphics/Text.hpp"
 #include "SFML/System/Time.hpp"
 
 class Application {
-public:
-    Application();
+   public:
+	Application();
+	void run();
 
-    void run();
-
-private:
-    void processInput();
-
-    void update(sf::Time dt);
-
-    void render();
+   private:
+	void processInput();
+	void update(sf::Time dt);
+	void render();
 
 #ifdef SFML_DEBUG
-
-    void updateStatistics(sf::Time dt);
-
+	void updateStatistics(sf::Time dt);
 #endif
 
-    void registerStates();
+	void registerStates();
+	void loadIcon();
+	void loadImages();
+	void loadFonts();
 
-    void loadIcon();
+   private:
+	static const sf::Time TimePerFrame;
 
-private:
-    static const sf::Time TimePerFrame;
-
-    sf::RenderWindow mWindow;
-    TextureHolder mTextures;
-    FontHolder mFonts;
-    ColorHolder mColors;
+	sf::RenderWindow mWindow;
+	TextureHolder mTextures;
+	FontHolder mFonts;
+	ColorHolder mColors;
 	SoundPlayer mSounds;
 
-    StateStack mStateStack;
+	StateStack mStateStack;
 
-    sf::Text mStatisticsText;
-    sf::Time mStatisticsUpdateTime;
-    std::size_t mStatisticsNumFrames;
+	sf::Text mStatisticsText;
+	sf::Time mStatisticsUpdateTime;
+	std::size_t mStatisticsNumFrames;
 };
 
 #endif  //NATUREOFCODE_APPLICATION_HPP

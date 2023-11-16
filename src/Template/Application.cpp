@@ -29,27 +29,66 @@ Application::Application()
 
 	mWindow.setFramerateLimit(60);
 
-	mFonts.load(Fonts::Main, Constants::dataPrefix + "resources/fonts/PublicSans-Regular.ttf");
-	mFonts.load(Fonts::Bold, Constants::dataPrefix + "resources/fonts/PublicSans-Bold.ttf");
-	mFonts.load(Fonts::Mono,
-	            Constants::dataPrefix + "resources/fonts/intelone-mono-font-family-regular.ttf");
-
+	loadFonts();
 	loadIcon();
+	loadImages();
 
-//	if (getSettings().theme == Settings::Themes::Light)
-//		Utility::loadLightTheme(mTextures, mColors);
-//	else
-//		Utility::loadDarkTheme(mTextures, mColors);
+	//	if (getSettings().theme == Settings::Themes::Light)
+	//		Utility::loadLightTheme(mTextures, mColors);
+	//	else
+	//		Utility::loadDarkTheme(mTextures, mColors);
 
 #ifdef SFML_DEBUG
 	mStatisticsText.setFont(mFonts.get(Fonts::Main));
 	mStatisticsText.setPosition(5.f, 5.f);
-	mStatisticsText.setFillColor(sf::Color::Black);
+	mStatisticsText.setFillColor(sf::Color::White);
 	mStatisticsText.setCharacterSize(13u);
 #endif
 
 	registerStates();
-	mStateStack.pushState(States::Game);
+	mStateStack.pushState(States::Menu);
+}
+
+void Application::registerStates() {
+	mStateStack.registerState<MenuState>(States::Menu);
+	mStateStack.registerState<GameState>(States::Game);
+	mStateStack.registerState<AboutState>(States::About);
+}
+
+void Application::loadIcon() {
+	sf::Image image;
+	if (!image.loadFromFile(Constants::dataPrefix + "resources/images/icon.png")) {
+		throw std::runtime_error("Icon load unsucessfully!");
+	}
+	mWindow.setIcon(image.getSize().x, image.getSize().y, image.getPixelsPtr());
+}
+
+void Application::loadFonts() {
+	mFonts.load(Fonts::Main, Constants::dataPrefix + "resources/fonts/Inter-Regular.ttf");
+	mFonts.load(Fonts::Bold, Constants::dataPrefix + "resources/fonts/Inter-Bold.ttf");
+	mFonts.load(Fonts::Mono,
+	            Constants::dataPrefix + "resources/fonts/intelone-mono-font-family-regular.ttf");
+}
+
+void Application::loadImages() {
+	mTextures.load(Textures::Background, Constants::dataPrefix + "resources/images/bg.png");
+	mTextures.load(Textures::Title, Constants::dataPrefix + "resources/images/title.png");
+	mTextures.load(Textures::TitleBar, Constants::dataPrefix + "resources/images/title_bar.png");
+	mTextures.load(Textures::AboutPanel, Constants::dataPrefix + "resources/images/about_panel.png");
+
+	// Buttons
+	mTextures.load(Textures::MenuButtonNormal,
+	               Constants::dataPrefix + "resources/images/buttons/menu_normal.png");
+	mTextures.load(Textures::MenuButtonSelected,
+	               Constants::dataPrefix + "resources/images/buttons/menu_selected.png");
+	mTextures.load(Textures::BackButtonNormal,
+	               Constants::dataPrefix + "resources/images/buttons/back_normal.png");
+	mTextures.load(Textures::BackButtonSelected,
+	               Constants::dataPrefix + "resources/images/buttons/back_selected.png");
+	mTextures.load(Textures::HomeButtonNormal,
+	               Constants::dataPrefix + "resources/images/buttons/home_normal.png");
+	mTextures.load(Textures::HomeButtonSelected,
+	               Constants::dataPrefix + "resources/images/buttons/home_selected.png");
 }
 
 void Application::run() {
@@ -113,16 +152,3 @@ void Application::updateStatistics(sf::Time dt) {
 }
 
 #endif
-
-void Application::registerStates() {
-//	mStateStack.registerState<MenuState>(States::Menu);
-    mStateStack.registerState<GameState>(States::Game);
-}
-
-void Application::loadIcon() {
-	sf::Image image;
-	if (!image.loadFromFile(Constants::dataPrefix + "resources/images/icon.png")) {
-		throw std::runtime_error("Icon load unsucessfully!");
-	}
-	mWindow.setIcon(image.getSize().x, image.getSize().y, image.getPixelsPtr());
-}
