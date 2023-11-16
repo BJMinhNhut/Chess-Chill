@@ -34,6 +34,8 @@ Textures::ID Button::getNormalTextureID(Type type) {
 			return Textures::HomeButtonNormal;
 		case Back:
 			return Textures::BackButtonNormal;
+		case Forward:
+			return Textures::ForwardButtonNormal;
 		default:
 			return Textures::Background;
 	}
@@ -47,6 +49,8 @@ Textures::ID Button::getSelectedTextureID(Type type) {
 			return Textures::HomeButtonSelected;
 		case Back:
 			return Textures::BackButtonSelected;
+		case Forward:
+			return Textures::ForwardButtonSelected;
 		default:
 			return Textures::Background;
 	}

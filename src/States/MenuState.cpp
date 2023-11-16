@@ -46,8 +46,7 @@ MenuState::MenuState(StateStack &stack, Context context)
     settingsButton->setPosition(800.f, 594.f+25.f);
     settingsButton->setText("Settings");
     settingsButton->setCallback([this]() {
-//        requestStackPop();
-//        requestStackPush(States::Settings);
+        requestStackPush(States::Settings);
     });
 
     auto aboutButton = std::make_shared<GUI::Button>(

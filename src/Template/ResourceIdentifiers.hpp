@@ -17,6 +17,7 @@ enum ID {
 	Title,
 	TitleBar,
 	AboutPanel,
+	SettingsPanel,
 
 	BackButtonNormal,
 	BackButtonSelected,
@@ -24,9 +25,11 @@ enum ID {
 	HomeButtonSelected,
 	MenuButtonNormal,
 	MenuButtonSelected,
+	ForwardButtonNormal,
+	ForwardButtonSelected,
 
 	Board,
-	PiecesSet,
+	PieceSet,
 	NumTextures,
 };
 }

@@ -30,7 +30,7 @@ namespace Utility {
 
     void loadImages(TextureHolder &textures, const std::string &prefix) {
         for (int id = 0; id < Textures::NumTextures; ++id) {
-            std::string imagePaths = Constants::dataPrefix + "resources/images/" + (prefix + Constants::imageNames[id]);
+            std::string imagePaths = Constants::DATA_PREFIX + "resources/images/" + (prefix + Constants::imageNames[id]);
             std::cerr << "Loading: " << imagePaths << '\n';
             textures.load(static_cast<Textures::ID>(id), imagePaths);
             std::cerr << "OK\n";

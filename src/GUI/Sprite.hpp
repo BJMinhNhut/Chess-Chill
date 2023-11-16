@@ -24,6 +24,7 @@ namespace GUI {
         virtual bool isSelectable() const;
 
         void setTexture(const sf::Texture &texture);
+	    void setSize(float x, float y);
 
         virtual void handleEvent(const sf::Event &event);
 

@@ -38,9 +38,9 @@ std::vector<std::string> const imageNames = {
 };
 
 #ifdef SFML_DEBUG
-const std::string dataPrefix = "../../";
+const std::string DATA_PREFIX = "../../";
 #else
-const std::string dataPrefix = "";
+const std::string DATA_PREFIX = "";
 #endif
 }  // namespace Constants
 

@@ -186,9 +186,9 @@ void GameHandler::highlightMove(int move, bool flag) {
 }
 
 void GameHandler::loadTextures() {
-	mTextures.load(Textures::Board, Constants::dataPrefix + "resources/images/boards/default.png");
-	mTextures.load(Textures::PiecesSet,
-	               Constants::dataPrefix + "resources/images/pieces/alpha.png");
+	mTextures.load(Textures::Board, Constants::DATA_PREFIX + "resources/images/boards/default.png");
+	mTextures.load(Textures::PieceSet,
+	               Constants::DATA_PREFIX + "resources/images/pieces/alpha.png");
 }
 
 void GameHandler::buildScene() {
@@ -211,7 +211,7 @@ void GameHandler::buildScene() {
 
 void GameHandler::addPiece(int piece, int square) {
 	GameLogic::addPiece(piece, square);
-	mPieces[square] = new Piece(mTextures.get(Textures::PiecesSet), piece);
+	mPieces[square] = new Piece(mTextures.get(Textures::PieceSet), piece);
 	mPieces[square]->setPosition(getBoxPosition(square), false);
 	mPieces[square]->updateTargetPosition();
 	mSceneLayers[Pieces]->attachChild(SceneNode::Ptr(mPieces[square]));

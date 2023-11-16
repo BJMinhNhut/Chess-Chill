@@ -50,7 +50,10 @@ add_executable(${TARGET_NAME}
         src/States/AboutState.cpp
         src/States/AboutState.hpp
         src/GUI/Label.cpp
-        src/GUI/Sprite.cpp)
+        src/GUI/Sprite.cpp
+        src/States/SettingsState.cpp
+        src/States/SettingsState.hpp
+        src/Template/Settings.cpp)
 target_link_libraries(${TARGET_NAME} PRIVATE sfml-graphics sfml-audio)
 target_compile_features(${TARGET_NAME} PRIVATE cxx_std_17)
 

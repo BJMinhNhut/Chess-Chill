@@ -6,9 +6,9 @@
 #include "Constants.hpp"
 
 SoundPlayer::SoundPlayer() : mSoundBuffers(), mSounds() {
-	mSoundBuffers.load(SoundEffect::Move, Constants::dataPrefix + "resources/music/standard/Move.mp3");
-	mSoundBuffers.load(SoundEffect::Capture, Constants::dataPrefix + "resources/music/standard/Capture.mp3");
-	mSoundBuffers.load(SoundEffect::Check, Constants::dataPrefix + "resources/music/standard/Check.mp3");
+	mSoundBuffers.load(SoundEffect::Move, Constants::DATA_PREFIX + "resources/music/standard/Move.mp3");
+	mSoundBuffers.load(SoundEffect::Capture, Constants::DATA_PREFIX + "resources/music/standard/Capture.mp3");
+	mSoundBuffers.load(SoundEffect::Check, Constants::DATA_PREFIX + "resources/music/standard/Check.mp3");
 }
 
 void SoundPlayer::play(SoundEffect::ID effect) {

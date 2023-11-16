@@ -3,53 +3,69 @@
 //
 
 #include "Settings.hpp"
+#include "Constants.hpp"
 
 #include <fstream>
 #include <iostream>
 
-Settings::Settings() : theme(Themes::Light) {}
+const std::vector<std::string> Settings::PIECESET_NAMES = {
+    "alpha", "anarcandy", "cardinal", "chessnut", "default", "kiwen-suwi", "maestro", "tatiana"};
+const std::string Settings::PIECESET_PATH = Constants::DATA_PREFIX + "resources/images/pieces/";
+const std::string Settings::SETTINGS_FILE = "settings.bin";
+
+Settings::Settings(): mPieceSetID(4) {
+	load();
+}
+
+void Settings::nextPieceSet() {
+	mPieceSetID = (mPieceSetID + 1) % PIECESET_NAMES.size();
+	std::cout << "Next piece set: " << PIECESET_NAMES[mPieceSetID] << "\n";
+	save();
+}
+
+void Settings::previousPieceSet() {
+	mPieceSetID = (mPieceSetID - 1 + PIECESET_NAMES.size()) % PIECESET_NAMES.size();
+	std::cout << "Previous piece set: " << PIECESET_NAMES[mPieceSetID] << "\n";
+	save();
+}
 
 void Settings::print() {
-    std::cerr << "==Settings==\n";
-    std::cerr << "Theme: ";
-    if (theme == Themes::Light)
-        std::cerr << "light\n";
-    else
-        std::cerr << "dark\n";
-
-    std::cerr << "==End==\n";
+	std::cout << "==Settings==\n";
+	std::cout << "Piece set: ";
+	std::cout << PIECESET_NAMES[mPieceSetID] << "\n";
+	std::cout << "==End==\n";
 }
 
-bool Settings::operator==(const Settings &settings) const {
-    if (theme != settings.theme)
-        return false;
-    return true;
+bool Settings::operator==(const Settings& settings) const {
+	if (mPieceSetID != settings.mPieceSetID)
+		return false;
+	return true;
 }
 
-bool Settings::operator!=(const Settings &settings) const {
-    return !((*this) == settings);
+bool Settings::operator!=(const Settings& settings) const {
+	return !((*this) == settings);
 }
 
-Settings getSettings() {
-    std::ifstream settingsFile("settings.bin",
-                               std::ios::in | std::ios::binary);
-    Settings settings;
-    settingsFile.seekg(0);
+void Settings::load() {
+	std::ifstream settingsFile(SETTINGS_FILE, std::ios::in | std::ios::binary);
+	settingsFile.seekg(0);
 
-    if (!settingsFile.read((char *) &settings, sizeof(settings))) {
-        std::cerr << "Settings file doesn't have correct format. "
-                     "Init default settings.";
-        updateSettings(settings);
-    }
-    settingsFile.close();
-    settings.print();
-    return settings;
+	if (!settingsFile.read((char*)&(*this), sizeof(*this))) {
+		std::cerr << "Settings file doesn't have correct format. "
+		             "Init default settings.\n";
+		save();
+	}
+	settingsFile.close();
+	print();
 }
 
-void updateSettings(const Settings &settings) {
-    std::ofstream settingsFile("settings.bin",
-                               std::ios::out | std::ios::binary);
-    settingsFile.seekp(0);
-    settingsFile.write((char *) &settings, sizeof(settings));
-    settingsFile.close();
+void Settings::save() {
+	std::ofstream settingsFile(SETTINGS_FILE, std::ios::out | std::ios::binary);
+	settingsFile.seekp(0);
+	settingsFile.write((char*)&(*this), sizeof(*this));
+	settingsFile.close();
+}
+
+std::string Settings::getPieceSetPath() const {
+	return PIECESET_PATH + PIECESET_NAMES[mPieceSetID] + ".png";
 }

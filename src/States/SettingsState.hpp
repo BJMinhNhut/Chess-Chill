@@ -1,0 +1,38 @@
+//
+// Created by MINH NHUT on 11/16/2023.
+//
+
+#ifndef CHESS_CHILL_SETTINGSSTATE_HPP
+#define CHESS_CHILL_SETTINGSSTATE_HPP
+
+#include "GUI/Container.hpp"
+#include "GUI/Sprite.hpp"
+#include "Template/Settings.hpp"
+#include "Template/State.hpp"
+
+#include <SFML/Graphics/Sprite.hpp>
+
+class SettingsState : public State {
+   public:
+	SettingsState(StateStack &stack, Context context);
+
+	virtual void draw();
+
+	virtual bool update(sf::Time dt);
+
+	virtual bool handleEvent(const sf::Event &event);
+
+   private:
+	void loadBasicGUI();
+	void loadSettingsGUI();
+
+	void updatePieceSet();
+
+   private:
+	GUI::Container mGUIContainer;
+
+	GUI::Sprite::Ptr mPieceSet;
+	Settings mSettings;
+};
+
+#endif  //CHESS_CHILL_SETTINGSSTATE_HPP

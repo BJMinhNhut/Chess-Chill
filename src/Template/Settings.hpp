@@ -8,25 +8,37 @@
 #ifndef SETTINGS_HPP
 #define SETTINGS_HPP
 
-struct Settings {
-    enum Themes {
-        Light, Dark
-    };
-    Themes theme;
+#include <string>
+#include <vector>
 
-    Settings();
+class Settings {
+   public:
+	static const std::vector<std::string> PIECESET_NAMES;
+	static const std::string PIECESET_PATH;
+	static const std::string SETTINGS_FILE;
 
-    void print();
+   public:
+	Settings();
 
-    bool operator==(const Settings &settings) const;
+	void nextPieceSet();
+	void previousPieceSet();
 
-    bool operator!=(const Settings &settings) const;
+	[[nodiscard]] std::string getPieceSetPath() const;
+
+   private:
+	void print();
+	void load();
+	void save();
+
+   public:
+	bool operator==(const Settings& settings) const;
+	bool operator!=(const Settings& settings) const;
+
+   private:
+	int mPieceSetID;
+
 };
-
-Settings getSettings();
-
-void updateSettings(const Settings &settings);
 
 #endif  // SETTINGS_HPP
 
-#endif //DATAVISUALIZATION2_SETTINGS_HPP
+#endif  //DATAVISUALIZATION2_SETTINGS_HPP
