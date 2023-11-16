@@ -17,11 +17,12 @@ const int GameHandler::BOARD_DRAW_SIZE = 680;
 const std::string GameHandler::START_FEN =
     "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
-GameHandler::GameHandler(sf::RenderWindow& window, FontHolder& fonts, SoundPlayer& sounds)
+GameHandler::GameHandler(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts,
+                         SoundPlayer& sounds)
     : mWindow(window),
       mFonts(fonts),
       mSounds(sounds),
-      mTextures(),
+      mTextures(textures),
       mSceneGraph(),
       mSceneLayers(),
       mPieces(GameLogic::BOARD_SIZE, nullptr),
@@ -35,7 +36,6 @@ GameHandler::GameHandler(sf::RenderWindow& window, FontHolder& fonts, SoundPlaye
       moveCandidates() {
 	mWindow.setView(mWindow.getDefaultView());
 
-	loadTextures();
 	buildScene();
 	loadFEN(START_FEN);
 }
@@ -129,13 +129,13 @@ void GameHandler::handleMove(int from, int to, bool drop) {
 		highlightMove(to << 6 | from, true);
 		makeMove(from, to);
 #ifdef DEBUG_ATTACK
-		for(int i = 0; i < 64; ++i) {
+		for (int i = 0; i < 64; ++i) {
 			if (isAttacked(i))
 				highlightSquare(i, Debug);
 			else
 				highlightSquare(i, Normal);
 		}
-#endif // DEBUG_ATTACK
+#endif  // DEBUG_ATTACK
 		mOldSquare = -1;
 	} else {
 		highlightMove(mLastMove, true);
@@ -183,12 +183,6 @@ void GameHandler::highlightMove(int move, bool flag) {
 		highlightSquare(newBox, Normal);
 		highlightSquare(oldBox, Normal);
 	}
-}
-
-void GameHandler::loadTextures() {
-	mTextures.load(Textures::Board, Constants::DATA_PREFIX + "resources/images/boards/default.png");
-	mTextures.load(Textures::PieceSet,
-	               Constants::DATA_PREFIX + "resources/images/pieces/alpha.png");
 }
 
 void GameHandler::buildScene() {
@@ -243,7 +237,8 @@ void GameHandler::postMove(bool captured) {
 		mSounds.play(SoundEffect::Check);
 	} else if (captured) {
 		mSounds.play(SoundEffect::Capture);
-	} else mSounds.play(SoundEffect::Move);
+	} else
+		mSounds.play(SoundEffect::Move);
 }
 
 void GameHandler::promotePiece(int square, int piece) {
@@ -271,7 +266,7 @@ Piece* GameHandler::checkHoverPiece(int x, int y) const {
 
 sf::Vector2f GameHandler::getBoxPosition(int box) const {
 	int row, column;
- 	row = box >> 3;
+	row = box >> 3;
 	column = box & 7;
 	return {(float)mBoardLeft + float(column * Piece::SIZE),
 	        (float)mBoardTop + float((7 - row) * Piece::SIZE)};

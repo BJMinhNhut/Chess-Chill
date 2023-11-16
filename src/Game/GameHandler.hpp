@@ -31,7 +31,7 @@ class GameHandler : public sf::NonCopyable, public GameLogic {
 	const static int BOARD_DRAW_SIZE;
 
    public:
-	explicit GameHandler(sf::RenderWindow& window, FontHolder& fonts, SoundPlayer& sounds);
+	explicit GameHandler(sf::RenderWindow& window, TextureHolder &textures, FontHolder& fonts, SoundPlayer& sounds);
 
 	void update(sf::Time dt);
 	void draw();
@@ -49,7 +49,6 @@ class GameHandler : public sf::NonCopyable, public GameLogic {
 	};
 
    private:
-	void loadTextures();
 	void buildScene();
 	void handleMove(int from, int to, bool drop = false);
 
@@ -74,7 +73,7 @@ class GameHandler : public sf::NonCopyable, public GameLogic {
 
    private:
 	sf::RenderWindow& mWindow;
-	TextureHolder mTextures;
+	TextureHolder& mTextures;
 	FontHolder& mFonts;
 	SoundPlayer& mSounds;
 

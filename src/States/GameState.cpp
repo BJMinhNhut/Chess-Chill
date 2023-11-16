@@ -11,23 +11,23 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/View.hpp>
 
-GameState::GameState(StateStack &stack, Context context)
-        : State(stack, context), mGame(*context.window, *context.fonts, *context.sounds) {
-}
+GameState::GameState(StateStack& stack, Context context)
+    : State(stack, context),
+      mGame(*context.window, *context.textures, *context.fonts, *context.sounds) {}
 
 void GameState::draw() {
-    sf::RenderWindow &window = *getContext().window;
-    window.setView(window.getDefaultView());
+	sf::RenderWindow& window = *getContext().window;
+	window.setView(window.getDefaultView());
 
 	mGame.draw();
 }
 
 bool GameState::update(sf::Time dt) {
 	mGame.update(dt);
-    return false;
+	return false;
 }
 
-bool GameState::handleEvent(const sf::Event &event) {
+bool GameState::handleEvent(const sf::Event& event) {
 	mGame.handleEvent(event);
 	if (event.type == sf::Event::KeyReleased) {
 		if (event.key.code == sf::Keyboard::Escape) {
@@ -37,5 +37,5 @@ bool GameState::handleEvent(const sf::Event &event) {
 			requestStackPush(States::Game);
 		}
 	}
-    return false;
+	return false;
 }
