@@ -12,6 +12,8 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/View.hpp>
 
+#include <iostream>
+
 GameState::GameState(StateStack& stack, Context context)
     : State(stack, context),
       mGame(*context.window, *context.textures, *context.fonts, *context.sounds),
@@ -55,13 +57,17 @@ void GameState::draw() {
 }
 
 bool GameState::update(sf::Time dt) {
-	mGame.update(dt);
+	if (mGame.isFinished()) {
+
+	} else mGame.update(dt);
 	mGUIContainer.update(dt);
 	return false;
 }
 
 bool GameState::handleEvent(const sf::Event& event) {
-	mGame.handleEvent(event);
+	if (mGame.isFinished()) {
+
+	} else mGame.handleEvent(event);
 	mGUIContainer.handleEvent(event);
 	return false;
 }

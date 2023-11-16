@@ -51,14 +51,16 @@ void GameHandler::update(sf::Time dt) {
 void GameHandler::handleEvent(const sf::Event& event) {
 	if (event.type == sf::Event::MouseMoved) {
 		handleMouseMoved(event.mouseMove.x, event.mouseMove.y);
-	} else if (event.type == sf::Event::MouseButtonPressed) {
-		checkPickUpPiece(event.mouseButton.x, event.mouseButton.y);
-	} else if (event.type == sf::Event::MouseButtonReleased) {
-		int newSquare = getHoverSquare(event.mouseButton.x, event.mouseButton.y);
-		if (mDragging == nullptr) {
-			checkClick(newSquare);
-		} else
-			checkDropPiece(newSquare);
+	} else if (event.mouseButton.button == sf::Mouse::Left) {
+		if (event.type == sf::Event::MouseButtonPressed) {
+			checkPickUpPiece(event.mouseButton.x, event.mouseButton.y);
+		} else if (event.type == sf::Event::MouseButtonReleased) {
+			int newSquare = getHoverSquare(event.mouseButton.x, event.mouseButton.y);
+			if (mDragging == nullptr) {
+				checkClick(newSquare);
+			} else
+				checkDropPiece(newSquare);
+		}
 	}
 }
 
@@ -231,11 +233,11 @@ void GameHandler::movePiece(int from, int to) {
 	mPieces[to]->setPosition(getBoxPosition(to), Piece::None);
 }
 
-void GameHandler::postMove(bool captured) {
-	GameLogic::postMove(captured);
+void GameHandler::postMove() {
+	GameLogic::postMove();
 	if (isKingInCheck()) {
 		mSounds.play(SoundEffect::Check);
-	} else if (captured) {
+	} else if (lastMoveStatus() == Capture) {
 		mSounds.play(SoundEffect::Capture);
 	} else
 		mSounds.play(SoundEffect::Move);

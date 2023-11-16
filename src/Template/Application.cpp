@@ -26,7 +26,7 @@ Application::Application()
       mSounds(),
       mStateStack(State::Context(mWindow, mTextures, mFonts, mColors, mSounds)) {
 
-	mWindow.setFramerateLimit(30);
+	mWindow.setFramerateLimit(60);
 
 	loadFonts();
 	loadIcon();
@@ -40,7 +40,7 @@ Application::Application()
 #endif
 
 	registerStates();
-	mStateStack.pushState(States::Menu);
+	mStateStack.pushState(States::Game);
 }
 
 void Application::registerStates() {
@@ -74,6 +74,8 @@ void Application::loadImages() {
 	               Constants::DATA_PREFIX + "resources/images/about_panel.png");
 	mTextures.load(Textures::SettingsPanel,
 	               Constants::DATA_PREFIX + "resources/images/settings_panel.png");
+	mTextures.load(Textures::EndGamePanel,
+	               Constants::DATA_PREFIX + "resources/images/panel_500_320.png");
 
 	// Gameplay
 	Settings settings;

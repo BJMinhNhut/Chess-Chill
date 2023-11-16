@@ -18,6 +18,7 @@ enum ID {
 	TitleBar,
 	AboutPanel,
 	SettingsPanel,
+	EndGamePanel,
 
 	BackButtonNormal,
 	BackButtonSelected,

@@ -13,8 +13,16 @@
 const int GameLogic::BOARD_SIZE = 64;
 
 GameLogic::GameLogic()
-    : mTurn(false), mCastling(0), mEnPassant(-1), mHalfMove(0), mFullMove(0), mBoard() {
+    : mTurn(false),
+      mCastling(0),
+      mEnPassant(-1),
+      mHalfMove(0),
+      mFullMove(0),
+      mBoard(),
+      mStatus(OnGoing),
+      mLastMove(Normal) {
 	mAttackBoard[0] = mAttackBoard[1] = 0;
+	updateStatus();
 }
 
 GameLogic::GameLogic(const GameLogic& other) : mBoard(other.mBoard) {
@@ -23,6 +31,8 @@ GameLogic::GameLogic(const GameLogic& other) : mBoard(other.mBoard) {
 	mEnPassant = other.mEnPassant;
 	mHalfMove = other.mHalfMove;
 	mFullMove = other.mFullMove;
+	mStatus = other.mStatus;
+	mLastMove = other.mLastMove;
 	mAttackBoard[0] = other.mAttackBoard[0];
 	mAttackBoard[1] = other.mAttackBoard[1];
 }
@@ -64,7 +74,7 @@ bool GameLogic::isLegalMove(int from, int to) const {
 
 	if (legal) {
 		GameLogic copy(*this);
-		copy.makeMove(from, to);
+		copy.move(from, to);
 		legal = !copy.isKingInCheck(mTurn);
 	}
 
@@ -79,25 +89,35 @@ bool GameLogic::getTurn() const {
 	return mTurn;
 }
 
-void GameLogic::makeMove(int from, int to) {
-	//	assert(isLegalMove(from, to));
+bool GameLogic::isFinished() const {
+	return mStatus != OnGoing;
+}
 
-	bool captured = false;
+void GameLogic::makeMove(int from, int to) {
+	move(from, to);
+
+	updateStatus();
+}
+
+void GameLogic::move(int from, int to) {
+	//	assert(isLegalMove(from, to));
+	mLastMove = Normal;
 
 	if (isEnPassant(from, to)) {
 		capturePiece(mEnPassant + (mTurn ? 8 : -8));
-		captured = true;
+		mLastMove = Capture;
 	}
 
 	if (mBoard.get(to) != 0) {
 		capturePiece(to);
-		captured = true;
+		mLastMove = Capture;
 	}
 
 	if (isLegalCastling(from, to)) {
 		int dir = to - from < 0 ? -1 : 1;
 		int rook = dir < 0 ? from - 4 : from + 3;
 		movePiece(rook, from + dir);
+		mLastMove = Castling;
 	}
 	updateEnPassant(from, to);
 	if (mBoard.getType(from) == Piece::King || mBoard.getType(from) == Piece::Rook)
@@ -106,9 +126,10 @@ void GameLogic::makeMove(int from, int to) {
 	movePiece(from, to);
 	// check for promotion
 	if (mBoard.getType(to) == Piece::Pawn && (Board::getRank(to) == 0 || Board::getRank(to) == 7)) {
-		promotePiece(to, Piece::Queen|(Piece::getColor(mBoard.get(to)) << 3));
+		promotePiece(to, Piece::Queen | (Piece::getColor(mBoard.get(to)) << 3));
+		mLastMove = Promotion;
 	}
-	postMove(captured);
+	postMove();
 }
 
 void GameLogic::addPiece(int piece, int square) {
@@ -126,7 +147,7 @@ void GameLogic::movePiece(int from, int to) {
 	mBoard.move(from, to);
 }
 
-void GameLogic::postMove(bool captured) {
+void GameLogic::postMove() {
 	if (mTurn)
 		mFullMove++;
 	updateAttacks(false);
@@ -180,6 +201,7 @@ void GameLogic::loadFEN(const std::string& fen) {
 	iss >> mHalfMove >> mFullMove;
 	updateAttacks(false);
 	updateAttacks(true);
+	updateStatus();
 }
 
 void GameLogic::updateEnPassant(int from, int to) {
@@ -192,7 +214,7 @@ void GameLogic::updateEnPassant(int from, int to) {
 		mEnPassant = from + dir;
 	} else
 		mEnPassant = -1;
-	std::cout << from << ' ' << to << ' ' << mEnPassant << '\n';
+	//	std::cout << from << ' ' << to << ' ' << mEnPassant << '\n';
 }
 
 void GameLogic::updateCastling(int from) {
@@ -237,6 +259,33 @@ void GameLogic::updateAttacks(bool turn) {
 				assert(false);
 		}
 	}
+}
+
+void GameLogic::updateStatus() {
+	if (!hasLegalMove()) {
+		if (isKingInCheck()) {
+			mStatus = Checkmate;
+			std::cout << "Checkmate " << (mTurn ? "White" : "Black") << " wins\n";
+		} else {
+			mStatus = Stalemate;
+			std::cout << "Stalemate\n";
+		}
+	} else {
+		mStatus = OnGoing;
+	}
+}
+
+bool GameLogic::hasLegalMove() const {
+	for (int i = 0; i < 64; i++) {
+		int piece = mBoard.get(i);
+		if (piece == 0 || Piece::getColor(piece) != mTurn)
+			continue;
+		for (int j = 0; j < 64; j++) {
+			if (isLegalMove(i, j))
+				return true;
+		}
+	}
+	return false;
 }
 
 bool GameLogic::isEnPassant(int from, int to) const {
@@ -399,6 +448,10 @@ bool GameLogic::isKingInCheck(bool turn) const {
 		return false;
 	}
 	return isAttacked(king, turn);
+}
+
+GameLogic::MoveStatus GameLogic::lastMoveStatus() const {
+	return mLastMove;
 }
 
 bool GameLogic::isAttacked(int square) const {
