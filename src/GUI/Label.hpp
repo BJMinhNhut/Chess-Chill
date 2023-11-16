@@ -20,6 +20,7 @@ class Label : public Component {
 		Main,
 		Bold,
 		Mono,
+		Title,
 		Small,
 	};
 
@@ -31,6 +32,8 @@ class Label : public Component {
 	      const sf::Color& color = sf::Color::White);
 
 	bool isSelectable() const override;
+
+	bool isEmpty() const;
 
 	void setText(const std::string& text);
 

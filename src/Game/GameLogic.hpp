@@ -17,6 +17,7 @@ class GameLogic {
 		Checkmate,
 		Stalemate,
 		Resign,
+		Timeout,
 	};
 
 	enum MoveStatus {
@@ -34,6 +35,8 @@ class GameLogic {
 	[[nodiscard]] bool isKingInCheck() const;
 	[[nodiscard]] bool getTurn() const;
 	[[nodiscard]] bool isFinished() const;
+	[[nodiscard]] Status status() const;
+	std::string getWinner() const;
 
 	void makeMove(int from, int to);
 
@@ -47,7 +50,7 @@ class GameLogic {
 	void loadFEN(const std::string& fen);
 	std::string getFEN() const;
 
-	MoveStatus lastMoveStatus() const;
+	[[nodiscard]] MoveStatus lastMoveStatus() const;
 	[[nodiscard]] bool isAttacked(int square) const;
 	[[nodiscard]] bool isAttacked(int square, bool turn) const;
 	[[nodiscard]] bool isKingInCheck(bool turn) const;

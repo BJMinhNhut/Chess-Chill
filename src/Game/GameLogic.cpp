@@ -99,6 +99,15 @@ void GameLogic::makeMove(int from, int to) {
 	updateStatus();
 }
 
+GameLogic::Status GameLogic::status() const {
+	return mStatus;
+}
+
+std::string GameLogic::getWinner() const {
+	assert(mStatus != OnGoing && mStatus != Stalemate);
+	return mTurn ? "White" : "Black";
+}
+
 void GameLogic::move(int from, int to) {
 	//	assert(isLegalMove(from, to));
 	mLastMove = Normal;

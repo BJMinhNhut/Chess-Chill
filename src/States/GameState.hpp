@@ -8,6 +8,7 @@
 #include "Template/State.hpp"
 #include "Game/GameHandler.hpp"
 #include "GUI/Container.hpp"
+#include "GUI/Label.hpp"
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
@@ -22,9 +23,15 @@ public:
 
     bool handleEvent(const sf::Event &event) override;
 
+   private:
+	void loadBasicGUI();
+	void loadEndGameGUI();
+
 private:
 	GameHandler mGame;
     GUI::Container mGUIContainer;
+	GUI::Container mEndGameContainer;
+	GUI::Label::Ptr mWinner, mDescription;
 };
 
 

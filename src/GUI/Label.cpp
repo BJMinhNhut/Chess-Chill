@@ -24,6 +24,10 @@ bool Label::isSelectable() const {
 	return false;
 }
 
+bool Label::isEmpty() const {
+	return mText.getString().isEmpty();
+}
+
 void Label::setText(const std::string& text) {
 	mText.setString(text);
 }
@@ -38,9 +42,8 @@ void Label::alignCenter() {
 
 Fonts::ID Label::getFontID(Type type) {
 	switch (type) {
-		case Main:
-			return Fonts::Main;
 		case Bold:
+		case Title:
 			return Fonts::Bold;
 		case Mono:
 			return Fonts::Mono;
@@ -54,6 +57,10 @@ unsigned int Label::getFontSize(Type type) {
 		case Main:
 		case Bold:
 			return 24u;
+		case Small:
+			return 20u;
+		case Title:
+			return 64u;
 		default:
 			return 16u;
 	}

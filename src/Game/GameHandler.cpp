@@ -37,7 +37,7 @@ GameHandler::GameHandler(sf::RenderWindow& window, TextureHolder& textures, Font
 	mWindow.setView(mWindow.getDefaultView());
 
 	buildScene();
-	loadFEN(START_FEN);
+	loadFEN("rn2k1nr/pp4pp/3p4/q1pP4/P1P2p1b/1b2pPRP/1P1NP1PQ/2B1KBNR w Kkq - 0 1");
 }
 
 void GameHandler::draw() {
@@ -130,6 +130,13 @@ void GameHandler::handleMove(int from, int to, bool drop) {
 		highlightMove(mLastMove, false);
 		highlightMove(to << 6 | from, true);
 		makeMove(from, to);
+		if (isFinished()) {
+			sf::Cursor cursor;
+			if (cursor.loadFromSystem(sf::Cursor::Arrow)) {
+				mWindow.setMouseCursor(cursor);
+			} else
+				throw std::runtime_error("Cannot load hand cursor");
+		}
 #ifdef DEBUG_ATTACK
 		for (int i = 0; i < 64; ++i) {
 			if (isAttacked(i))
