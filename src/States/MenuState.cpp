@@ -28,7 +28,6 @@ MenuState::MenuState(StateStack &stack, Context context)
     startButton->setPosition(800.f, 446.f+25.f);
     startButton->setText("New Game");
     startButton->setCallback([this]() {
-        requestStackPop();
         requestStackPush(States::Game);
     });
 

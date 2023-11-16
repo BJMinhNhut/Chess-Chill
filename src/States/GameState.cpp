@@ -3,6 +3,7 @@
 //
 
 #include "GameState.hpp"
+#include "GUI/Label.hpp"
 #include "GUI/Button.hpp"
 #include "GUI/Sprite.hpp"
 #include "Template/ResourceHolder.hpp"
@@ -13,29 +14,54 @@
 
 GameState::GameState(StateStack& stack, Context context)
     : State(stack, context),
-      mGame(*context.window, *context.textures, *context.fonts, *context.sounds) {}
+      mGame(*context.window, *context.textures, *context.fonts, *context.sounds),
+      mGUIContainer() {
+	auto background = std::make_shared<GUI::Sprite>(context.textures->get(Textures::Background));
+	mGUIContainer.pack(background);
+
+	auto backButton =
+	    std::make_shared<GUI::Button>(GUI::Button::Back, *context.fonts, *context.textures);
+	backButton->setPosition(509.f, 53.f);
+	backButton->setCallback([this]() {
+		requestStackPop();
+	});
+	mGUIContainer.pack(backButton);
+
+	auto homeButton =
+	    std::make_shared<GUI::Button>(GUI::Button::Home, *context.fonts, *context.textures);
+	homeButton->setPosition(1063.f + 54.f / 2, 53.f);
+	homeButton->setCallback([this]() {
+		requestStateClear();
+		requestStackPush(States::Menu);
+	});
+	mGUIContainer.pack(homeButton);
+
+	auto titleBar = std::make_shared<GUI::Sprite>(context.textures->get(Textures::TitleBar));
+	titleBar->centerOrigin();
+	titleBar->setPosition(800.f, 53.f);
+	mGUIContainer.pack(titleBar);
+
+	auto titleLabel = std::make_shared<GUI::Label>(GUI::Label::Bold, "Player vs Player", *context.fonts);
+	titleLabel->setPosition(titleBar->getPosition());
+	titleLabel->alignCenter();
+	mGUIContainer.pack(titleLabel);
+}
 
 void GameState::draw() {
 	sf::RenderWindow& window = *getContext().window;
 	window.setView(window.getDefaultView());
-
+	window.draw(mGUIContainer);
 	mGame.draw();
 }
 
 bool GameState::update(sf::Time dt) {
 	mGame.update(dt);
+	mGUIContainer.update(dt);
 	return false;
 }
 
 bool GameState::handleEvent(const sf::Event& event) {
 	mGame.handleEvent(event);
-	if (event.type == sf::Event::KeyReleased) {
-		if (event.key.code == sf::Keyboard::Escape) {
-			requestStackPop();
-		} else if (event.key.code == sf::Keyboard::R) {
-			requestStackPop();
-			requestStackPush(States::Game);
-		}
-	}
+	mGUIContainer.handleEvent(event);
 	return false;
 }

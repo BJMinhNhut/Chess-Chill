@@ -11,7 +11,8 @@ enum ID {
 	Menu,
     Game,
 	About,
-	Settings
+	Settings,
+	EndGame,
 };
 }
 

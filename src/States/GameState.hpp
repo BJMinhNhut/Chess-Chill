@@ -16,17 +16,15 @@ class GameState : public State {
 public:
     GameState(StateStack &stack, Context context);
 
-    virtual void draw();
+    void draw() override;
 
-    virtual bool update(sf::Time dt);
+    bool update(sf::Time dt) override;
 
-    virtual bool handleEvent(const sf::Event &event);
+    bool handleEvent(const sf::Event &event) override;
 
 private:
 	GameHandler mGame;
-//    sf::Sprite mBackgroundSprite;
-//    sf::Sprite mTitle;
-//    GUI::Container mGUIContainer;
+    GUI::Container mGUIContainer;
 };
 
 

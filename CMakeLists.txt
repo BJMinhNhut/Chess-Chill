@@ -53,7 +53,9 @@ add_executable(${TARGET_NAME}
         src/GUI/Sprite.cpp
         src/States/SettingsState.cpp
         src/States/SettingsState.hpp
-        src/Template/Settings.cpp)
+        src/Template/Settings.cpp
+        src/States/EndGameState.cpp
+        src/States/EndGameState.hpp)
 target_link_libraries(${TARGET_NAME} PRIVATE sfml-graphics sfml-audio)
 target_compile_features(${TARGET_NAME} PRIVATE cxx_std_17)
 

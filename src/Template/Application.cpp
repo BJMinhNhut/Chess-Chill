@@ -26,7 +26,7 @@ Application::Application()
       mSounds(),
       mStateStack(State::Context(mWindow, mTextures, mFonts, mColors, mSounds)) {
 
-	mWindow.setFramerateLimit(60);
+	mWindow.setFramerateLimit(30);
 
 	loadFonts();
 	loadIcon();
@@ -48,6 +48,7 @@ void Application::registerStates() {
 	mStateStack.registerState<GameState>(States::Game);
 	mStateStack.registerState<AboutState>(States::About);
 	mStateStack.registerState<SettingsState>(States::Settings);
+	mStateStack.registerState<EndGameState>(States::EndGame);
 }
 
 void Application::loadIcon() {
