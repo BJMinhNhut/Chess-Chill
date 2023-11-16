@@ -37,7 +37,7 @@ GameHandler::GameHandler(sf::RenderWindow& window, TextureHolder& textures, Font
 	mWindow.setView(mWindow.getDefaultView());
 
 	buildScene();
-	loadFEN("rn2k1nr/pp4pp/3p4/q1pP4/P1P2p1b/1b2pPRP/1P1NP1PQ/2B1KBNR w Kkq - 0 1");
+	loadFEN(START_FEN);
 }
 
 void GameHandler::draw() {

@@ -40,7 +40,7 @@ Application::Application()
 #endif
 
 	registerStates();
-	mStateStack.pushState(States::Game);
+	mStateStack.pushState(States::Menu);
 }
 
 void Application::registerStates() {
@@ -48,7 +48,6 @@ void Application::registerStates() {
 	mStateStack.registerState<GameState>(States::Game);
 	mStateStack.registerState<AboutState>(States::About);
 	mStateStack.registerState<SettingsState>(States::Settings);
-	mStateStack.registerState<EndGameState>(States::EndGame);
 }
 
 void Application::loadIcon() {
