@@ -28,15 +28,6 @@ namespace Utility {
                         std::floor(bounds.top + bounds.height / 2.f));
     }
 
-    void loadImages(TextureHolder &textures, const std::string &prefix) {
-        for (int id = 0; id < Textures::NumTextures; ++id) {
-            std::string imagePaths = Constants::DATA_PREFIX + "resources/images/" + (prefix + Constants::imageNames[id]);
-            std::cerr << "Loading: " << imagePaths << '\n';
-            textures.load(static_cast<Textures::ID>(id), imagePaths);
-            std::cerr << "OK\n";
-        }
-    }
-
     bool isInt(const std::string &data) {
         if (data.empty()) return false;
         for (int i = 0; i < data.length(); ++i) {
