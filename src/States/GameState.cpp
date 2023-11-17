@@ -116,11 +116,6 @@ void GameState::draw() {
 				mWinner->setText("Draw");
 				mDescription->setText("by threefold repetition");
 			}
-			// TODO: implement these
-			//			else if (mGame.status() == GameLogic::Draw) {
-			//				mWinner->setText("Draw");
-			//				mDescription->setText("by agreement");
-			//			}
 			mWinner->alignCenter();
 			mDescription->alignCenter();
 		}
