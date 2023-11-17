@@ -109,18 +109,15 @@ void GameState::draw() {
 			} else if (mGame.status() == GameLogic::Stalemate) {
 				mWinner->setText("Draw");
 				mDescription->setText("by stalemate");
+			} else if (mGame.status() == GameLogic::InsufficientMaterial) {
+				mWinner->setText("Draw");
+				mDescription->setText("by insufficient material");
+			} else if (mGame.status() == GameLogic::ThreefoldRepetition) {
+				mWinner->setText("Draw");
+				mDescription->setText("by threefold repetition");
 			}
 			// TODO: implement these
-			//			else if (mGame.status() == GameLogic::InsufficientMaterial) {
-			//				mWinner->setText("Draw");
-			//				mDescription->setText("by insufficient material");
-			//			} else if (mGame.status() == GameLogic::FiftyMoveRule) {
-			//				mWinner->setText("Draw");
-			//				mDescription->setText("by fifty move rule");
-			//			} else if (mGame.status() == GameLogic::ThreefoldRepetition) {
-			//				mWinner->setText("Draw");
-			//				mDescription->setText("by threefold repetition");
-			//			} else if (mGame.status() == GameLogic::Draw) {
+			//			else if (mGame.status() == GameLogic::Draw) {
 			//				mWinner->setText("Draw");
 			//				mDescription->setText("by agreement");
 			//			}

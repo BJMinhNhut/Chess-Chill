@@ -55,6 +55,32 @@ int Piece::getPieceFromChar(char ch) {
 	return piece;
 }
 
+char Piece::getCharFromPiece(int piece) {
+	char ch = ' ';
+	switch (piece & NAME) {
+		case Pawn:
+			ch = 'p';
+			break;
+		case Knight:
+			ch = 'n';
+			break;
+		case Bishop:
+			ch = 'b';
+			break;
+		case Rook:
+			ch = 'r';
+			break;
+		case Queen:
+			ch = 'q';
+			break;
+		case King:
+			ch = 'k';
+			break;
+		default:
+			assert(false);
+	}
+	return (piece & White) ? std::toupper(ch) : ch;
+}
 
 void Piece::updateCurrent(sf::Time dt) {
 	// move piece to target position with static velocity (40 frames)
@@ -101,3 +127,4 @@ Piece* Piece::clone() const {
 bool Piece::color() const {
 	return (mType >> 3) & 1;
 }
+

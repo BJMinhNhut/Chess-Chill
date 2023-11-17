@@ -8,6 +8,7 @@
 #include "Board.hpp"
 
 #include <string>
+#include <vector>
 
 class GameLogic {
    public:
@@ -16,6 +17,8 @@ class GameLogic {
 		OnGoing,
 		Checkmate,
 		Stalemate,
+		InsufficientMaterial,
+		ThreefoldRepetition,
 		Resign,
 		Timeout,
 	};
@@ -36,7 +39,7 @@ class GameLogic {
 	[[nodiscard]] bool getTurn() const;
 	[[nodiscard]] bool isFinished() const;
 	[[nodiscard]] Status status() const;
-	std::string getWinner() const;
+	[[nodiscard]] std::string getWinner() const;
 
 	void makeMove(int from, int to);
 
@@ -48,7 +51,7 @@ class GameLogic {
 	virtual void promotePiece(int square, int piece);
 
 	void loadFEN(const std::string& fen);
-	std::string getFEN() const;
+	std::string getFEN(bool withMove = true) const;
 
 	[[nodiscard]] MoveStatus lastMoveStatus() const;
 	[[nodiscard]] bool isAttacked(int square) const;
@@ -58,9 +61,13 @@ class GameLogic {
    private:
 	void move(int from, int to);
 	void updateEnPassant(int from, int to);
+	void updateHalfMove(int from, int to);
 	void updateCastling(int from);
 	void updateAttacks(bool turn);
 	void updateStatus();
+
+	[[nodiscard]] bool isInsufficientMaterial();
+	[[nodiscard]] bool isThreefoldRepetition();
 
 	[[nodiscard]] bool hasLegalMove() const;
 	[[nodiscard]] bool isLegalPawnMove(int from, int to) const;
@@ -83,6 +90,8 @@ class GameLogic {
 
 	Status mStatus;
 	MoveStatus mLastMove;
+
+	std::vector<std::string> mHistory;
 };
 
 #endif  //CHESS_GAMELOGIC_HPP

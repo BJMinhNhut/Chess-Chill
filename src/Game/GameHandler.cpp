@@ -16,6 +16,7 @@
 const int GameHandler::BOARD_DRAW_SIZE = 680;
 const std::string GameHandler::START_FEN =
     "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+const std::string GameHandler::ONLY_KINGS_FEN = "k7/8/8/8/8/8/8/7K w - - 0 1";
 
 GameHandler::GameHandler(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts,
                          SoundPlayer& sounds)
@@ -37,7 +38,7 @@ GameHandler::GameHandler(sf::RenderWindow& window, TextureHolder& textures, Font
 	mWindow.setView(mWindow.getDefaultView());
 
 	buildScene();
-	loadFEN(START_FEN);
+	loadFEN(ONLY_KINGS_FEN);
 }
 
 void GameHandler::draw() {

@@ -20,7 +20,8 @@ GameLogic::GameLogic()
       mFullMove(0),
       mBoard(),
       mStatus(OnGoing),
-      mLastMove(Normal) {
+      mLastMove(Normal),
+      mHistory() {
 	mAttackBoard[0] = mAttackBoard[1] = 0;
 	updateStatus();
 }
@@ -33,6 +34,7 @@ GameLogic::GameLogic(const GameLogic& other) : mBoard(other.mBoard) {
 	mFullMove = other.mFullMove;
 	mStatus = other.mStatus;
 	mLastMove = other.mLastMove;
+	mHistory = other.mHistory;
 	mAttackBoard[0] = other.mAttackBoard[0];
 	mAttackBoard[1] = other.mAttackBoard[1];
 }
@@ -116,6 +118,7 @@ void GameLogic::move(int from, int to) {
 		capturePiece(mEnPassant + (mTurn ? 8 : -8));
 		mLastMove = Capture;
 	}
+	updateEnPassant(from, to);
 
 	if (mBoard.get(to) != 0) {
 		capturePiece(to);
@@ -128,10 +131,9 @@ void GameLogic::move(int from, int to) {
 		movePiece(rook, from + dir);
 		mLastMove = Castling;
 	}
-	updateEnPassant(from, to);
-	if (mBoard.getType(from) == Piece::King || mBoard.getType(from) == Piece::Rook)
-		updateCastling(from);
 
+	updateCastling(from);
+	updateHalfMove(from, to);
 	movePiece(from, to);
 	// check for promotion
 	if (mBoard.getType(to) == Piece::Pawn && (Board::getRank(to) == 0 || Board::getRank(to) == 7)) {
@@ -211,6 +213,65 @@ void GameLogic::loadFEN(const std::string& fen) {
 	updateAttacks(false);
 	updateAttacks(true);
 	updateStatus();
+	assert(mBoard.getKing(0) != -1 && mBoard.getKing(1) != -1);
+}
+
+std::string GameLogic::getFEN(bool withMove) const {
+	std::ostringstream oss;
+	for (int rank = 7; rank >= 0; rank--) {
+		int empty = 0;
+		for (int file = 0; file < 8; file++) {
+			int piece = mBoard.get(rank, file);
+			if (piece == 0)
+				empty++;
+			else {
+				if (empty > 0) {
+					oss << empty;
+					empty = 0;
+				}
+				oss << Piece::getCharFromPiece(piece);
+			}
+		}
+		if (empty > 0)
+			oss << empty;
+		if (rank > 0)
+			oss << '/';
+	}
+	oss << ' ';
+	oss << (mTurn ? 'b' : 'w') << ' ';
+	if (mCastling == 0)
+		oss << '-';
+	else {
+		if (mCastling & 1)
+			oss << 'K';
+		if (mCastling & 2)
+			oss << 'Q';
+		if (mCastling & 4)
+			oss << 'k';
+		if (mCastling & 8)
+			oss << 'q';
+	}
+	oss << ' ';
+	if (mEnPassant == -1)
+		oss << '-';
+	else {
+		oss << (char)('a' + Board::getFile(mEnPassant));
+		oss << (char)('1' + Board::getRank(mEnPassant));
+	}
+	if (withMove) {
+		oss << ' ';
+		oss << mHalfMove << ' ' << mFullMove;
+	}
+	return oss.str();
+}
+
+void GameLogic::updateHalfMove(int from, int to) {
+	int piece = mBoard.get(from);
+	int capture = mBoard.get(to);
+	if (Piece::getType(piece) == Piece::Pawn || capture != 0)
+		mHalfMove = 0;
+	else
+		mHalfMove++;
 }
 
 void GameLogic::updateEnPassant(int from, int to) {
@@ -271,6 +332,7 @@ void GameLogic::updateAttacks(bool turn) {
 }
 
 void GameLogic::updateStatus() {
+	mHistory.push_back(getFEN(false));
 	if (!hasLegalMove()) {
 		if (isKingInCheck()) {
 			mStatus = Checkmate;
@@ -279,9 +341,51 @@ void GameLogic::updateStatus() {
 			mStatus = Stalemate;
 			std::cout << "Stalemate\n";
 		}
+	} else if (isInsufficientMaterial()) {
+		mStatus = InsufficientMaterial;
+		std::cout << "Insufficient material\n";
+	} else if (isThreefoldRepetition()) {
+		mStatus = ThreefoldRepetition;
+		std::cout << "Threefold repetition\n";
 	} else {
 		mStatus = OnGoing;
 	}
+}
+
+bool GameLogic::isThreefoldRepetition() {
+	// check for threefold repetition
+	// not really a correct way, but I will use this for simplification
+	int count = 0;
+	for (int i = 0; i < mHistory.size(); i++) {
+		if (mHistory.back() == mHistory[i])
+			count++;
+	}
+	std::cout << "current FEN \"" << mHistory.back() << "\" " << count << '\n';
+	return count >= 3;
+}
+
+bool GameLogic::isInsufficientMaterial() {
+	// check for insufficient material
+	int whiteLight = 0, blackLight = 0;
+	for (int i = 0; i < 64; i++) {
+		int piece = mBoard.get(i);
+		if (piece == 0)
+			continue;
+		switch (Piece::getType(piece)) {
+			case Piece::Knight:
+			case Piece::Bishop:
+				if (Piece::getColor(piece))
+					blackLight++;
+				else
+					whiteLight++;
+				break;
+			case Piece::King:
+				break;
+			default:
+				return false;
+		}
+	}
+	return (whiteLight <= 1 && blackLight <= 1);
 }
 
 bool GameLogic::hasLegalMove() const {

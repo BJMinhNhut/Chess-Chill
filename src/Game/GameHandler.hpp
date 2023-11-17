@@ -28,6 +28,7 @@ class Event;
 class GameHandler : public sf::NonCopyable, public GameLogic {
    public:
 	const static std::string START_FEN;
+	const static std::string ONLY_KINGS_FEN;
 	const static int BOARD_DRAW_SIZE;
 
    public:
