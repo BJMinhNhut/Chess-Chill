@@ -28,6 +28,7 @@ class GameState : public State {
 
    private:
 	void loadBasicGUI();
+	void loadGameGUI();
 	void loadEndGameGUI();
 	void loadResult();
 

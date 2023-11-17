@@ -24,6 +24,7 @@ GameState::GameState(StateStack& stack, Context context)
       mWinner(nullptr),
       mDescription(nullptr) {
 	loadBasicGUI();
+	loadGameGUI();
 	loadEndGameGUI();
 }
 
@@ -31,10 +32,6 @@ void GameState::loadBasicGUI() {
 	auto context = getContext();
 	auto background = std::make_shared<GUI::Sprite>(context.textures->get(Textures::Background));
 	mGUIContainer.pack(background);
-
-	auto panels = std::make_shared<GUI::Sprite>(context.textures->get(Textures::GameGUI));
-	panels->setPosition(BOARD_POSITION);
-	mGUIContainer.pack(panels);
 
 	auto backButton =
 	    std::make_shared<GUI::Button>(GUI::Button::Back, *context.fonts, *context.textures);
@@ -61,6 +58,21 @@ void GameState::loadBasicGUI() {
 	titleLabel->setPosition(titleBar->getPosition());
 	titleLabel->alignCenter();
 	mGUIContainer.pack(titleLabel);
+}
+
+void GameState::loadGameGUI() {
+	auto context = getContext();
+	auto panels = std::make_shared<GUI::Sprite>(context.textures->get(Textures::GameGUI));
+	panels->setPosition(BOARD_POSITION);
+	mGUIContainer.pack(panels);
+
+	auto player1 = std::make_shared<GUI::Label>(GUI::Label::Main, "Player 1", *context.fonts);
+	player1->setPosition(1040.f, 217.f + 8.f);
+	mGUIContainer.pack(player1);
+
+	auto player2 = std::make_shared<GUI::Label>(GUI::Label::Main, "Player 2", *context.fonts);
+	player2->setPosition(1040.f, 696.f + 8.f);
+	mGUIContainer.pack(player2);
 }
 
 void GameState::loadEndGameGUI() {
