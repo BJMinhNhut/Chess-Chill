@@ -19,7 +19,7 @@ const std::string GameHandler::START_FEN =
 const std::string GameHandler::ONLY_KINGS_FEN = "k7/8/8/8/8/8/8/7K w - - 0 1";
 
 GameHandler::GameHandler(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts,
-                         SoundPlayer& sounds)
+                         SoundPlayer& sounds, sf::Vector2f position)
     : mWindow(window),
       mFonts(fonts),
       mSounds(sounds),
@@ -29,8 +29,7 @@ GameHandler::GameHandler(sf::RenderWindow& window, TextureHolder& textures, Font
       mPieces(GameLogic::BOARD_SIZE, nullptr),
       mHighlights(GameLogic::BOARD_SIZE, nullptr),
       mDragging(nullptr),
-      mBoardLeft(),
-      mBoardTop(),
+      mBoardPosition(position),
       mOldSquare(-1),
       mLastMove(-1),
       GameLogic(),
@@ -38,7 +37,7 @@ GameHandler::GameHandler(sf::RenderWindow& window, TextureHolder& textures, Font
 	mWindow.setView(mWindow.getDefaultView());
 
 	buildScene();
-	loadFEN(ONLY_KINGS_FEN);
+	loadFEN(START_FEN);
 }
 
 void GameHandler::draw() {
@@ -204,12 +203,8 @@ void GameHandler::buildScene() {
 		mSceneGraph.attachChild(std::move(layer));
 	}
 
-	// Add the background sprite to the scene
-	mBoardLeft = (int)mWindow.getSize().x / 2 - BOARD_DRAW_SIZE / 2;
-	mBoardTop = (int)mWindow.getSize().y / 2 - BOARD_DRAW_SIZE / 2;
-
 	std::unique_ptr<SpriteNode> boardSprite(new SpriteNode(mTextures.get(Textures::Board)));
-	boardSprite->setPosition((float)mBoardLeft, (float)mBoardTop);
+	boardSprite->setPosition(mBoardPosition);
 	mSceneLayers[Background]->attachChild(std::move(boardSprite));
 }
 
@@ -258,10 +253,11 @@ void GameHandler::promotePiece(int square, int piece) {
 }
 
 int GameHandler::getHoverSquare(int x, int y) const {
-	if (x < mBoardLeft || y < mBoardTop)
+	if (x < mBoardPosition.x || y < mBoardPosition.y || x > mBoardPosition.x + BOARD_DRAW_SIZE ||
+	    y > mBoardPosition.y + BOARD_DRAW_SIZE)
 		return -1;
-	int column = (x - mBoardLeft) / Piece::SIZE;
-	int row = 7 - (y - mBoardTop) / Piece::SIZE;
+	int column = (x - (int)mBoardPosition.x) / Piece::SIZE;
+	int row = 7 - (y - (int)mBoardPosition.y) / Piece::SIZE;
 	if (row >= 8 || column >= 8 || row < 0 || column < 0)
 		return -1;
 	return Board::getSquareID(row, column);
@@ -278,6 +274,5 @@ sf::Vector2f GameHandler::getBoxPosition(int box) const {
 	int row, column;
 	row = box >> 3;
 	column = box & 7;
-	return {(float)mBoardLeft + float(column * Piece::SIZE),
-	        (float)mBoardTop + float((7 - row) * Piece::SIZE)};
+	return mBoardPosition + sf::Vector2f(float(column * Piece::SIZE),float((7 - row) * Piece::SIZE));
 }

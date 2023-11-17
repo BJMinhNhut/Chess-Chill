@@ -31,6 +31,7 @@ enum ID {
 
 	Board,
 	PieceSet,
+	GameGUI,
 	NumTextures,
 };
 }

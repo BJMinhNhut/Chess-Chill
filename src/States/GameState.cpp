@@ -14,9 +14,12 @@
 
 #include <iostream>
 
+const sf::Vector2f GameState::BOARD_POSITION(262.f, 105.f);
+
 GameState::GameState(StateStack& stack, Context context)
     : State(stack, context),
-      mGame(*context.window, *context.textures, *context.fonts, *context.sounds),
+      mGame(*context.window, *context.textures, *context.fonts, *context.sounds,
+            BOARD_POSITION + sf::Vector2f(25.f, 25.f)),
       mGUIContainer(),
       mWinner(nullptr),
       mDescription(nullptr) {
@@ -28,6 +31,10 @@ void GameState::loadBasicGUI() {
 	auto context = getContext();
 	auto background = std::make_shared<GUI::Sprite>(context.textures->get(Textures::Background));
 	mGUIContainer.pack(background);
+
+	auto panels = std::make_shared<GUI::Sprite>(context.textures->get(Textures::GameGUI));
+	panels->setPosition(BOARD_POSITION);
+	mGUIContainer.pack(panels);
 
 	auto backButton =
 	    std::make_shared<GUI::Button>(GUI::Button::Back, *context.fonts, *context.textures);
@@ -58,12 +65,12 @@ void GameState::loadBasicGUI() {
 
 void GameState::loadEndGameGUI() {
 	auto panel = std::make_shared<GUI::Sprite>(getContext().textures->get(Textures::EndGamePanel));
-	panel->setPosition(547.f, 285.f);
+	panel->setPosition(377.f, 310.f);
 	mEndGameContainer.pack(panel);
 
 	auto newGameButton = std::make_shared<GUI::Button>(GUI::Button::Menu, *getContext().fonts,
 	                                                   *getContext().textures);
-	newGameButton->setPosition(717.f + 166.f / 2, 451.f + 48.f / 2);
+	newGameButton->setPosition(547.f + 166.f / 2, 476.f + 48.f / 2);
 	newGameButton->setText("New Game");
 	newGameButton->setCallback([this]() {
 		requestStackPop();
@@ -73,7 +80,7 @@ void GameState::loadEndGameGUI() {
 
 	auto homeButton = std::make_shared<GUI::Button>(GUI::Button::Menu, *getContext().fonts,
 	                                                *getContext().textures);
-	homeButton->setPosition(717.f + 166.f / 2, 515.f + 48.f / 2);
+	homeButton->setPosition(547.f + 166.f / 2, 540.f + 48.f / 2);
 	homeButton->setText("Home");
 	homeButton->setCallback([this]() {
 		requestStateClear();
@@ -82,11 +89,11 @@ void GameState::loadEndGameGUI() {
 	mEndGameContainer.pack(homeButton);
 
 	mWinner = std::make_shared<GUI::Label>(GUI::Label::Title, "", *getContext().fonts);
-	mWinner->setPosition(800.f, 306.f + 102.f / 2);
+	mWinner->setPosition(474.f + 310.f / 2, 331.f + 102.f / 2);
 	mEndGameContainer.pack(mWinner);
 
 	mDescription = std::make_shared<GUI::Label>(GUI::Label::Small, "", *getContext().fonts);
-	mDescription->setPosition(800.f, 393.f + 32.f / 2);
+	mDescription->setPosition(563.f + 132.f / 2, 418.f + 32.f / 2);
 	mEndGameContainer.pack(mDescription);
 }
 
@@ -120,7 +127,8 @@ void GameState::draw() {
 	window.draw(mGUIContainer);
 	mGame.draw();
 	if (mGame.isFinished()) {
-		if (mWinner->isEmpty()) loadResult();
+		if (mWinner->isEmpty())
+			loadResult();
 		window.draw(mEndGameContainer);
 	}
 }

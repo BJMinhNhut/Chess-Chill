@@ -80,6 +80,7 @@ void Application::loadImages() {
 	Settings settings;
 	mTextures.load(Textures::PieceSet, settings.getPieceSetPath());
 	mTextures.load(Textures::Board, settings.getBoardPath());
+	mTextures.load(Textures::GameGUI, Constants::DATA_PREFIX + "resources/images/game_gui.png");
 
 	// Buttons
 	mTextures.load(Textures::MenuButtonNormal,

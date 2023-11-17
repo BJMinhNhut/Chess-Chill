@@ -5,6 +5,7 @@
 #ifndef CHESS_GAMEHANDLER_HPP
 #define CHESS_GAMEHANDLER_HPP
 
+#include "GameLogic.hpp"
 #include "Piece.hpp"
 #include "Template/RectNode.hpp"
 #include "Template/ResourceHolder.hpp"
@@ -12,7 +13,6 @@
 #include "Template/SceneNode.hpp"
 #include "Template/SoundPlayer.hpp"
 #include "Template/SpriteNode.hpp"
-#include "GameLogic.hpp"
 
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/View.hpp>
@@ -32,7 +32,8 @@ class GameHandler : public sf::NonCopyable, public GameLogic {
 	const static int BOARD_DRAW_SIZE;
 
    public:
-	explicit GameHandler(sf::RenderWindow& window, TextureHolder &textures, FontHolder& fonts, SoundPlayer& sounds);
+	explicit GameHandler(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts,
+	                     SoundPlayer& sounds, sf::Vector2f position);
 
 	void update(sf::Time dt);
 	void draw();
@@ -88,7 +89,7 @@ class GameHandler : public sf::NonCopyable, public GameLogic {
 	int mOldSquare;
 	int mLastMove;  // (newBox << 6) | oldBox;
 
-	int mBoardLeft, mBoardTop;
+	const sf::Vector2f mBoardPosition;
 };
 
 #endif  //CHESS_GAMEHANDLER_HPP
