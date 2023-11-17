@@ -26,6 +26,7 @@ public:
    private:
 	void loadBasicGUI();
 	void loadEndGameGUI();
+	void loadResult();
 
 private:
 	GameHandler mGame;

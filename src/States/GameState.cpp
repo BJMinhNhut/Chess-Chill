@@ -90,35 +90,37 @@ void GameState::loadEndGameGUI() {
 	mEndGameContainer.pack(mDescription);
 }
 
+void GameState::loadResult() {
+	if (mGame.status() == GameLogic::Checkmate) {
+		mWinner->setText(mGame.getWinner() + " wins");
+		mDescription->setText("by checkmate");
+	} else if (mGame.status() == GameLogic::Resign) {
+		mWinner->setText(mGame.getWinner() + " wins");
+		mDescription->setText("by resignation");
+	} else if (mGame.status() == GameLogic::Timeout) {
+		mWinner->setText(mGame.getWinner() + " wins");
+		mDescription->setText("by timeout");
+	} else if (mGame.status() == GameLogic::Stalemate) {
+		mWinner->setText("Draw");
+		mDescription->setText("by stalemate");
+	} else if (mGame.status() == GameLogic::InsufficientMaterial) {
+		mWinner->setText("Draw");
+		mDescription->setText("by insufficient material");
+	} else if (mGame.status() == GameLogic::ThreefoldRepetition) {
+		mWinner->setText("Draw");
+		mDescription->setText("by threefold repetition");
+	}
+	mWinner->alignCenter();
+	mDescription->alignCenter();
+}
+
 void GameState::draw() {
 	sf::RenderWindow& window = *getContext().window;
 	window.setView(window.getDefaultView());
 	window.draw(mGUIContainer);
 	mGame.draw();
 	if (mGame.isFinished()) {
-		if (mWinner->isEmpty()) {
-			if (mGame.status() == GameLogic::Checkmate) {
-				mWinner->setText(mGame.getWinner() + " wins");
-				mDescription->setText("by checkmate");
-			} else if (mGame.status() == GameLogic::Resign) {
-				mWinner->setText(mGame.getWinner() + " wins");
-				mDescription->setText("by resignation");
-			} else if (mGame.status() == GameLogic::Timeout) {
-				mWinner->setText(mGame.getWinner() + " wins");
-				mDescription->setText("by timeout");
-			} else if (mGame.status() == GameLogic::Stalemate) {
-				mWinner->setText("Draw");
-				mDescription->setText("by stalemate");
-			} else if (mGame.status() == GameLogic::InsufficientMaterial) {
-				mWinner->setText("Draw");
-				mDescription->setText("by insufficient material");
-			} else if (mGame.status() == GameLogic::ThreefoldRepetition) {
-				mWinner->setText("Draw");
-				mDescription->setText("by threefold repetition");
-			}
-			mWinner->alignCenter();
-			mDescription->alignCenter();
-		}
+		if (mWinner->isEmpty()) loadResult();
 		window.draw(mEndGameContainer);
 	}
 }
