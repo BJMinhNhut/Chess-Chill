@@ -65,7 +65,7 @@ int64_t generateKnightAttacks(int square) {
 	return attacks;
 }
 
-int64_t generateBishopAttacks(int square, Board& board) {
+int64_t generateBishopAttacks(int square, const Board& board) {
 	int64_t attacks = 0;
 	int rank = Board::getRank(square);
 	int file = Board::getFile(square);
@@ -101,7 +101,7 @@ int64_t generateBishopAttacks(int square, Board& board) {
 	return attacks;
 }
 
-int64_t generateRookAttacks(int square, Board& board) {
+int64_t generateRookAttacks(int square, const Board& board) {
 	int64_t attacks = 0;
 	int rank = Board::getRank(square);
 	int file = Board::getFile(square);
@@ -137,7 +137,7 @@ int64_t generateRookAttacks(int square, Board& board) {
 	return attacks;
 }
 
-int64_t generateQueenAttacks(int square, Board& board) {
+int64_t generateQueenAttacks(int square, const Board& board) {
 	return generateBishopAttacks(square, board) | generateRookAttacks(square, board);
 }
 

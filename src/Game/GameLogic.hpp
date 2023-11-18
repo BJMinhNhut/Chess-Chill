@@ -6,6 +6,7 @@
 #define CHESS_GAMELOGIC_HPP
 
 #include "Board.hpp"
+#include "AttackBoard.hpp"
 
 #include <SFML/System/Time.hpp>
 
@@ -27,17 +28,16 @@ class GameLogic {
 
 	enum MoveStatus {
 		Normal,
+		Check,
 		Capture,
 		Castling,
 		Promotion,
 	};
 
    public:
-	GameLogic(const std::string &fen);
+	explicit GameLogic(const std::string &fen);
 	GameLogic(const GameLogic &other);
 
-	[[nodiscard]] bool isLegalMove(int from, int to) const;
-	[[nodiscard]] bool isKingInCheck() const;
 	[[nodiscard]] bool isFinished() const;
 	[[nodiscard]] Status status() const;
 	[[nodiscard]] std::string getWinner() const;
@@ -55,19 +55,20 @@ class GameLogic {
 	virtual void updateTime(sf::Time dt);
 
 	[[nodiscard]] MoveStatus lastMoveStatus() const;
-	[[nodiscard]] bool isAttacked(int square) const;
-	[[nodiscard]] bool isAttacked(int square, bool turn) const;
-	[[nodiscard]] bool isKingInCheck(bool turn) const;
 	[[nodiscard]] int getPiece(int square) const;
 	[[nodiscard]] bool getTurn() const;
 
+	[[nodiscard]] bool isLegalMove(int from, int to) const;
+	[[nodiscard]] bool isAttacked(int square) const;
+
    private:
 	void move(int from, int to);
-	void updateAttacks(bool turn);
 	void updateStatus();
 
 	[[nodiscard]] bool isInsufficientMaterial();
 	[[nodiscard]] bool isThreefoldRepetition();
+
+	[[nodiscard]] bool isPseudoLegalMove(int from, int to) const;
 
 	[[nodiscard]] bool hasLegalMove() const;
 	[[nodiscard]] bool isLegalPawnMove(int from, int to) const;
@@ -82,7 +83,7 @@ class GameLogic {
 
    private:
 	Board mBoard;
-	int64_t mAttackBoard[2];
+	AttackBoard mAttacks;
 
 	Status mStatus;
 	MoveStatus mLastMove;

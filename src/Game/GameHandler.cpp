@@ -249,22 +249,21 @@ void GameHandler::movePiece(int from, int to) {
 
 void GameHandler::postMove() {
 	GameLogic::postMove();
-	if (isKingInCheck()) {
-		mSounds.play(SoundEffect::Check);
-	} else {
-		switch (lastMoveStatus()) {
-			case Capture:
-				mSounds.play(SoundEffect::Capture);
-				break;
-			case Castling:
-				mSounds.play(SoundEffect::Castling);
-				break;
-			case Promotion:
-				mSounds.play(SoundEffect::Promotion);
-				break;
-			default:
-				mSounds.play(SoundEffect::Move);
-		}
+	switch (lastMoveStatus()) {
+		case Check:
+			mSounds.play(SoundEffect::Check);
+			break;
+		case Capture:
+			mSounds.play(SoundEffect::Capture);
+			break;
+		case Castling:
+			mSounds.play(SoundEffect::Castling);
+			break;
+		case Promotion:
+			mSounds.play(SoundEffect::Promotion);
+			break;
+		default:
+			mSounds.play(SoundEffect::Move);
 	}
 }
 
