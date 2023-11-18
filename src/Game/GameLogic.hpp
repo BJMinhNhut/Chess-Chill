@@ -33,12 +33,11 @@ class GameLogic {
 	};
 
    public:
-	GameLogic();
+	GameLogic(const std::string &fen);
 	GameLogic(const GameLogic &other);
 
 	[[nodiscard]] bool isLegalMove(int from, int to) const;
 	[[nodiscard]] bool isKingInCheck() const;
-	[[nodiscard]] bool getTurn() const;
 	[[nodiscard]] bool isFinished() const;
 	[[nodiscard]] Status status() const;
 	[[nodiscard]] std::string getWinner() const;
@@ -48,7 +47,6 @@ class GameLogic {
 	[[nodiscard]] float getRemainingTime(bool turn) const;
 
    protected:
-	virtual void addPiece(int piece, int square);
 	virtual void capturePiece(int square);
 	virtual void movePiece(int from, int to);
 	virtual void postMove();
@@ -56,19 +54,15 @@ class GameLogic {
 
 	virtual void updateTime(sf::Time dt);
 
-	void loadFEN(const std::string& fen);
-	[[nodiscard]] std::string getFEN(bool withMove = true) const;
-
 	[[nodiscard]] MoveStatus lastMoveStatus() const;
 	[[nodiscard]] bool isAttacked(int square) const;
 	[[nodiscard]] bool isAttacked(int square, bool turn) const;
 	[[nodiscard]] bool isKingInCheck(bool turn) const;
+	[[nodiscard]] int getPiece(int square) const;
+	[[nodiscard]] bool getTurn() const;
 
    private:
 	void move(int from, int to);
-	void updateEnPassant(int from, int to);
-	void updateHalfMove(int from, int to);
-	void updateCastling(int from);
 	void updateAttacks(bool turn);
 	void updateStatus();
 
@@ -85,14 +79,10 @@ class GameLogic {
 	[[nodiscard]] bool isLegalKingMove(int from, int to) const;
 	[[nodiscard]] bool isLegalCastling(int from, int to) const;
 
+
    private:
 	Board mBoard;
 	int64_t mAttackBoard[2];
-	bool mTurn;
-	int mCastling;
-	int mEnPassant;
-	int mHalfMove;
-	int mFullMove;
 
 	Status mStatus;
 	MoveStatus mLastMove;

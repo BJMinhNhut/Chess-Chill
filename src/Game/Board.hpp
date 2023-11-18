@@ -5,9 +5,11 @@
 #ifndef CHESS_BOARD_HPP
 #define CHESS_BOARD_HPP
 
+#include <string>
+
 class Board {
    public:
-	Board();
+	Board(const std::string &fen);
 	Board(const Board &other);
 
 	static int getRank(int square);
@@ -25,6 +27,25 @@ class Board {
 	[[nodiscard]] int getType(int rank, int file) const;
 
 	[[nodiscard]] int getKing(bool turn) const; // if not found return -1
+	[[nodiscard]] bool getTurn() const;
+	[[nodiscard]] int getCastling() const;
+	[[nodiscard]] int getEnPassant() const;
+	[[nodiscard]] int getHalfMove() const;
+	[[nodiscard]] int getFullMove() const;
+
+	void setTurn(bool turn);
+	void nextTurn();
+	void setCastling(int castling);
+	void setEnPassant(int enPassant);
+	void setHalfMove(int halfMove);
+	void setFullMove(int fullMove);
+	void nextFullMove();
+
+	void updateCastling(int from);
+	void updateEnPassant(int from, int to);
+	void updateHalfMove(int from, int to);
+
+	[[nodiscard]] std::string getFEN(bool withMove = true) const;
 
 	void clear();
 	void set(int square, int piece);
@@ -32,7 +53,15 @@ class Board {
 	void move(int from, int to);
 
    private:
+	void loadFEN(const std::string &fen);
+
+   private:
 	int mBoard[64]{};
+	bool mTurn;
+	int mCastling;
+	int mEnPassant;
+	int mHalfMove;
+	int mFullMove;
 };
 
 #endif  //CHESS_BOARD_HPP

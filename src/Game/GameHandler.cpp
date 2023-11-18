@@ -32,11 +32,10 @@ GameHandler::GameHandler(sf::RenderWindow& window, TextureHolder& textures, Font
       mBoardPosition(position),
       mOldSquare(-1),
       mLastMove(-1),
-      GameLogic(),
+      GameLogic(START_FEN),
       moveCandidates() {
 	mWindow.setView(mWindow.getDefaultView());
 	buildScene();
-	loadFEN(START_FEN);
 }
 
 void GameHandler::draw() {
@@ -210,10 +209,14 @@ void GameHandler::buildScene() {
 	std::unique_ptr<SpriteNode> boardSprite(new SpriteNode(mTextures.get(Textures::Board)));
 	boardSprite->setPosition(mBoardPosition);
 	mSceneLayers[Background]->attachChild(std::move(boardSprite));
+
+	for (int square = 0; square < GameLogic::BOARD_SIZE; ++square) {
+		int piece = getPiece(square);
+		if (piece != 0) addPiece(piece, square);
+	}
 }
 
 void GameHandler::addPiece(int piece, int square) {
-	GameLogic::addPiece(piece, square);
 	mPieces[square] = new Piece(mTextures.get(Textures::PieceSet), piece);
 	mPieces[square]->setPosition(getBoxPosition(square), false);
 	mPieces[square]->updateTargetPosition();
@@ -277,7 +280,7 @@ int GameHandler::getHoverSquare(int x, int y) const {
 		return -1;
 	int column = (x - (int)mBoardPosition.x) / Piece::SIZE;
 	int row = 7 - (y - (int)mBoardPosition.y) / Piece::SIZE;
-	if (row >= 8 || column >= 8 || row < 0 || column < 0)
+	if (row >= 8 || column >= 8 || row < 0 || column < 0 )
 		return -1;
 	return Board::getSquareID(row, column);
 }
