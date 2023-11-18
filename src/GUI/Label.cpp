@@ -44,6 +44,7 @@ Fonts::ID Label::getFontID(Type type) {
 	switch (type) {
 		case Bold:
 		case Title:
+		case Clock:
 			return Fonts::Bold;
 		case Mono:
 			return Fonts::Mono;
@@ -59,6 +60,8 @@ unsigned int Label::getFontSize(Type type) {
 			return 24u;
 		case Small:
 			return 20u;
+		case Clock:
+			return 48u;
 		case Title:
 			return 64u;
 		default:

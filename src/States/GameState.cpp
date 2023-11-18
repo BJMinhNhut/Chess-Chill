@@ -8,6 +8,7 @@
 #include "GUI/Sprite.hpp"
 #include "Template/ResourceHolder.hpp"
 #include "Template/Utility.hpp"
+#include "Template/Constants.hpp"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/View.hpp>
@@ -74,6 +75,16 @@ void GameState::loadGameGUI() {
 	auto player2 = std::make_shared<GUI::Label>(GUI::Label::Main, "Player 2", *context.fonts);
 	player2->setPosition(1040.f, 696.f + 8.f);
 	mGUIContainer.pack(player2);
+
+	mClock[0] = std::make_shared<GUI::Label>(GUI::Label::Clock, "00:00", *context.fonts, Constants::mBlack);
+	mClock[0]->setPosition(1015.f + 320.f/2, 259.f + 80.f/2);
+	mClock[0]->alignCenter();
+	mGUIContainer.pack(mClock[0]);
+
+	mClock[1] = std::make_shared<GUI::Label>(GUI::Label::Clock, "00:00", *context.fonts, Constants::mBlack);
+	mClock[1]->setPosition(1015.f + 320.f/2, 602.f + 80.f/2);
+	mClock[1]->alignCenter();
+	mGUIContainer.pack(mClock[1]);
 }
 
 void GameState::loadEndGameGUI() {
@@ -134,6 +145,18 @@ void GameState::loadResult() {
 	mDescription->alignCenter();
 }
 
+std::string GameState::getClockString(float time) {
+	int minutes = static_cast<int>(time) / 60;
+	int seconds = static_cast<int>(time) % 60;
+	return (minutes < 10 ? "0" : "") + std::to_string(minutes) + ":" +
+	       (seconds < 10 ? "0" : "") + std::to_string(seconds);
+}
+
+void GameState::updateClock() {
+	mClock[0]->setText(getClockString(mGame.getRemainingTime(true)));
+	mClock[1]->setText(getClockString(mGame.getRemainingTime(false)));
+}
+
 void GameState::draw() {
 	sf::RenderWindow& window = *getContext().window;
 	window.setView(window.getDefaultView());
@@ -153,6 +176,7 @@ bool GameState::update(sf::Time dt) {
 		mEndGameContainer.update(dt);
 	} else {
 		mGame.update(dt);
+		updateClock();
 		mGUIContainer.update(dt);
 	}
 	return false;

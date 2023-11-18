@@ -32,11 +32,15 @@ class GameState : public State {
 	void loadEndGameGUI();
 	void loadResult();
 
+	void updateClock();
+	static std::string getClockString(float time);
+
    private:
 	GameHandler mGame;
 	GUI::Container mGUIContainer;
 	GUI::Container mEndGameContainer;
 	GUI::Label::Ptr mWinner, mDescription;
+	GUI::Label::Ptr mClock[2];
 };
 
 #endif  //CHESS_GAMESTATE_HPP

@@ -44,7 +44,7 @@ void GameHandler::draw() {
 }
 
 void GameHandler::update(sf::Time dt) {
-	GameLogic::update(dt);
+	GameLogic::updateTime(dt);
 	mSceneGraph.update(dt);
 }
 

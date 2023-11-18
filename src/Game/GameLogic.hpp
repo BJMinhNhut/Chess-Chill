@@ -54,7 +54,7 @@ class GameLogic {
 	virtual void postMove();
 	virtual void promotePiece(int square, int piece);
 
-	virtual void update(sf::Time dt);
+	virtual void updateTime(sf::Time dt);
 
 	void loadFEN(const std::string& fen);
 	[[nodiscard]] std::string getFEN(bool withMove = true) const;

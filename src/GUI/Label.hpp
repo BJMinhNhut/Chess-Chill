@@ -22,6 +22,7 @@ class Label : public Component {
 		Mono,
 		Title,
 		Small,
+		Clock,
 	};
 
    public:

@@ -43,8 +43,8 @@ GameLogic::GameLogic(const GameLogic& other) : mBoard(other.mBoard) {
 	mTime[1] = other.mTime[1];
 }
 
-void GameLogic::update(sf::Time dt) {
-	if (!mHasClock)
+void GameLogic::updateTime(sf::Time dt) {
+	if (!mHasClock || mHistory.size() < 2)
 		return;
 	mTime[mTurn] -= dt;
 	if (mTime[mTurn] <= sf::Time::Zero) {
@@ -292,7 +292,7 @@ void GameLogic::updateHalfMove(int from, int to) {
 }
 
 void GameLogic::updateEnPassant(int from, int to) {
-	// check and update mEnPassant when pawn move 2 square
+	// check and updateTime mEnPassant when pawn move 2 square
 	int piece = mBoard.get(from);
 	int diff = to - from;
 	int absDiff = diff < 0 ? -diff : diff;
