@@ -35,7 +35,6 @@ GameHandler::GameHandler(sf::RenderWindow& window, TextureHolder& textures, Font
       GameLogic(),
       moveCandidates() {
 	mWindow.setView(mWindow.getDefaultView());
-
 	buildScene();
 	loadFEN(START_FEN);
 }
@@ -45,6 +44,7 @@ void GameHandler::draw() {
 }
 
 void GameHandler::update(sf::Time dt) {
+	GameLogic::update(dt);
 	mSceneGraph.update(dt);
 }
 

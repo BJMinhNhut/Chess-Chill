@@ -21,9 +21,10 @@ GameLogic::GameLogic()
       mBoard(),
       mStatus(OnGoing),
       mLastMove(Normal),
-      mHistory() {
+      mHistory(),
+      mHasClock(true) {
 	mAttackBoard[0] = mAttackBoard[1] = 0;
-	updateStatus();
+	mTime[0] = mTime[1] = sf::seconds(50.f);
 }
 
 GameLogic::GameLogic(const GameLogic& other) : mBoard(other.mBoard) {
@@ -35,8 +36,25 @@ GameLogic::GameLogic(const GameLogic& other) : mBoard(other.mBoard) {
 	mStatus = other.mStatus;
 	mLastMove = other.mLastMove;
 	mHistory = other.mHistory;
+	mHasClock = other.mHasClock;
 	mAttackBoard[0] = other.mAttackBoard[0];
 	mAttackBoard[1] = other.mAttackBoard[1];
+	mTime[0] = other.mTime[0];
+	mTime[1] = other.mTime[1];
+}
+
+void GameLogic::update(sf::Time dt) {
+	if (!mHasClock)
+		return;
+	mTime[mTurn] -= dt;
+	if (mTime[mTurn] <= sf::Time::Zero) {
+		mStatus = Timeout;
+		std::cout << "Timeout " << (mTurn ? "White" : "Black") << " wins\n";
+	}
+}
+
+float GameLogic::getRemainingTime(bool turn) const {
+	return mTime[turn].asSeconds();
 }
 
 bool GameLogic::isLegalMove(int from, int to) const {
@@ -97,7 +115,6 @@ bool GameLogic::isFinished() const {
 
 void GameLogic::makeMove(int from, int to) {
 	move(from, to);
-
 	updateStatus();
 }
 
@@ -111,7 +128,7 @@ std::string GameLogic::getWinner() const {
 }
 
 void GameLogic::move(int from, int to) {
-	//	assert(isLegalMove(from, to));
+	assert(mStatus == OnGoing);
 	mLastMove = Normal;
 
 	if (isEnPassant(from, to)) {

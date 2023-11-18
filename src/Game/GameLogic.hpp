@@ -7,6 +7,8 @@
 
 #include "Board.hpp"
 
+#include <SFML/System/Time.hpp>
+
 #include <string>
 #include <vector>
 
@@ -43,6 +45,8 @@ class GameLogic {
 
 	void makeMove(int from, int to);
 
+	[[nodiscard]] float getRemainingTime(bool turn) const;
+
    protected:
 	virtual void addPiece(int piece, int square);
 	virtual void capturePiece(int square);
@@ -50,8 +54,10 @@ class GameLogic {
 	virtual void postMove();
 	virtual void promotePiece(int square, int piece);
 
+	virtual void update(sf::Time dt);
+
 	void loadFEN(const std::string& fen);
-	std::string getFEN(bool withMove = true) const;
+	[[nodiscard]] std::string getFEN(bool withMove = true) const;
 
 	[[nodiscard]] MoveStatus lastMoveStatus() const;
 	[[nodiscard]] bool isAttacked(int square) const;
@@ -92,6 +98,9 @@ class GameLogic {
 	MoveStatus mLastMove;
 
 	std::vector<std::string> mHistory;
+
+	bool mHasClock;
+	sf::Time mTime[2];
 };
 
 #endif  //CHESS_GAMELOGIC_HPP
