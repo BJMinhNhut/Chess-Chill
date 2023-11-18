@@ -23,7 +23,7 @@ GameState::GameState(StateStack& stack, Context context)
       mGUIContainer(),
       mWinner(nullptr),
       mDescription(nullptr) {
-	getContext().sounds->play(SoundEffect::Game);
+	getContext().sounds->play(SoundEffect::StartGame);
 	loadBasicGUI();
 	loadGameGUI();
 	loadEndGameGUI();
@@ -141,7 +141,7 @@ void GameState::draw() {
 	mGame.draw();
 	if (mGame.isFinished()) {
 		if (mWinner->isEmpty()) {
-			getContext().sounds->play(SoundEffect::Game);
+			getContext().sounds->play(SoundEffect::EndGame);
 			loadResult();
 		}
 		window.draw(mEndGameContainer);

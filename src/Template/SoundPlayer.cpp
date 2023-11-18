@@ -12,7 +12,8 @@ SoundPlayer::SoundPlayer() : mSoundBuffers(), mSounds() {
 	mSoundBuffers.load(SoundEffect::Castling, Constants::DATA_PREFIX + "resources/music/standard/Castling.mp3");
 	mSoundBuffers.load(SoundEffect::Promotion, Constants::DATA_PREFIX + "resources/music/standard/Promotion.mp3");
 	mSoundBuffers.load(SoundEffect::OutOfBound, Constants::DATA_PREFIX + "resources/music/standard/OutOfBound.mp3");
-	mSoundBuffers.load(SoundEffect::Game, Constants::DATA_PREFIX + "resources/music/standard/Game.wav");
+	mSoundBuffers.load(SoundEffect::EndGame, Constants::DATA_PREFIX + "resources/music/standard/EndGame.wav");
+	mSoundBuffers.load(SoundEffect::StartGame, Constants::DATA_PREFIX + "resources/music/standard/StartGame.mp3");
 }
 
 void SoundPlayer::play(SoundEffect::ID effect) {

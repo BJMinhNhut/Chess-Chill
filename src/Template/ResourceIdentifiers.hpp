@@ -52,7 +52,8 @@ enum ID {
 	Castling,
 	Promotion,
 	OutOfBound,
-	Game,
+	EndGame,
+	StartGame,
 };
 }
 
