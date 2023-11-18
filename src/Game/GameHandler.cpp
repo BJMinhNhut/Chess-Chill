@@ -224,6 +224,10 @@ void GameHandler::clearCandidates() {
 	for (int square : moveCandidates)
 		highlightSquare(square, Normal);
 	std::vector<int>().swap(moveCandidates);
+	if (mOldSquare > -1) {
+		highlightSquare(mOldSquare, Normal);
+		mOldSquare = -1;
+	}
 }
 
 void GameHandler::capturePiece(int square) {
