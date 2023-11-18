@@ -17,9 +17,11 @@ const std::vector<std::string> Settings::BOARD_NAMES = {
     "metal",   "newspaper",  "pink_pyramid", "purple_diag",   "wood"};
 const std::string Settings::BOARD_PATH = Constants::DATA_PREFIX + "resources/images/boards/";
 
+const std::vector<std::string> Settings::SOUND_OPTIONS = {"Off", "On"};
+
 const std::string Settings::SETTINGS_FILE = "settings.bin";
 
-Settings::Settings() : mPieceSetID(0), mBoardID(0) {
+Settings::Settings() : mPieceSetID(0), mBoardID(0), mSound(true) {
 	load();
 }
 
@@ -41,6 +43,11 @@ void Settings::nextBoard() {
 void Settings::previousBoard() {
 	mBoardID = (mBoardID - 1 + BOARD_NAMES.size()) % BOARD_NAMES.size();
 	std::cout << "Previous board: " << BOARD_NAMES[mBoardID] << "\n";
+}
+
+void Settings::toggleSound() {
+	mSound = !mSound;
+	std::cout << "Sound: " << SOUND_OPTIONS[mSound] << "\n";
 }
 
 void Settings::print() {
@@ -88,4 +95,12 @@ std::string Settings::getPieceSetPath() const {
 
 std::string Settings::getBoardPath() const {
 	return BOARD_PATH + BOARD_NAMES[mBoardID] + ".png";
+}
+
+std::string Settings::getSoundLabel() const {
+	return SOUND_OPTIONS[mSound];
+}
+
+bool Settings::useSound() const {
+	return mSound;
 }

@@ -6,6 +6,7 @@
 #define CHESS_CHILL_SETTINGSSTATE_HPP
 
 #include "GUI/Container.hpp"
+#include "GUI/Label.hpp"
 #include "GUI/Sprite.hpp"
 #include "Template/Settings.hpp"
 #include "Template/State.hpp"
@@ -14,18 +15,19 @@
 
 class SettingsState : public State {
    public:
-	SettingsState(StateStack &stack, Context context);
+	SettingsState(StateStack& stack, Context context);
 
 	void draw() override;
 
 	bool update(sf::Time dt) override;
 
-	bool handleEvent(const sf::Event &event) override;
+	bool handleEvent(const sf::Event& event) override;
 
    private:
 	void loadBasicGUI();
 	void loadPieceSetGUI();
 	void loadBoardGUI();
+	void loadSoundGUI();
 
 	void updatePieceSet();
 	void updateBoard();
@@ -34,6 +36,7 @@ class SettingsState : public State {
 	GUI::Container mGUIContainer;
 
 	GUI::Sprite::Ptr mPieceSet, mBoard;
+	GUI::Label::Ptr mSound;
 	Settings mSettings;
 };
 

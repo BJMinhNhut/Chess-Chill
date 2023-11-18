@@ -41,6 +41,9 @@ Application::Application()
 
 	registerStates();
 	mStateStack.pushState(States::Menu);
+
+	Settings mSettings;
+	if (!mSettings.useSound()) mSounds.setMute(true);
 }
 
 void Application::registerStates() {

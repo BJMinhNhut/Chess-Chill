@@ -12,11 +12,14 @@
 SettingsState::SettingsState(StateStack& stack, Context context)
     : State(stack, context),
       mGUIContainer(),
+      mSettings(),
       mPieceSet(std::make_shared<GUI::Sprite>(context.textures->get(Textures::PieceSet))),
-      mBoard(std::make_shared<GUI::Sprite>(context.textures->get(Textures::Board))) {
+      mBoard(std::make_shared<GUI::Sprite>(context.textures->get(Textures::Board))),
+      mSound() {
 	loadBasicGUI();
 	loadPieceSetGUI();
 	loadBoardGUI();
+	loadSoundGUI();
 }
 
 void SettingsState::loadBasicGUI() {
@@ -60,7 +63,7 @@ void SettingsState::loadBasicGUI() {
 }
 
 void SettingsState::loadPieceSetGUI() {
-	mPieceSet->setPosition(810.f + 10.f, 301.f+10.f);
+	mPieceSet->setPosition(810.f + 10.f, 301.f + 10.f);
 	updatePieceSet();
 	mGUIContainer.pack(mPieceSet);
 
@@ -111,6 +114,35 @@ void SettingsState::loadBoardGUI() {
 		updateBoard();
 	});
 	mGUIContainer.pack(boardBackward);
+}
+
+void SettingsState::loadSoundGUI() {
+	mSound = std::make_shared<GUI::Label>(GUI::Label::Small, mSettings.getSoundLabel(),
+	                                      *getContext().fonts);
+	mSound->alignCenter();
+	mSound->setPosition(808.f + 180.f/2, 583.f + 40.f/2);
+	mGUIContainer.pack(mSound);
+
+	auto soundForward = std::make_shared<GUI::Button>(GUI::Button::Forward, *getContext().fonts,
+	                                                  *getContext().textures);
+	soundForward->setPosition(1033.f - 20.f, 583.f + 20.f);
+	soundForward->setCallback([this]() {
+		mSettings.toggleSound();
+		getContext().sounds->setMute(!mSettings.useSound());
+		mSound->setText(mSettings.getSoundLabel());
+	});
+	mGUIContainer.pack(soundForward);
+
+	auto soundBackward = std::make_shared<GUI::Button>(GUI::Button::Forward, *getContext().fonts,
+	                                                   *getContext().textures);
+	soundBackward->setPosition(763 + 20.f, 623.f -20.f);
+	soundBackward->rotate(180.f);
+	soundBackward->setCallback([this]() {
+		mSettings.toggleSound();
+		getContext().sounds->setMute(!mSettings.useSound());
+		mSound->setText(mSettings.getSoundLabel());
+	});
+	mGUIContainer.pack(soundBackward);
 }
 
 void SettingsState::updatePieceSet() {

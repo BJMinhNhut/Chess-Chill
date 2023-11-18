@@ -21,6 +21,8 @@ class Settings {
 	static const std::vector<std::string> BOARD_NAMES;
 	static const std::string BOARD_PATH;
 
+	static const std::vector<std::string> SOUND_OPTIONS;
+
    public:
 	Settings();
 
@@ -32,8 +34,13 @@ class Settings {
 	void nextBoard();
 	void previousBoard();
 
+	void toggleSound();
+
+
 	[[nodiscard]] std::string getPieceSetPath() const;
 	[[nodiscard]] std::string getBoardPath() const;
+	[[nodiscard]] bool useSound() const;
+	[[nodiscard]] std::string getSoundLabel() const;
 
    private:
 	void print();
@@ -46,7 +53,7 @@ class Settings {
    private:
 	int mPieceSetID;
 	int mBoardID;
-
+	bool mSound;
 };
 
 #endif  // SETTINGS_HPP
