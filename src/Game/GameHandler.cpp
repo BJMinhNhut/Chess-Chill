@@ -86,8 +86,12 @@ void GameHandler::checkDropPiece(int square) {
 	mPieces[mOldSquare]->setOpacity(100);
 	mSceneLayers[PopUp]->detachChild(*mDragging);
 	mDragging = nullptr;
-	if (square != mOldSquare)
-		handleMove(mOldSquare, square, true);
+	if (square != mOldSquare) {
+		if (Board::validSquare(square))
+			handleMove(mOldSquare, square, true);
+		else
+			mSounds.play(SoundEffect::OutOfBound);
+	}
 }
 
 void GameHandler::checkPickUpPiece(int x, int y) {
@@ -240,10 +244,21 @@ void GameHandler::postMove() {
 	GameLogic::postMove();
 	if (isKingInCheck()) {
 		mSounds.play(SoundEffect::Check);
-	} else if (lastMoveStatus() == Capture) {
-		mSounds.play(SoundEffect::Capture);
-	} else
-		mSounds.play(SoundEffect::Move);
+	} else {
+		switch (lastMoveStatus()) {
+			case Capture:
+				mSounds.play(SoundEffect::Capture);
+				break;
+			case Castling:
+				mSounds.play(SoundEffect::Castling);
+				break;
+			case Promotion:
+				mSounds.play(SoundEffect::Promotion);
+				break;
+			default:
+				mSounds.play(SoundEffect::Move);
+		}
+	}
 }
 
 void GameHandler::promotePiece(int square, int piece) {
@@ -274,5 +289,6 @@ sf::Vector2f GameHandler::getBoxPosition(int box) const {
 	int row, column;
 	row = box >> 3;
 	column = box & 7;
-	return mBoardPosition + sf::Vector2f(float(column * Piece::SIZE),float((7 - row) * Piece::SIZE));
+	return mBoardPosition +
+	       sf::Vector2f(float(column * Piece::SIZE), float((7 - row) * Piece::SIZE));
 }

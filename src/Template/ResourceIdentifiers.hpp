@@ -49,6 +49,9 @@ enum ID {
 	Move,
 	Capture,
 	Check,
+	Castling,
+	Promotion,
+	OutOfBound,
 };
 }
 
