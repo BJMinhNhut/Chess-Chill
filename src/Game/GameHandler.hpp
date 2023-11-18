@@ -39,6 +39,8 @@ class GameHandler : public sf::NonCopyable, public GameLogic {
 	void draw();
 	void handleEvent(const sf::Event& event);
 
+	void rotateBoard();
+
    private:
 	enum Layer { Background, Pieces, PopUp, LayerCount };
 
@@ -88,6 +90,9 @@ class GameHandler : public sf::NonCopyable, public GameLogic {
 	Piece* mDragging;
 	int mOldSquare;
 	int mLastMove;  // (newBox << 6) | oldBox;
+
+	SpriteNode* mBoardIndex;
+	bool mRotated;
 
 	const sf::Vector2f mBoardPosition;
 };

@@ -29,13 +29,39 @@ GameHandler::GameHandler(sf::RenderWindow& window, TextureHolder& textures, Font
       mPieces(GameLogic::BOARD_SIZE, nullptr),
       mHighlights(GameLogic::BOARD_SIZE, nullptr),
       mDragging(nullptr),
+      mBoardIndex(nullptr),
       mBoardPosition(position),
       mOldSquare(-1),
       mLastMove(-1),
       GameLogic(START_FEN),
+      mRotated(false),
       moveCandidates() {
 	mWindow.setView(mWindow.getDefaultView());
 	buildScene();
+}
+
+void GameHandler::buildScene() {
+	// Initialize the different layers
+	for (std::size_t i = 0; i < LayerCount; ++i) {
+		SceneNode::Ptr layer(new SceneNode());
+		mSceneLayers[i] = layer.get();
+
+		mSceneGraph.attachChild(std::move(layer));
+	}
+
+	mBoardIndex = new SpriteNode(mTextures.get(Textures::BoardIndexWhite));
+	mBoardIndex->setPosition(262.f, 105.f);
+	mSceneLayers[Background]->attachChild(SceneNode::Ptr(mBoardIndex));
+
+	std::unique_ptr<SpriteNode> boardSprite(new SpriteNode(mTextures.get(Textures::Board)));
+	boardSprite->setPosition(mBoardPosition);
+	mSceneLayers[Background]->attachChild(std::move(boardSprite));
+
+	for (int square = 0; square < GameLogic::BOARD_SIZE; ++square) {
+		int piece = getPiece(square);
+		if (piece != 0)
+			addPiece(piece, square);
+	}
 }
 
 void GameHandler::draw() {
@@ -60,6 +86,21 @@ void GameHandler::handleEvent(const sf::Event& event) {
 			} else
 				checkDropPiece(newSquare);
 		}
+	}
+}
+
+void GameHandler::rotateBoard() {
+	mSounds.play(SoundEffect::Castling);
+	mRotated = !mRotated;
+	mBoardIndex->setTexture(
+	    mTextures.get(mRotated ? Textures::BoardIndexBlack : Textures::BoardIndexWhite));
+	for (int square = 0; square < GameLogic::BOARD_SIZE; ++square) {
+		if (mPieces[square] != nullptr) {
+			mPieces[square]->setPosition(getBoxPosition(square), false);
+			mPieces[square]->updateTargetPosition();
+		}
+		if (mHighlights[square] != nullptr)
+			mHighlights[square]->setPosition(getBoxPosition(square));
 	}
 }
 
@@ -197,25 +238,6 @@ void GameHandler::highlightMove(int move, bool flag) {
 	}
 }
 
-void GameHandler::buildScene() {
-	// Initialize the different layers
-	for (std::size_t i = 0; i < LayerCount; ++i) {
-		SceneNode::Ptr layer(new SceneNode());
-		mSceneLayers[i] = layer.get();
-
-		mSceneGraph.attachChild(std::move(layer));
-	}
-
-	std::unique_ptr<SpriteNode> boardSprite(new SpriteNode(mTextures.get(Textures::Board)));
-	boardSprite->setPosition(mBoardPosition);
-	mSceneLayers[Background]->attachChild(std::move(boardSprite));
-
-	for (int square = 0; square < GameLogic::BOARD_SIZE; ++square) {
-		int piece = getPiece(square);
-		if (piece != 0) addPiece(piece, square);
-	}
-}
-
 void GameHandler::addPiece(int piece, int square) {
 	mPieces[square] = new Piece(mTextures.get(Textures::PieceSet), piece);
 	mPieces[square]->setPosition(getBoxPosition(square), false);
@@ -279,7 +301,13 @@ int GameHandler::getHoverSquare(int x, int y) const {
 		return -1;
 	int column = (x - (int)mBoardPosition.x) / Piece::SIZE;
 	int row = 7 - (y - (int)mBoardPosition.y) / Piece::SIZE;
-	if (row >= 8 || column >= 8 || row < 0 || column < 0 )
+
+	if (mRotated) {
+		row = 7 - row;
+		column = 7 - column;
+	}
+
+	if (row >= 8 || column >= 8 || row < 0 || column < 0)
 		return -1;
 	return Board::getSquareID(row, column);
 }
@@ -295,6 +323,10 @@ sf::Vector2f GameHandler::getBoxPosition(int box) const {
 	int row, column;
 	row = box >> 3;
 	column = box & 7;
+	if (mRotated) {
+		row = 7 - row;
+		column = 7 - column;
+	}
 	return mBoardPosition +
 	       sf::Vector2f(float(column * Piece::SIZE), float((7 - row) * Piece::SIZE));
 }

@@ -9,6 +9,7 @@
 #include "GUI/Label.hpp"
 #include "Game/GameHandler.hpp"
 #include "Template/State.hpp"
+#include "GUI/Sprite.hpp"
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>

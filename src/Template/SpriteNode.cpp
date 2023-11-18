@@ -17,6 +17,11 @@ SpriteNode::SpriteNode(const sf::Texture& texture, const sf::IntRect& textureRec
 void SpriteNode::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const {
 	target.draw(mSprite, states);
 }
+
+void SpriteNode::setTexture(const sf::Texture& texture) {
+	mSprite.setTexture(texture, true);
+}
+
 void SpriteNode::centerOrigin() {
 	Utility::centerOrigin(mSprite);
 }

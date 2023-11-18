@@ -43,7 +43,8 @@ Application::Application()
 	mStateStack.pushState(States::Menu);
 
 	Settings mSettings;
-	if (!mSettings.useSound()) mSounds.setMute(true);
+	if (!mSettings.useSound())
+		mSounds.setMute(true);
 }
 
 void Application::registerStates() {
@@ -64,8 +65,7 @@ void Application::loadIcon() {
 void Application::loadFonts() {
 	mFonts.load(Fonts::Main, Constants::DATA_PREFIX + "resources/fonts/Inter-Regular.ttf");
 	mFonts.load(Fonts::Bold, Constants::DATA_PREFIX + "resources/fonts/Inter-Bold.ttf");
-	mFonts.load(Fonts::Mono,
-	            Constants::DATA_PREFIX + "resources/fonts/JetBrainsMono-Bold.ttf");
+	mFonts.load(Fonts::Mono, Constants::DATA_PREFIX + "resources/fonts/JetBrainsMono-Bold.ttf");
 }
 
 void Application::loadImages() {
@@ -78,6 +78,10 @@ void Application::loadImages() {
 	               Constants::DATA_PREFIX + "resources/images/settings_panel.png");
 	mTextures.load(Textures::EndGamePanel,
 	               Constants::DATA_PREFIX + "resources/images/panel_500_320.png");
+	mTextures.load(Textures::BoardIndexWhite,
+	               Constants::DATA_PREFIX + "resources/images/gui/board_index_white.png");
+	mTextures.load(Textures::BoardIndexBlack,
+	               Constants::DATA_PREFIX + "resources/images/gui/board_index_black.png");
 
 	// Gameplay
 	Settings settings;
