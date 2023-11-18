@@ -3,12 +3,10 @@
 //
 
 #include "GameLogic.hpp"
-#include "AttackGenerator.hpp"
 #include "Piece.hpp"
 
 #include <cassert>
 #include <iostream>
-#include <sstream>
 
 const int GameLogic::BOARD_SIZE = 64;
 
@@ -18,8 +16,8 @@ GameLogic::GameLogic(const std::string &fen)
       mStatus(OnGoing),
       mLastMove(Normal),
       mHistory(),
-      mHasClock(true) {
-	mTime[0] = mTime[1] = sf::seconds(120.f);
+      mClock() {
+	setClock(0, sf::seconds(300));
 	updateStatus();
 }
 
@@ -27,23 +25,19 @@ GameLogic::GameLogic(const GameLogic& other) : mBoard(other.mBoard), mAttacks(mB
 	mStatus = other.mStatus;
 	mLastMove = other.mLastMove;
 	mHistory = other.mHistory;
-	mHasClock = other.mHasClock;
-	mTime[0] = other.mTime[0];
-	mTime[1] = other.mTime[1];
+	mClock[0] = other.mClock[0];
+	mClock[1] = other.mClock[1];
 }
 
 void GameLogic::updateTime(sf::Time dt) {
-	if (!mHasClock || mHistory.size() < 2)
-		return;
-	mTime[mBoard.getTurn()] -= dt;
-	if (mTime[mBoard.getTurn()] <= sf::Time::Zero) {
+	if (mStatus != OnGoing || mHistory.size() < 2) return;
+	mClock[mBoard.getTurn()].update(dt);
+	if (mClock[mBoard.getTurn()].isTimeOut())
 		mStatus = Timeout;
-		std::cout << "Timeout " << (mBoard.getTurn() ? "White" : "Black") << " wins\n";
-	}
 }
 
 float GameLogic::getRemainingTime(bool turn) const {
-	return mTime[turn].asSeconds();
+	return mClock[turn].get();
 }
 
 bool GameLogic::isLegalMove(int from, int to) const {
@@ -105,6 +99,10 @@ bool GameLogic::isFinished() const {
 void GameLogic::makeMove(int from, int to) {
 	move(from, to);
 	updateStatus();
+}
+
+void GameLogic::setClock(bool turn, sf::Time time) {
+	mClock[turn].set(time);
 }
 
 GameLogic::Status GameLogic::status() const {

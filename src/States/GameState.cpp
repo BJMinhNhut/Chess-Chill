@@ -76,13 +76,13 @@ void GameState::loadGameGUI() {
 	player2->setPosition(1040.f, 696.f + 8.f);
 	mGUIContainer.pack(player2);
 
-	mClock[0] = std::make_shared<GUI::Label>(GUI::Label::Clock, "00:00", *context.fonts, Constants::mBlack);
+	mClock[0] = std::make_shared<GUI::Label>(GUI::Label::Clock, "--:--", *context.fonts, Constants::mBlack);
 	mClock[0]->setPosition(1015.f + 320.f/2, 259.f + 80.f/2);
 	mClock[0]->alignCenter();
 	mGUIContainer.pack(mClock[0]);
 
-	mClock[1] = std::make_shared<GUI::Label>(GUI::Label::Clock, "00:00", *context.fonts, Constants::mBlack);
-	mClock[1]->setPosition(1015.f + 320.f/2, 602.f + 80.f/2);
+	mClock[1] = std::make_shared<GUI::Label>(GUI::Label::Clock, "--:--", *context.fonts, Constants::mBlack);
+	mClock[1]->setPosition(1015.f + 320.f/2, 605.f + 80.f/2);
 	mClock[1]->alignCenter();
 	mGUIContainer.pack(mClock[1]);
 }
@@ -148,6 +148,7 @@ void GameState::loadResult() {
 std::string GameState::getClockString(float time) {
 	int minutes = static_cast<int>(time) / 60;
 	int seconds = static_cast<int>(time) % 60;
+	if (minutes > 59) return "--:--";
 	return (minutes < 10 ? "0" : "") + std::to_string(minutes) + ":" +
 	       (seconds < 10 ? "0" : "") + std::to_string(seconds);
 }

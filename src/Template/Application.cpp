@@ -65,7 +65,7 @@ void Application::loadFonts() {
 	mFonts.load(Fonts::Main, Constants::DATA_PREFIX + "resources/fonts/Inter-Regular.ttf");
 	mFonts.load(Fonts::Bold, Constants::DATA_PREFIX + "resources/fonts/Inter-Bold.ttf");
 	mFonts.load(Fonts::Mono,
-	            Constants::DATA_PREFIX + "resources/fonts/intelone-mono-font-family-regular.ttf");
+	            Constants::DATA_PREFIX + "resources/fonts/JetBrainsMono-Bold.ttf");
 }
 
 void Application::loadImages() {
