@@ -27,6 +27,7 @@ GameState::GameState(StateStack& stack, Context context)
 	getContext().sounds->play(SoundEffect::StartGame);
 	loadBasicGUI();
 	loadGameGUI();
+	loadControllerGUI();
 	loadEndGameGUI();
 }
 
@@ -87,6 +88,14 @@ void GameState::loadGameGUI() {
 	mClock[1]->setPosition(1015.f + 320.f / 2, 605.f + 80.f / 2);
 	mClock[1]->alignCenter();
 	mGUIContainer.pack(mClock[1]);
+}
+
+void GameState::loadControllerGUI() {
+	auto rotateButton = std::make_shared<GUI::Button>(GUI::Button::Rotate, *getContext().fonts,
+	                                                  *getContext().textures);
+	rotateButton->setPosition(1269.f + 50.f / 2, 366.f + 40.f / 2);
+//	rotateButton->setCallback([this]() { mGame.rotateBoard(); });
+	mGUIContainer.pack(rotateButton);
 }
 
 void GameState::loadEndGameGUI() {

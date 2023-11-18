@@ -28,6 +28,8 @@ enum ID {
 	MenuButtonSelected,
 	ForwardButtonNormal,
 	ForwardButtonSelected,
+	RotateButtonNormal,
+	RotateButtonSelected,
 
 	Board,
 	PieceSet,

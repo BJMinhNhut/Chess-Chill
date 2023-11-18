@@ -102,6 +102,10 @@ void Application::loadImages() {
 	               Constants::DATA_PREFIX + "resources/images/buttons/forward_normal.png");
 	mTextures.load(Textures::ForwardButtonSelected,
 	               Constants::DATA_PREFIX + "resources/images/buttons/forward_selected.png");
+	mTextures.load(Textures::RotateButtonNormal,
+	               Constants::DATA_PREFIX + "resources/images/buttons/rotate_normal.png");
+	mTextures.load(Textures::RotateButtonSelected,
+	               Constants::DATA_PREFIX + "resources/images/buttons/rotate_selected.png");
 }
 
 void Application::run() {
