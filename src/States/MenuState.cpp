@@ -20,15 +20,12 @@ MenuState::MenuState(StateStack &stack, Context context)
     mTitle.setPosition(context.window->getSize().x / 2.f,
                        context.window->getSize().y / 4.f);
 
-    sf::Font &font = context.fonts->get(Fonts::Main);
-    sf::Vector2u bounds = context.window->getSize();
-
     auto startButton = std::make_shared<GUI::Button>(
             GUI::Button::Menu, *context.fonts, *context.textures);
     startButton->setPosition(800.f, 446.f+25.f);
     startButton->setText("New Game");
     startButton->setCallback([this]() {
-        requestStackPush(States::Game);
+        requestStackPush(States::GameOptions);
     });
 
 	auto historyButton = std::make_shared<GUI::Button>(

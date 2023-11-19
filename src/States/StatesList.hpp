@@ -9,5 +9,6 @@
 #include "GameState.hpp"
 #include "AboutState.hpp"
 #include "SettingsState.hpp"
+#include "GameOptionsState.hpp"
 
 #endif //CHESS_STATESLIST_HPP

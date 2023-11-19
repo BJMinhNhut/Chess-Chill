@@ -12,6 +12,8 @@ enum ID {
     Game,
 	About,
 	Settings,
+
+	GameOptions,
 };
 }
 

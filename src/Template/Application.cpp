@@ -51,6 +51,7 @@ void Application::registerStates() {
 	mStateStack.registerState<GameState>(States::Game);
 	mStateStack.registerState<AboutState>(States::About);
 	mStateStack.registerState<SettingsState>(States::Settings);
+	mStateStack.registerState<GameOptionsState>(States::GameOptions);
 }
 
 void Application::loadIcon() {
