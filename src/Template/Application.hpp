@@ -5,7 +5,6 @@
 #ifndef NATUREOFCODE_APPLICATION_HPP
 #define NATUREOFCODE_APPLICATION_HPP
 
-#include "ColorHolder.hpp"
 #include "ResourceHolder.hpp"
 #include "ResourceIdentifiers.hpp"
 #include "SoundPlayer.hpp"
@@ -40,8 +39,8 @@ class Application {
 	sf::RenderWindow mWindow;
 	TextureHolder mTextures;
 	FontHolder mFonts;
-	ColorHolder mColors;
 	SoundPlayer mSounds;
+	Settings mSettings;
 
 	StateStack mStateStack;
 

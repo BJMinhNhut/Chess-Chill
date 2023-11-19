@@ -12,7 +12,6 @@
 SettingsState::SettingsState(StateStack& stack, Context context)
     : State(stack, context),
       mGUIContainer(),
-      mSettings(),
       mPieceSet(std::make_shared<GUI::Sprite>(context.textures->get(Textures::PieceSet))),
       mBoard(std::make_shared<GUI::Sprite>(context.textures->get(Textures::Board))),
       mSound() {
@@ -31,7 +30,7 @@ void SettingsState::loadBasicGUI() {
 	    std::make_shared<GUI::Button>(GUI::Button::Back, *context.fonts, *context.textures);
 	backButton->setPosition(509.f, 53.f);
 	backButton->setCallback([this]() {
-		mSettings.save();
+		getContext().settings->save();
 		requestStackPop();
 	});
 	mGUIContainer.pack(backButton);
@@ -40,7 +39,7 @@ void SettingsState::loadBasicGUI() {
 	    std::make_shared<GUI::Button>(GUI::Button::Home, *context.fonts, *context.textures);
 	homeButton->setPosition(1063.f + 54.f / 2, 53.f);
 	homeButton->setCallback([this]() {
-		mSettings.save();
+		getContext().settings->save();
 		requestStateClear();
 		requestStackPush(States::Menu);
 	});
@@ -70,9 +69,9 @@ void SettingsState::loadPieceSetGUI() {
 	auto pieceSetForward = std::make_shared<GUI::Button>(GUI::Button::Forward, *getContext().fonts,
 	                                                     *getContext().textures);
 	pieceSetForward->setPosition(1033.f - 20.f, 317.f + 20.f);
-	pieceSetForward->setCallback([this]() {
-		mSettings.nextPieceSet();
-		getContext().textures->load(Textures::PieceSet, mSettings.getPieceSetPath());
+	pieceSetForward->setCallback([&]() {
+		getContext().settings->nextPieceSet();
+		getContext().textures->load(Textures::PieceSet, getContext().settings->getPieceSetPath());
 		updatePieceSet();
 	});
 	mGUIContainer.pack(pieceSetForward);
@@ -82,8 +81,8 @@ void SettingsState::loadPieceSetGUI() {
 	pieceSetBackward->setPosition(763 + 20.f, 317.f + 20.f);
 	pieceSetBackward->rotate(180.f);
 	pieceSetBackward->setCallback([this]() {
-		mSettings.previousPieceSet();
-		getContext().textures->load(Textures::PieceSet, mSettings.getPieceSetPath());
+		getContext().settings->previousPieceSet();
+		getContext().textures->load(Textures::PieceSet, getContext().settings->getPieceSetPath());
 		updatePieceSet();
 	});
 	mGUIContainer.pack(pieceSetBackward);
@@ -98,8 +97,8 @@ void SettingsState::loadBoardGUI() {
 	                                                  *getContext().textures);
 	boardForward->setPosition(1033.f - 20.f, 470.f);
 	boardForward->setCallback([this]() {
-		mSettings.nextBoard();
-		getContext().textures->load(Textures::Board, mSettings.getBoardPath());
+		getContext().settings->nextBoard();
+		getContext().textures->load(Textures::Board, getContext().settings->getBoardPath());
 		updateBoard();
 	});
 	mGUIContainer.pack(boardForward);
@@ -109,15 +108,15 @@ void SettingsState::loadBoardGUI() {
 	boardBackward->setPosition(763 + 20.f, 470.f);
 	boardBackward->rotate(180.f);
 	boardBackward->setCallback([this]() {
-		mSettings.previousBoard();
-		getContext().textures->load(Textures::Board, mSettings.getBoardPath());
+		getContext().settings->previousBoard();
+		getContext().textures->load(Textures::Board, getContext().settings->getBoardPath());
 		updateBoard();
 	});
 	mGUIContainer.pack(boardBackward);
 }
 
 void SettingsState::loadSoundGUI() {
-	mSound = std::make_shared<GUI::Label>(GUI::Label::Small, mSettings.getSoundLabel(),
+	mSound = std::make_shared<GUI::Label>(GUI::Label::Small, getContext().settings->getSoundLabel(),
 	                                      *getContext().fonts);
 	mSound->alignCenter();
 	mSound->setPosition(808.f + 180.f/2, 583.f + 40.f/2);
@@ -127,9 +126,9 @@ void SettingsState::loadSoundGUI() {
 	                                                  *getContext().textures);
 	soundForward->setPosition(1033.f - 20.f, 583.f + 20.f);
 	soundForward->setCallback([this]() {
-		mSettings.toggleSound();
-		getContext().sounds->setMute(!mSettings.useSound());
-		mSound->setText(mSettings.getSoundLabel());
+		getContext().settings->toggleSound();
+		getContext().sounds->setMute(!getContext().settings->useSound());
+		mSound->setText(getContext().settings->getSoundLabel());
 	});
 	mGUIContainer.pack(soundForward);
 
@@ -138,9 +137,9 @@ void SettingsState::loadSoundGUI() {
 	soundBackward->setPosition(763 + 20.f, 623.f -20.f);
 	soundBackward->rotate(180.f);
 	soundBackward->setCallback([this]() {
-		mSettings.toggleSound();
-		getContext().sounds->setMute(!mSettings.useSound());
-		mSound->setText(mSettings.getSoundLabel());
+		getContext().settings->toggleSound();
+		getContext().sounds->setMute(!getContext().settings->useSound());
+		mSound->setText(getContext().settings->getSoundLabel());
 	});
 	mGUIContainer.pack(soundBackward);
 }
@@ -170,6 +169,6 @@ bool SettingsState::update(sf::Time dt) {
 bool SettingsState::handleEvent(const sf::Event& event) {
 	mGUIContainer.handleEvent(event);
 	if (event.type == sf::Event::Closed)
-		mSettings.save();
+		getContext().settings->save();
 	return false;
 }

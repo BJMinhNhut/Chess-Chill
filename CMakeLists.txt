@@ -58,6 +58,8 @@ add_executable(${TARGET_NAME}
         src/Game/AttackBoard.hpp
         src/Game/Clock.cpp
         src/Game/Clock.hpp
+        src/States/GameOptionsState.cpp
+        src/States/GameOptionsState.hpp
 )
 target_link_libraries(${TARGET_NAME} PRIVATE sfml-graphics sfml-audio)
 target_compile_features(${TARGET_NAME} PRIVATE cxx_std_17)

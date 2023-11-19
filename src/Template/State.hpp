@@ -5,10 +5,10 @@
 #ifndef NATUREOFCODE_STATE_HPP
 #define NATUREOFCODE_STATE_HPP
 
-#include "ColorHolder.hpp"
 #include "ResourceIdentifiers.hpp"
 #include "SoundPlayer.hpp"
 #include "StateIdentifiers.hpp"
+#include "Settings.hpp"
 
 #include "SFML/System/Time.hpp"
 #include "SFML/Window/Event.hpp"
@@ -26,13 +26,13 @@ class State {
 
 	struct Context {
 		Context(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts,
-		        ColorHolder& colors, SoundPlayer& sounds);
+		        SoundPlayer& sounds, Settings& settings);
 
 		sf::RenderWindow* window;
 		TextureHolder* textures;
 		FontHolder* fonts;
-		ColorHolder* colors;
 		SoundPlayer* sounds;
+		Settings* settings;
 	};
 
    public:

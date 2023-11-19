@@ -8,7 +8,6 @@
 #include "GUI/Container.hpp"
 #include "GUI/Label.hpp"
 #include "GUI/Sprite.hpp"
-#include "Template/Settings.hpp"
 #include "Template/State.hpp"
 
 #include <SFML/Graphics/Sprite.hpp>
@@ -37,7 +36,6 @@ class SettingsState : public State {
 
 	GUI::Sprite::Ptr mPieceSet, mBoard;
 	GUI::Label::Ptr mSound;
-	Settings mSettings;
 };
 
 #endif  //CHESS_CHILL_SETTINGSSTATE_HPP

@@ -22,9 +22,9 @@ Application::Application()
 #endif
       mTextures(),
       mFonts(),
-      mColors(),
       mSounds(),
-      mStateStack(State::Context(mWindow, mTextures, mFonts, mColors, mSounds)) {
+      mSettings(),
+      mStateStack(State::Context(mWindow, mTextures, mFonts, mSounds, mSettings)) {
 
 	mWindow.setFramerateLimit(60);
 
@@ -42,7 +42,6 @@ Application::Application()
 	registerStates();
 	mStateStack.pushState(States::Menu);
 
-	Settings mSettings;
 	if (!mSettings.useSound())
 		mSounds.setMute(true);
 }
@@ -84,9 +83,8 @@ void Application::loadImages() {
 	               Constants::DATA_PREFIX + "resources/images/gui/board_index_black.png");
 
 	// Gameplay
-	Settings settings;
-	mTextures.load(Textures::PieceSet, settings.getPieceSetPath());
-	mTextures.load(Textures::Board, settings.getBoardPath());
+	mTextures.load(Textures::PieceSet, mSettings.getPieceSetPath());
+	mTextures.load(Textures::Board, mSettings.getBoardPath());
 	mTextures.load(Textures::GameGUI, Constants::DATA_PREFIX + "resources/images/game_gui.png");
 
 	// Buttons
