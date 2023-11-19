@@ -24,7 +24,8 @@ Application::Application()
       mFonts(),
       mSounds(),
       mSettings(),
-      mStateStack(State::Context(mWindow, mTextures, mFonts, mSounds, mSettings)) {
+      mOptions(),
+      mStateStack(State::Context(mWindow, mTextures, mFonts, mSounds, mSettings, mOptions)) {
 
 	mWindow.setFramerateLimit(60);
 
@@ -71,7 +72,8 @@ void Application::loadFonts() {
 void Application::loadImages() {
 	mTextures.load(Textures::Background, Constants::DATA_PREFIX + "resources/images/gui/bg.png");
 	mTextures.load(Textures::Title, Constants::DATA_PREFIX + "resources/images/gui/title.png");
-	mTextures.load(Textures::TitleBar, Constants::DATA_PREFIX + "resources/images/gui/title_bar.png");
+	mTextures.load(Textures::TitleBar,
+	               Constants::DATA_PREFIX + "resources/images/gui/title_bar.png");
 	mTextures.load(Textures::AboutPanel,
 	               Constants::DATA_PREFIX + "resources/images/gui/about_panel.png");
 	mTextures.load(Textures::SettingsPanel,
@@ -82,8 +84,8 @@ void Application::loadImages() {
 	               Constants::DATA_PREFIX + "resources/images/gui/board_index_white.png");
 	mTextures.load(Textures::BoardIndexBlack,
 	               Constants::DATA_PREFIX + "resources/images/gui/board_index_black.png");
-	mTextures.load(Textures::GameOptionsPanel, Constants::DATA_PREFIX +
-	                                            "resources/images/gui/game_options_panel.png");
+	mTextures.load(Textures::GameOptionsPanel,
+	               Constants::DATA_PREFIX + "resources/images/gui/game_options_panel.png");
 
 	// Gameplay
 	mTextures.load(Textures::PieceSet, mSettings.getPieceSetPath());

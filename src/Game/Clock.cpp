@@ -11,14 +11,14 @@ void Clock::update(sf::Time dt) {
 		mTime -= dt;
 }
 
-void Clock::set(sf::Time time, sf::Time bonus) {
+void Clock::set(sf::Time time, sf::Time increment) {
 	mActive = true;
 	mTime = time;
-	mBonus = bonus;
+	mIncrement = increment;
 }
 
-void Clock::bonus() {
-	mTime += mBonus;
+void Clock::increment() {
+	mTime += mIncrement;
 }
 
 bool Clock::isTimeOut() const {

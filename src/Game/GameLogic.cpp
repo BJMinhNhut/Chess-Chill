@@ -98,7 +98,7 @@ bool GameLogic::isFinished() const {
 }
 
 void GameLogic::makeMove(int from, int to) {
-	mClock[mBoard.getTurn()].bonus();
+	mClock[mBoard.getTurn()].increment();
 	move(from, to);
 	updateStatus();
 }

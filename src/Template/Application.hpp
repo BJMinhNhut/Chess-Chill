@@ -41,6 +41,7 @@ class Application {
 	FontHolder mFonts;
 	SoundPlayer mSounds;
 	Settings mSettings;
+	GameOptions mOptions;
 
 	StateStack mStateStack;
 

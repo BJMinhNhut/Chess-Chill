@@ -12,16 +12,16 @@ class Clock {
 	Clock();
 
 	void update(sf::Time dt);
-	void set(sf::Time time, sf::Time bonus = sf::seconds(0));
+	void set(sf::Time time, sf::Time increment = sf::seconds(0));
 
-	void bonus();
+	void increment();
 
 	[[nodiscard]] bool isTimeOut() const;
 	[[nodiscard]] float get() const;
 
    private:
 	bool mActive;
-	sf::Time mTime, mBonus;
+	sf::Time mTime, mIncrement;
 };
 
 #endif  //CHESS_CHILL_CLOCK_HPP

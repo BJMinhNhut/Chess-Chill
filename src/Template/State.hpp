@@ -9,6 +9,7 @@
 #include "SoundPlayer.hpp"
 #include "StateIdentifiers.hpp"
 #include "Settings.hpp"
+#include "GameOptions.hpp"
 
 #include "SFML/System/Time.hpp"
 #include "SFML/Window/Event.hpp"
@@ -26,13 +27,14 @@ class State {
 
 	struct Context {
 		Context(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts,
-		        SoundPlayer& sounds, Settings& settings);
+		        SoundPlayer& sounds, Settings& settings, GameOptions& options);
 
 		sf::RenderWindow* window;
 		TextureHolder* textures;
 		FontHolder* fonts;
 		SoundPlayer* sounds;
 		Settings* settings;
+		GameOptions* options;
 	};
 
    public:
