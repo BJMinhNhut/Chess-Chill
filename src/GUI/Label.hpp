@@ -41,6 +41,7 @@ class Label : public Component {
 	void setColor(const sf::Color& color);
 
 	void alignCenter();
+	void alignRight();
 
 	void handleEvent(const sf::Event& event) override;
 

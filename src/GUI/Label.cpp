@@ -40,6 +40,11 @@ void Label::alignCenter() {
 	Utility::centerOrigin(mText);
 }
 
+void Label::alignRight() {
+	sf::FloatRect bounds = mText.getLocalBounds();
+	mText.setOrigin(bounds.width, std::floor(bounds.height / 2.f));
+}
+
 Fonts::ID Label::getFontID(Type type) {
 	switch (type) {
 		case Bold:
