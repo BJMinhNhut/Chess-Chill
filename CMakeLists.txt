@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
-project(Chess LANGUAGES CXX)
-
+set(TARGET_NAME Chess-Chill)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+project(${TARGET_NAME} LANGUAGES CXX)
 
 include(FetchContent)
 FetchContent_Declare(SFML
@@ -9,8 +10,15 @@ FetchContent_Declare(SFML
     GIT_TAG 2.6.x)
 FetchContent_MakeAvailable(SFML)
 
+if (WIN32)
+    enable_language("RC")
+    set (WIN32_RESOURCES src/icon.rc)
+endif()
+
 include_directories(src)
-add_executable(Chess src/main.cpp
+add_executable(${TARGET_NAME}
+        ${WIN32_RESOURCES}
+        src/main.cpp
         src/Template/Application.cpp
         src/States/StatesList.hpp
         src/States/GameState.cpp
@@ -34,16 +42,36 @@ add_executable(Chess src/main.cpp
         src/Game/AttackGenerator.cpp
         src/Game/AttackGenerator.hpp
         src/Game/Board.cpp
-        src/Game/Board.hpp)
-target_link_libraries(Chess PRIVATE sfml-graphics sfml-audio)
-target_compile_features(Chess PRIVATE cxx_std_17)
+        src/Game/Board.hpp
+        src/States/MenuState.cpp
+        src/GUI/Component.cpp
+        src/GUI/Container.cpp
+        src/GUI/Button.cpp
+        src/States/AboutState.cpp
+        src/States/AboutState.hpp
+        src/GUI/Label.cpp
+        src/GUI/Sprite.cpp
+        src/States/SettingsState.cpp
+        src/States/SettingsState.hpp
+        src/Template/Settings.cpp
+        src/Game/AttackBoard.cpp
+        src/Game/AttackBoard.hpp
+        src/Game/Clock.cpp
+        src/Game/Clock.hpp
+        src/States/GameOptionsState.cpp
+        src/States/GameOptionsState.hpp
+        src/Template/GameOptions.cpp
+        src/Template/GameOptions.hpp
+)
+target_link_libraries(${TARGET_NAME} PRIVATE sfml-graphics sfml-audio)
+target_compile_features(${TARGET_NAME} PRIVATE cxx_std_17)
 
 if(WIN32)
     add_custom_command(
-        TARGET Chess
+        TARGET ${TARGET_NAME}
         COMMENT "Copy OpenAL DLL"
-        PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SFML_SOURCE_DIR}/extlibs/bin/$<IF:$<EQUAL:${CMAKE_SIZEOF_VOID_P},8>,x64,x86>/openal32.dll $<TARGET_FILE_DIR:Chess>
+        PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SFML_SOURCE_DIR}/extlibs/bin/$<IF:$<EQUAL:${CMAKE_SIZEOF_VOID_P},8>,x64,x86>/openal32.dll $<TARGET_FILE_DIR:${TARGET_NAME}>
         VERBATIM)
 endif()
 
-install(TARGETS Chess)
+install(TARGETS ${TARGET_NAME})

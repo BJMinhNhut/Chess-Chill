@@ -10,24 +10,35 @@
 
 namespace GUI {
 
-    Sprite::Sprite(const sf::Texture &texture) {
-        setTexture(texture);
-    }
+Sprite::Sprite(const sf::Texture& texture) {
+	setTexture(texture);
+}
 
-    bool Sprite::isSelectable() const {
-        return false;
-    }
+bool Sprite::isSelectable() const {
+	return false;
+}
 
-    void Sprite::setTexture(const sf::Texture &texture) {
-        mSprite.setTexture(texture, true);
-        Utility::centerOrigin(mSprite);
-    }
+void Sprite::setTexture(const sf::Texture& texture) {
+	mSprite.setTexture(texture, true);
+}
 
-    void Sprite::handleEvent(const sf::Event &event) {}
+void Sprite::crop(int width, int height) {
+	mSprite.setTextureRect(sf::IntRect(0, 0, width, height));
+}
 
-    void Sprite::draw(sf::RenderTarget &target, sf::RenderStates states) const {
-        states.transform *= getTransform();
-        target.draw(mSprite, states);
-    }
+void Sprite::setSize(float x, float y) {
+	mSprite.setScale(x / mSprite.getLocalBounds().width, y / mSprite.getLocalBounds().height);
+}
+
+void Sprite::centerOrigin() {
+	Utility::centerOrigin(mSprite);
+}
+
+void Sprite::handleEvent(const sf::Event& event) {}
+
+void Sprite::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+	states.transform *= getTransform();
+	target.draw(mSprite, states);
+}
 
 }  // namespace GUI

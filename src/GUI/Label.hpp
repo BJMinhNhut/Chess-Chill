@@ -6,7 +6,6 @@
 #define DATAVISUALIZATION2_LABEL_HPP
 
 #include "GUI/Component.hpp"
-#include "Template/ColorHolder.hpp"
 #include "Template/ResourceHolder.hpp"
 #include "Template/ResourceIdentifiers.hpp"
 
@@ -21,22 +20,28 @@ class Label : public Component {
 		Main,
 		Bold,
 		Mono,
+		Title,
 		Small,
+		Clock,
 	};
 
    public:
 	typedef std::shared_ptr<Label> Ptr;
 
    public:
-	Label(Type type, const std::string& text, const FontHolder& fonts, const ColorHolder& colors);
+	Label(Type type, const std::string& text, const FontHolder& fonts,
+	      const sf::Color& color = sf::Color::White);
 
 	bool isSelectable() const override;
+
+	bool isEmpty() const;
 
 	void setText(const std::string& text);
 
 	void setColor(const sf::Color& color);
 
 	void alignCenter();
+	void alignRight();
 
 	void handleEvent(const sf::Event& event) override;
 

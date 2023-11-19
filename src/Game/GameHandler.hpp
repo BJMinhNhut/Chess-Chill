@@ -5,6 +5,7 @@
 #ifndef CHESS_GAMEHANDLER_HPP
 #define CHESS_GAMEHANDLER_HPP
 
+#include "GameLogic.hpp"
 #include "Piece.hpp"
 #include "Template/RectNode.hpp"
 #include "Template/ResourceHolder.hpp"
@@ -12,7 +13,6 @@
 #include "Template/SceneNode.hpp"
 #include "Template/SoundPlayer.hpp"
 #include "Template/SpriteNode.hpp"
-#include "GameLogic.hpp"
 
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/View.hpp>
@@ -28,14 +28,18 @@ class Event;
 class GameHandler : public sf::NonCopyable, public GameLogic {
    public:
 	const static std::string START_FEN;
+	const static std::string ONLY_KINGS_FEN;
 	const static int BOARD_DRAW_SIZE;
 
    public:
-	explicit GameHandler(sf::RenderWindow& window, FontHolder& fonts, SoundPlayer& sounds);
+	explicit GameHandler(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts,
+	                     SoundPlayer& sounds, sf::Vector2f position);
 
 	void update(sf::Time dt);
 	void draw();
 	void handleEvent(const sf::Event& event);
+
+	void rotateBoard();
 
    private:
 	enum Layer { Background, Pieces, PopUp, LayerCount };
@@ -49,7 +53,6 @@ class GameHandler : public sf::NonCopyable, public GameLogic {
 	};
 
    private:
-	void loadTextures();
 	void buildScene();
 	void handleMove(int from, int to, bool drop = false);
 
@@ -57,10 +60,10 @@ class GameHandler : public sf::NonCopyable, public GameLogic {
 	int getHoverSquare(int x, int y) const;
 	sf::Vector2f getBoxPosition(int box) const;
 
-	void addPiece(int piece, int square) override;
+	void addPiece(int piece, int square);
 	void movePiece(int from, int to) override;
 	void capturePiece(int square) override;
-	void postMove(bool captured) override;
+	void postMove() override;
 	void promotePiece(int square, int piece) override;
 
 	void checkDropPiece(int square);
@@ -74,7 +77,7 @@ class GameHandler : public sf::NonCopyable, public GameLogic {
 
    private:
 	sf::RenderWindow& mWindow;
-	TextureHolder mTextures;
+	TextureHolder& mTextures;
 	FontHolder& mFonts;
 	SoundPlayer& mSounds;
 
@@ -88,7 +91,10 @@ class GameHandler : public sf::NonCopyable, public GameLogic {
 	int mOldSquare;
 	int mLastMove;  // (newBox << 6) | oldBox;
 
-	int mBoardLeft, mBoardTop;
+	SpriteNode* mBoardIndex;
+	bool mRotated;
+
+	const sf::Vector2f mBoardPosition;
 };
 
 #endif  //CHESS_GAMEHANDLER_HPP

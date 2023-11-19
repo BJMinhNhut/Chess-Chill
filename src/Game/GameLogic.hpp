@@ -6,44 +6,72 @@
 #define CHESS_GAMELOGIC_HPP
 
 #include "Board.hpp"
+#include "AttackBoard.hpp"
+#include "Clock.hpp"
+
+#include <SFML/System/Time.hpp>
 
 #include <string>
+#include <vector>
 
 class GameLogic {
    public:
 	static const int BOARD_SIZE;
+	enum Status {
+		OnGoing,
+		Checkmate,
+		Stalemate,
+		InsufficientMaterial,
+		ThreefoldRepetition,
+		Resign,
+		Timeout,
+	};
+
+	enum MoveStatus {
+		Normal,
+		Check,
+		Capture,
+		Castling,
+		Promotion,
+	};
 
    public:
-	GameLogic();
+	explicit GameLogic(const std::string &fen);
 	GameLogic(const GameLogic &other);
 
-	[[nodiscard]] bool isLegalMove(int from, int to) const;
-	[[nodiscard]] bool isKingInCheck() const;
-	[[nodiscard]] bool getTurn() const;
+	[[nodiscard]] bool isFinished() const;
+	[[nodiscard]] Status status() const;
+	[[nodiscard]] std::string getWinner() const;
+	[[nodiscard]] float getRemainingTime(bool turn) const;
 
 	void makeMove(int from, int to);
+	void setClock(bool turn, sf::Time time, sf::Time bonus = sf::seconds(0));
 
    protected:
-	virtual void addPiece(int piece, int square);
 	virtual void capturePiece(int square);
 	virtual void movePiece(int from, int to);
-	virtual void postMove(bool captured);
+	virtual void postMove();
 	virtual void promotePiece(int square, int piece);
 
-   public:
+	virtual void updateTime(sf::Time dt);
 
-	void loadFEN(const std::string& fen);
-	std::string getFEN() const;
+	[[nodiscard]] MoveStatus lastMoveStatus() const;
+	[[nodiscard]] int getPiece(int square) const;
+	[[nodiscard]] bool getTurn() const;
 
+	[[nodiscard]] bool isLegalMove(int from, int to) const;
 	[[nodiscard]] bool isAttacked(int square) const;
-	[[nodiscard]] bool isAttacked(int square, bool turn) const;
-	[[nodiscard]] bool isKingInCheck(bool turn) const;
 
    private:
-	void updateEnPassant(int from, int to);
-	void updateCastling(int from);
-	void updateAttacks(bool turn);
+	void move(int from, int to);
+	void updateStatus();
 
+	[[nodiscard]] bool isInsufficientMaterial();
+	[[nodiscard]] bool isThreefoldRepetition();
+
+	[[nodiscard]] bool isPseudoLegalMove(int from, int to) const;
+
+	[[nodiscard]] bool hasLegalMove() const;
 	[[nodiscard]] bool isLegalPawnMove(int from, int to) const;
 	[[nodiscard]] bool isEnPassant(int from, int to) const;
 	static bool isLegalKnightMove(int from, int to);
@@ -53,14 +81,17 @@ class GameLogic {
 	[[nodiscard]] bool isLegalKingMove(int from, int to) const;
 	[[nodiscard]] bool isLegalCastling(int from, int to) const;
 
+
    private:
 	Board mBoard;
-	int64_t mAttackBoard[2];
-	bool mTurn;
-	int mCastling;
-	int mEnPassant;
-	int mHalfMove;
-	int mFullMove;
+	AttackBoard mAttacks;
+
+	Status mStatus;
+	MoveStatus mLastMove;
+
+	std::vector<std::string> mHistory;
+
+	Clock mClock[2];
 };
 
 #endif  //CHESS_GAMELOGIC_HPP

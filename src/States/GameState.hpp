@@ -5,29 +5,44 @@
 #ifndef CHESS_GAMESTATE_HPP
 #define CHESS_GAMESTATE_HPP
 
-#include "Template/State.hpp"
-#include "Game/GameHandler.hpp"
 #include "GUI/Container.hpp"
+#include "GUI/Label.hpp"
+#include "Game/GameHandler.hpp"
+#include "Template/State.hpp"
+#include "GUI/Sprite.hpp"
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
 
 class GameState : public State {
-public:
-    GameState(StateStack &stack, Context context);
+   public:
+	const static sf::Vector2f BOARD_POSITION;
 
-    virtual void draw();
+   public:
+	GameState(StateStack& stack, Context context);
 
-    virtual bool update(sf::Time dt);
+	void draw() override;
 
-    virtual bool handleEvent(const sf::Event &event);
+	bool update(sf::Time dt) override;
 
-private:
+	bool handleEvent(const sf::Event& event) override;
+
+   private:
+	void loadBasicGUI();
+	void loadGameGUI();
+	void loadControllerGUI();
+	void loadEndGameGUI();
+	void loadResult();
+
+	void updateClock();
+	static std::string getClockString(float time);
+
+   private:
 	GameHandler mGame;
-//    sf::Sprite mBackgroundSprite;
-//    sf::Sprite mTitle;
-//    GUI::Container mGUIContainer;
+	GUI::Container mGUIContainer;
+	GUI::Container mEndGameContainer;
+	GUI::Label::Ptr mWinner, mDescription;
+	GUI::Label::Ptr mClock[2];
 };
 
-
-#endif //CHESS_GAMESTATE_HPP
+#endif  //CHESS_GAMESTATE_HPP

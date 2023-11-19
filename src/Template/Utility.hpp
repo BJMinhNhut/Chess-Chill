@@ -31,8 +31,6 @@ namespace Utility {
     float getNorm(sf::Vector2f vector);
 
     float getNormSqr(sf::Vector2f vector);
-
-    void loadImages(TextureHolder &textures, const std::string &prefix);
 }
 
 #endif //DATAVISUALIZATION2_UTILITY_HPP

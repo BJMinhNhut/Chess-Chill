@@ -14,6 +14,8 @@ class SpriteNode : public SceneNode {
 	explicit SpriteNode(const sf::Texture& texture);
 	explicit SpriteNode(const sf::Texture& texture, const sf::IntRect& textureRect);
 
+	void setTexture(const sf::Texture& texture);
+
 	void centerOrigin();
 
 	// rate from 0 to 100

@@ -28,6 +28,7 @@ class Piece : public SpriteNode {
 	Piece(const sf::Texture& textures, int piece);
 
 	static int getPieceFromChar(char ch);
+	static char getCharFromPiece(int piece);
 	static int getColor(int piece);
 	static int getType(int piece);
 	static bool valid(int piece);

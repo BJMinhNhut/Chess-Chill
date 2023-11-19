@@ -22,6 +22,8 @@ class SoundPlayer : private sf::NonCopyable {
 	//	void play(SoundEffect::ID effect,
 	//	          sf::Vector2f position);
 
+	void setMute(bool mute);
+
 	void removeStoppedSounds();
 	//	void setListenerPosition(sf::Vector2f position);
 	//	sf::Vector2f getListenerPosition() const;
@@ -29,6 +31,7 @@ class SoundPlayer : private sf::NonCopyable {
    private:
 	SoundBufferHolder mSoundBuffers;
 	std::list<sf::Sound> mSounds;
+	bool mMute;
 };
 
 #endif  //CHESS_SOUNDPLAYER_HPP

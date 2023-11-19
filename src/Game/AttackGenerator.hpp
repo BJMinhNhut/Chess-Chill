@@ -14,11 +14,11 @@ int64_t generatePawnAttacks(int square, bool color);
 
 int64_t generateKnightAttacks(int square);
 
-int64_t generateBishopAttacks(int square, Board &board);
+int64_t generateBishopAttacks(int square, const Board& board);
 
-int64_t generateRookAttacks(int square, Board &board);
+int64_t generateRookAttacks(int square, const Board& board);
 
-int64_t generateQueenAttacks(int square, Board &board);
+int64_t generateQueenAttacks(int square, const Board& board);
 
 int64_t generateKingAttacks(int square);
 }  // namespace AttackGenerator

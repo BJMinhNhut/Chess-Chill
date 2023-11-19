@@ -13,11 +13,34 @@ class SoundBuffer;
 
 namespace Textures {
 enum ID {
-//	Background,
-//	Title,
-//
-    Board,
-	PiecesSet,
+	Background,
+	Title,
+	TitleBar,
+	AboutPanel,
+	SettingsPanel,
+	EndGamePanel,
+	GameOptionsPanel,
+	OptionBox,
+
+	BackButtonNormal,
+	BackButtonSelected,
+	HomeButtonNormal,
+	HomeButtonSelected,
+	MenuButtonNormal,
+	MenuButtonSelected,
+	ForwardButtonNormal,
+	ForwardButtonSelected,
+	RotateButtonNormal,
+	RotateButtonSelected,
+	PlayButtonNormal,
+	PlayButtonSelected,
+
+	Board,
+	PieceSet,
+	GameGUI,
+	BoardIndexWhite,
+	BoardIndexBlack,
+
 	NumTextures,
 };
 }
@@ -35,6 +58,11 @@ enum ID {
 	Move,
 	Capture,
 	Check,
+	Castling,
+	Promotion,
+	OutOfBound,
+	EndGame,
+	StartGame,
 };
 }
 

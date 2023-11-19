@@ -8,25 +8,54 @@
 #ifndef SETTINGS_HPP
 #define SETTINGS_HPP
 
-struct Settings {
-    enum Themes {
-        Light, Dark
-    };
-    Themes theme;
+#include <string>
+#include <vector>
 
-    Settings();
+class Settings {
+   public:
+	static const std::string SETTINGS_FILE;
 
-    void print();
+	static const std::vector<std::string> PIECESET_NAMES;
+	static const std::string PIECESET_PATH;
 
-    bool operator==(const Settings &settings) const;
+	static const std::vector<std::string> BOARD_NAMES;
+	static const std::string BOARD_PATH;
 
-    bool operator!=(const Settings &settings) const;
+	static const std::vector<std::string> SOUND_OPTIONS;
+
+   public:
+	Settings();
+
+	void save();
+
+	void nextPieceSet();
+	void previousPieceSet();
+
+	void nextBoard();
+	void previousBoard();
+
+	void toggleSound();
+
+
+	[[nodiscard]] std::string getPieceSetPath() const;
+	[[nodiscard]] std::string getBoardPath() const;
+	[[nodiscard]] bool useSound() const;
+	[[nodiscard]] std::string getSoundLabel() const;
+
+   private:
+	void print();
+	void load();
+
+   public:
+	bool operator==(const Settings& settings) const;
+	bool operator!=(const Settings& settings) const;
+
+   private:
+	int mPieceSetID;
+	int mBoardID;
+	bool mSound;
 };
-
-Settings getSettings();
-
-void updateSettings(const Settings &settings);
 
 #endif  // SETTINGS_HPP
 
-#endif //DATAVISUALIZATION2_SETTINGS_HPP
+#endif  //DATAVISUALIZATION2_SETTINGS_HPP
