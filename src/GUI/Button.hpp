@@ -22,7 +22,7 @@
 namespace GUI {
 class Button : public Component {
    public:
-	enum Type { Menu, Back, Home, Forward, Rotate, ButtonCount };
+	enum Type { Menu, Back, Home, Forward, Rotate, Play, ButtonCount };
 
    public:
 	typedef std::shared_ptr<Button> Ptr;

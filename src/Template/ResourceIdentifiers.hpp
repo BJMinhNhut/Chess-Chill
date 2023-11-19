@@ -19,6 +19,7 @@ enum ID {
 	AboutPanel,
 	SettingsPanel,
 	EndGamePanel,
+	GameOptionsPanel,
 
 	BackButtonNormal,
 	BackButtonSelected,
@@ -30,6 +31,8 @@ enum ID {
 	ForwardButtonSelected,
 	RotateButtonNormal,
 	RotateButtonSelected,
+	PlayButtonNormal,
+	PlayButtonSelected,
 
 	Board,
 	PieceSet,

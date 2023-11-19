@@ -69,24 +69,26 @@ void Application::loadFonts() {
 }
 
 void Application::loadImages() {
-	mTextures.load(Textures::Background, Constants::DATA_PREFIX + "resources/images/bg.png");
-	mTextures.load(Textures::Title, Constants::DATA_PREFIX + "resources/images/title.png");
-	mTextures.load(Textures::TitleBar, Constants::DATA_PREFIX + "resources/images/title_bar.png");
+	mTextures.load(Textures::Background, Constants::DATA_PREFIX + "resources/images/gui/bg.png");
+	mTextures.load(Textures::Title, Constants::DATA_PREFIX + "resources/images/gui/title.png");
+	mTextures.load(Textures::TitleBar, Constants::DATA_PREFIX + "resources/images/gui/title_bar.png");
 	mTextures.load(Textures::AboutPanel,
-	               Constants::DATA_PREFIX + "resources/images/about_panel.png");
+	               Constants::DATA_PREFIX + "resources/images/gui/about_panel.png");
 	mTextures.load(Textures::SettingsPanel,
-	               Constants::DATA_PREFIX + "resources/images/settings_panel.png");
+	               Constants::DATA_PREFIX + "resources/images/gui/settings_panel.png");
 	mTextures.load(Textures::EndGamePanel,
-	               Constants::DATA_PREFIX + "resources/images/panel_500_320.png");
+	               Constants::DATA_PREFIX + "resources/images/gui/panel_500_320.png");
 	mTextures.load(Textures::BoardIndexWhite,
 	               Constants::DATA_PREFIX + "resources/images/gui/board_index_white.png");
 	mTextures.load(Textures::BoardIndexBlack,
 	               Constants::DATA_PREFIX + "resources/images/gui/board_index_black.png");
+	mTextures.load(Textures::GameOptionsPanel, Constants::DATA_PREFIX +
+	                                            "resources/images/gui/game_options_panel.png");
 
 	// Gameplay
 	mTextures.load(Textures::PieceSet, mSettings.getPieceSetPath());
 	mTextures.load(Textures::Board, mSettings.getBoardPath());
-	mTextures.load(Textures::GameGUI, Constants::DATA_PREFIX + "resources/images/game_gui.png");
+	mTextures.load(Textures::GameGUI, Constants::DATA_PREFIX + "resources/images/gui/game_gui.png");
 
 	// Buttons
 	mTextures.load(Textures::MenuButtonNormal,
@@ -109,6 +111,10 @@ void Application::loadImages() {
 	               Constants::DATA_PREFIX + "resources/images/buttons/rotate_normal.png");
 	mTextures.load(Textures::RotateButtonSelected,
 	               Constants::DATA_PREFIX + "resources/images/buttons/rotate_selected.png");
+	mTextures.load(Textures::PlayButtonNormal,
+	               Constants::DATA_PREFIX + "resources/images/buttons/play_normal.png");
+	mTextures.load(Textures::PlayButtonSelected,
+	               Constants::DATA_PREFIX + "resources/images/buttons/play_selected.png");
 }
 
 void Application::run() {

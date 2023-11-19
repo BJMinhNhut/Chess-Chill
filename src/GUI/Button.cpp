@@ -38,6 +38,8 @@ Textures::ID Button::getNormalTextureID(Type type) {
 			return Textures::ForwardButtonNormal;
 		case Rotate:
 			return Textures::RotateButtonNormal;
+		case Play:
+			return Textures::PlayButtonNormal;
 		default:
 			return Textures::Background;
 	}
@@ -55,6 +57,8 @@ Textures::ID Button::getSelectedTextureID(Type type) {
 			return Textures::ForwardButtonSelected;
 		case Rotate:
 			return Textures::RotateButtonSelected;
+		case Play:
+			return Textures::PlayButtonSelected;
 		default:
 			return Textures::Background;
 	}

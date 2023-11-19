@@ -53,6 +53,13 @@ void GameOptionsState::loadBasicGUI() {
 	    std::make_shared<GUI::Sprite>(context.textures->get(Textures::SettingsPanel));
 	settingsPanel->setPosition(482.f, 236.f);
 	mGUIContainer.pack(settingsPanel);
+
+	auto playButton = std::make_shared<GUI::Button>(GUI::Button::Play, *context.fonts, *context.textures);
+	playButton->setCallback([this]() {
+		requestStackPush(States::Game);
+	});
+	playButton->setPosition(973.f + 306.f/2, 638.f + 82.f/2);
+	mGUIContainer.pack(playButton);
 }
 
 void GameOptionsState::draw() {
