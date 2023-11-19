@@ -49,10 +49,10 @@ void GameOptionsState::loadBasicGUI() {
 	titleLabel->alignCenter();
 	mGUIContainer.pack(titleLabel);
 
-	auto settingsPanel =
-	    std::make_shared<GUI::Sprite>(context.textures->get(Textures::SettingsPanel));
-	settingsPanel->setPosition(482.f, 236.f);
-	mGUIContainer.pack(settingsPanel);
+	auto optionsPanel =
+	    std::make_shared<GUI::Sprite>(context.textures->get(Textures::GameOptionsPanel));
+	optionsPanel->setPosition(322.f, 220.f);
+	mGUIContainer.pack(optionsPanel);
 
 	auto playButton = std::make_shared<GUI::Button>(GUI::Button::Play, *context.fonts, *context.textures);
 	playButton->setCallback([this]() {
