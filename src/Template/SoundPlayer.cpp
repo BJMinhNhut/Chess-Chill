@@ -19,7 +19,7 @@ SoundPlayer::SoundPlayer() : mSoundBuffers(), mSounds(), mMute(false) {
 	mSoundBuffers.load(SoundEffect::OutOfBound,
 	                   Constants::DATA_PREFIX + "resources/music/standard/OutOfBound.mp3");
 	mSoundBuffers.load(SoundEffect::EndGame,
-	                   Constants::DATA_PREFIX + "resources/music/standard/EndGame.wav");
+	                   Constants::DATA_PREFIX + "resources/music/standard/EndGame.mp3");
 	mSoundBuffers.load(SoundEffect::StartGame,
 	                   Constants::DATA_PREFIX + "resources/music/standard/StartGame.mp3");
 }
