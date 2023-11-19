@@ -17,8 +17,6 @@ GameLogic::GameLogic(const std::string &fen)
       mLastMove(Normal),
       mHistory(),
       mClock() {
-	setClock(0, sf::seconds(60), sf::seconds(0));
-	setClock(1, sf::seconds(60), sf::seconds(0));
 	updateStatus();
 }
 

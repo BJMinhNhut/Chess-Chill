@@ -47,6 +47,14 @@ std::string GameOptions::getStringType() const {
 	return TYPE_NAMES[mType];
 }
 
+int GameOptions::getTime() const {
+	return TIMES[mTimeID].first * 60;
+}
+
+int GameOptions::getIncrement() const {
+	return TIMES[mTimeID].second;
+}
+
 void GameOptions::nextMode() {
 	mMode = static_cast<Mode>((mMode + 1) % NumModes);
 }

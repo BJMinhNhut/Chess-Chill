@@ -29,6 +29,11 @@ GameState::GameState(StateStack& stack, Context context)
 	loadGameGUI();
 	loadControllerGUI();
 	loadEndGameGUI();
+
+	mGame.setClock(0, sf::seconds(context.options->getTime()),
+	               sf::seconds(context.options->getIncrement()));
+	mGame.setClock(1, sf::seconds(context.options->getTime()),
+	               sf::seconds(context.options->getIncrement()));
 }
 
 void GameState::loadBasicGUI() {
