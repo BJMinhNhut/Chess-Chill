@@ -45,7 +45,7 @@ class GameLogic {
 	[[nodiscard]] float getRemainingTime(bool turn) const;
 
 	void makeMove(int from, int to);
-	void setClock(bool turn, sf::Time time);
+	void setClock(bool turn, sf::Time time, sf::Time bonus = sf::seconds(0));
 
    protected:
 	virtual void capturePiece(int square);

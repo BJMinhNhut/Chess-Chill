@@ -17,7 +17,8 @@ GameLogic::GameLogic(const std::string &fen)
       mLastMove(Normal),
       mHistory(),
       mClock() {
-	setClock(0, sf::seconds(300));
+	setClock(0, sf::seconds(60), sf::seconds(0));
+	setClock(1, sf::seconds(60), sf::seconds(0));
 	updateStatus();
 }
 
@@ -97,12 +98,13 @@ bool GameLogic::isFinished() const {
 }
 
 void GameLogic::makeMove(int from, int to) {
+	mClock[mBoard.getTurn()].bonus();
 	move(from, to);
 	updateStatus();
 }
 
-void GameLogic::setClock(bool turn, sf::Time time) {
-	mClock[turn].set(time);
+void GameLogic::setClock(bool turn, sf::Time time, sf::Time bonus) {
+	mClock[turn].set(time, bonus);
 }
 
 GameLogic::Status GameLogic::status() const {
