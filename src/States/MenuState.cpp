@@ -31,7 +31,7 @@ MenuState::MenuState(StateStack &stack, Context context)
 	auto historyButton = std::make_shared<GUI::Button>(
 	    GUI::Button::Menu, *context.fonts, *context.textures);
 	historyButton->setPosition(800.f, 520.f+25.f);
-	historyButton->setText("History");
+	historyButton->setText("Learn");
 	historyButton->setCallback([this]() {
 		//        requestStackPop();
 		//        requestStackPush(States::Settings);
