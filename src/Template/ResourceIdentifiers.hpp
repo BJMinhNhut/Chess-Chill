@@ -20,6 +20,7 @@ enum ID {
 	SettingsPanel,
 	EndGamePanel,
 	GameOptionsPanel,
+	OptionBox,
 
 	BackButtonNormal,
 	BackButtonSelected,

@@ -86,6 +86,8 @@ void Application::loadImages() {
 	               Constants::DATA_PREFIX + "resources/images/gui/board_index_black.png");
 	mTextures.load(Textures::GameOptionsPanel,
 	               Constants::DATA_PREFIX + "resources/images/gui/game_options_panel.png");
+	mTextures.load(Textures::OptionBox,
+	               Constants::DATA_PREFIX + "resources/images/gui/option_box.png");
 
 	// Gameplay
 	mTextures.load(Textures::PieceSet, mSettings.getPieceSetPath());

@@ -25,14 +25,18 @@ class GameOptionsState : public State {
 
    private:
 	void loadBasicGUI();
-	void loadOptionsGUI();
+	void loadGameModeGUI();
+	void loadTypeGUI();
+	void loadTimeGUI();
 	void loadDescriptionGUI();
 
 	void updateType();
 	void updateMode();
+	void updateTime();
 
    private:
 	GUI::Container mGUIContainer;
+	GUI::Label::Ptr mType, mMode, mTime;
 };
 
 #endif  //CHESS_CHILL_GAMEOPTIONSSTATE_HPP

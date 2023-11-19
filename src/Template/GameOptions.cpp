@@ -33,7 +33,7 @@ GameOptions::GameOptions() : mMode(PvP), mType(Standard), mTimeID(6) {}
 std::string GameOptions::getStringTime() const {
 	int mTime = TIMES[mTimeID].first;
 	int mIncrement = TIMES[mTimeID].second;
-	if (mTime == 0) return "∞";
+	if (mTime == 0) return "Unlimited";
 	if (mIncrement)
 		return std::to_string(mTime) + " | " + std::to_string(mIncrement);
 	return std::to_string(mTime) + " min";
