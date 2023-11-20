@@ -22,6 +22,9 @@ enum ID {
 	GameOptionsPanel,
 	OptionBox,
 
+	ChessStandard,
+	Chess960,
+
 	BackButtonNormal,
 	BackButtonSelected,
 	HomeButtonNormal,

@@ -11,8 +11,9 @@
 
 GameOptionsState::GameOptionsState(StateStack& stack, Context context)
     : State(stack, context),
-      mGUIContainer(), mType(nullptr), mMode(nullptr), mTime(nullptr) {
+      mGUIContainer(), mType(nullptr), mMode(nullptr), mTime(nullptr), mDescription(nullptr) {
 	loadBasicGUI();
+	loadDescriptionGUI();
 	loadGameModeGUI();
 	loadTypeGUI();
 	loadTimeGUI();
@@ -141,6 +142,8 @@ void GameOptionsState::loadTypeGUI() {
 void GameOptionsState::updateType() {
 	mType->setText(getContext().options->getStringType());
 	mType->alignCenter();
+	Textures::ID id = static_cast<Textures::ID>(getContext().options->getTypeDescriptionID());
+	mDescription->setTexture(getContext().textures->get(id));
 }
 
 void GameOptionsState::loadTimeGUI() {
@@ -175,6 +178,13 @@ void GameOptionsState::loadTimeGUI() {
 		updateTime();
 	});
 	mGUIContainer.pack(timeBackward);
+}
+
+void GameOptionsState::loadDescriptionGUI() {
+	Textures::ID id = static_cast<Textures::ID>(getContext().options->getTypeDescriptionID());
+	mDescription = std::make_shared<GUI::Sprite>(getContext().textures->get(id));
+	mDescription->setPosition(973.f, 220.f);
+	mGUIContainer.pack(mDescription);
 }
 
 void GameOptionsState::updateTime() {

@@ -37,6 +37,7 @@ class GameOptionsState : public State {
    private:
 	GUI::Container mGUIContainer;
 	GUI::Label::Ptr mType, mMode, mTime;
+	GUI::Sprite::Ptr mDescription;
 };
 
 #endif  //CHESS_CHILL_GAMEOPTIONSSTATE_HPP

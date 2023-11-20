@@ -93,6 +93,10 @@ void Application::loadImages() {
 	mTextures.load(Textures::PieceSet, mSettings.getPieceSetPath());
 	mTextures.load(Textures::Board, mSettings.getBoardPath());
 	mTextures.load(Textures::GameGUI, Constants::DATA_PREFIX + "resources/images/gui/game_gui.png");
+	mTextures.load(Textures::ChessStandard,
+	               Constants::DATA_PREFIX + "resources/images/gui/chess_standard.png");
+	mTextures.load(Textures::Chess960,
+	               Constants::DATA_PREFIX + "resources/images/gui/chess_960.png");
 
 	// Buttons
 	mTextures.load(Textures::MenuButtonNormal,

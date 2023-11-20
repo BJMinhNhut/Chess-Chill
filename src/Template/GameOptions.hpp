@@ -26,7 +26,7 @@ class GameOptions {
 
    private:
 	static const std::vector<std::string> MODE_NAMES;
-	static const std::vector<std::string> TYPE_NAMES;
+	static const std::vector<std::pair<std::string, int>> TYPE_NAMES;
 	static const std::vector<std::pair<int, int>> TIMES;
 
    public:
@@ -35,6 +35,8 @@ class GameOptions {
 	[[nodiscard]] std::string getStringTime() const;
 	[[nodiscard]] std::string getStringMode() const;
 	[[nodiscard]] std::string getStringType() const;
+	[[nodiscard]] int getTypeDescriptionID() const;
+
 
 	// as seconds
 	int getTime() const;

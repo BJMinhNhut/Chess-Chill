@@ -3,6 +3,7 @@
 //
 
 #include "GameOptions.hpp"
+#include "ResourceIdentifiers.hpp"
 
 const std::vector<std::string> GameOptions::MODE_NAMES = {
 	"PvP",
@@ -10,9 +11,9 @@ const std::vector<std::string> GameOptions::MODE_NAMES = {
 	"AIvAI",
 };
 
-const std::vector<std::string> GameOptions::TYPE_NAMES = {
-	"Standard",
-	"Chess960",
+const std::vector<std::pair<std::string, int>> GameOptions::TYPE_NAMES = {
+	std::make_pair("Standard", Textures::ChessStandard),
+	std::make_pair("Chess960", Textures::Chess960),
 };
 
 const std::vector<std::pair<int, int>> GameOptions::TIMES = {
@@ -44,7 +45,11 @@ std::string GameOptions::getStringMode() const {
 }
 
 std::string GameOptions::getStringType() const {
-	return TYPE_NAMES[mType];
+	return TYPE_NAMES[mType].first;
+}
+
+int GameOptions::getTypeDescriptionID() const {
+	return TYPE_NAMES[mType].second;
 }
 
 int GameOptions::getTime() const {
