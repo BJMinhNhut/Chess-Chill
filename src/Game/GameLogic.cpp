@@ -10,13 +10,8 @@
 
 const int GameLogic::BOARD_SIZE = 64;
 
-GameLogic::GameLogic(const std::string &fen)
-    : mBoard(fen),
-      mAttacks(mBoard),
-      mStatus(OnGoing),
-      mLastMove(Normal),
-      mHistory(),
-      mClock() {
+GameLogic::GameLogic(const std::string& fen)
+    : mBoard(fen), mAttacks(mBoard), mStatus(OnGoing), mLastMove(Normal), mHistory(), mClock() {
 	updateStatus();
 }
 
@@ -29,7 +24,8 @@ GameLogic::GameLogic(const GameLogic& other) : mBoard(other.mBoard), mAttacks(mB
 }
 
 void GameLogic::updateTime(sf::Time dt) {
-	if (mStatus != OnGoing || mHistory.size() < 2) return;
+	if (mStatus != OnGoing || mHistory.size() < 2)
+		return;
 	mClock[mBoard.getTurn()].update(dt);
 	if (mClock[mBoard.getTurn()].isTimeOut())
 		mStatus = Timeout;
@@ -99,8 +95,10 @@ bool GameLogic::isLegalMove(int from, int to) const {
 			assert(false);
 	};
 
-	if (legal) return !isPseudoLegalMove(from, to);
-	else return false;
+	if (legal)
+		return !isPseudoLegalMove(from, to);
+	else
+		return false;
 }
 
 bool GameLogic::isPseudoLegalMove(int from, int to) const {
@@ -184,10 +182,12 @@ void GameLogic::movePiece(int from, int to) {
 }
 
 void GameLogic::postMove() {
-	if (mBoard.getTurn()) mBoard.nextFullMove();
+	if (mBoard.getTurn())
+		mBoard.nextFullMove();
 	mAttacks.update();
 	mBoard.nextTurn();
-	if (mAttacks.isKingInCheck()) mLastMove = Check;
+	if (mAttacks.isKingInCheck())
+		mLastMove = Check;
 }
 
 void GameLogic::promotePiece(int square, int piece) {
@@ -395,6 +395,7 @@ bool GameLogic::isLegalKingMove(int from, int to) const {
 	return isLegalCastling(from, to);
 }
 
+// [BUG] castling when a piece blocks the way
 bool GameLogic::isLegalCastling(int from, int to) const {
 	int diffRank = (to >> 3) - (from >> 3);
 	int diffFile = (to & 7) - (from & 7);
@@ -407,10 +408,16 @@ bool GameLogic::isLegalCastling(int from, int to) const {
 			return false;
 		if (Board::getRank(from) != (color ? 7 : 0))
 			return false;
-		if (mAttacks.isAttacked(from) || mAttacks.isAttacked(from + dir) || mAttacks.isAttacked(from + 2 * dir))
+		if (mAttacks.isAttacked(from) || mAttacks.isAttacked(from + dir) ||
+		    mAttacks.isAttacked(from + 2 * dir))
 			return false;
 		if (mBoard.get(from + dir) != 0 || mBoard.get(from + 2 * dir) != 0)  // check for blocking
 			return false;
+		if (to == (color ? 61 : 2)) { // Queen side castling
+			if (mBoard.get(from + 3 * dir) != 0 || mAttacks.isAttacked(from + 3 * dir))
+				return false;
+		}
+
 		if (dir == 1)
 			return mBoard.getCastling() & (color ? 4 : 1);
 		else
