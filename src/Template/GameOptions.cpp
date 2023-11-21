@@ -60,6 +60,14 @@ int GameOptions::getIncrement() const {
 	return TIMES[mTimeID].second;
 }
 
+GameOptions::Mode GameOptions::getMode() const {
+	return mMode;
+}
+
+GameOptions::Type GameOptions::getType() const {
+	return mType;
+}
+
 void GameOptions::nextMode() {
 	mMode = static_cast<Mode>((mMode + 1) % NumModes);
 }

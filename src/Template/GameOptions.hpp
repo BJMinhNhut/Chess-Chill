@@ -37,6 +37,9 @@ class GameOptions {
 	[[nodiscard]] std::string getStringType() const;
 	[[nodiscard]] int getTypeDescriptionID() const;
 
+	[[nodiscard]] Mode getMode() const;
+	[[nodiscard]] Type getType() const;
+
 
 	// as seconds
 	int getTime() const;

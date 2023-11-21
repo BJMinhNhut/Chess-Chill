@@ -6,10 +6,10 @@
 #include "GUI/Button.hpp"
 #include "GUI/Label.hpp"
 #include "GUI/Sprite.hpp"
+#include "Game/BotPlayer.hpp"
 #include "Game/HumanPlayer.hpp"
 #include "Template/Constants.hpp"
 #include "Template/ResourceHolder.hpp"
-#include "Game/BotPlayer.hpp"
 #include "Template/Utility.hpp"
 
 #include <SFML/Graphics/RenderWindow.hpp>
@@ -26,15 +26,24 @@ GameState::GameState(StateStack& stack, Context context)
       mGUIContainer(),
       mWinner(nullptr),
       mDescription(nullptr),
-      mPlayers(), mClock(), mEndGameContainer(), mReviewMode(false) {
+      mPlayers(),
+      mClock(),
+      mEndGameContainer(),
+      mReviewMode(false) {
 
 	mGame.setClock(0, sf::seconds(context.options->getTime()),
 	               sf::seconds(context.options->getIncrement()));
 	mGame.setClock(1, sf::seconds(context.options->getTime()),
 	               sf::seconds(context.options->getIncrement()));
 
-	mPlayers[0] = std::unique_ptr<Player>(new BotPlayer(mGame, Player::White));
-	mPlayers[1] = std::unique_ptr<Player>(new BotPlayer(mGame, Player::Black));
+	if (context.options->getMode() != GameOptions::AIvAI)
+		mPlayers[0] = std::unique_ptr<Player>(new HumanPlayer(mGame, Player::White));
+	else
+		mPlayers[0] = std::unique_ptr<Player>(new BotPlayer(mGame, Player::White));
+	if (context.options->getMode() != GameOptions::PvP)
+		mPlayers[1] = std::unique_ptr<Player>(new BotPlayer(mGame, Player::Black));
+	else
+		mPlayers[1] = std::unique_ptr<Player>(new HumanPlayer(mGame, Player::Black));
 
 	getContext().sounds->play(SoundEffect::StartGame);
 	loadBasicGUI();
@@ -68,8 +77,7 @@ void GameState::loadBasicGUI() {
 	titleBar->setPosition(800.f, 53.f);
 	mGUIContainer.pack(titleBar);
 
-	auto titleLabel =
-	    std::make_shared<GUI::Label>(GUI::Label::Bold, "Player vs Player", *context.fonts);
+	auto titleLabel = std::make_shared<GUI::Label>(GUI::Label::Bold, getTitle(), *context.fonts);
 	titleLabel->setPosition(titleBar->getPosition());
 	titleLabel->alignCenter();
 	mGUIContainer.pack(titleLabel);
@@ -81,11 +89,13 @@ void GameState::loadGameGUI() {
 	panels->setPosition(BOARD_POSITION);
 	mGUIContainer.pack(panels);
 
-	auto whitePlayer = std::make_shared<GUI::Label>(GUI::Label::Main, mPlayers[0]->getName(), *context.fonts);
+	auto whitePlayer =
+	    std::make_shared<GUI::Label>(GUI::Label::Main, mPlayers[0]->getName(), *context.fonts);
 	whitePlayer->setPosition(1040.f, 696.f + 8.f);
 	mGUIContainer.pack(whitePlayer);
 
-	auto blackPlayer = std::make_shared<GUI::Label>(GUI::Label::Main, mPlayers[1]->getName(), *context.fonts);
+	auto blackPlayer =
+	    std::make_shared<GUI::Label>(GUI::Label::Main, mPlayers[1]->getName(), *context.fonts);
 	blackPlayer->setPosition(1040.f, 217.f + 8.f);
 	mGUIContainer.pack(blackPlayer);
 
@@ -117,7 +127,7 @@ void GameState::loadEndGameGUI() {
 
 	auto closeButton = std::make_shared<GUI::Button>(GUI::Button::Close, *getContext().fonts,
 	                                                 *getContext().textures);
-	closeButton->setPosition(818.f + 50.f/2, 317.f + 50.f/2);
+	closeButton->setPosition(818.f + 50.f / 2, 317.f + 50.f / 2);
 	closeButton->setCallback([this]() { mReviewMode = true; });
 	mEndGameContainer.pack(closeButton);
 
@@ -127,7 +137,7 @@ void GameState::loadEndGameGUI() {
 	newGameButton->setText("New Game");
 	newGameButton->setCallback([this]() {
 		requestStackPop();
-		requestStackPush(States::Game);
+		requestStackPush(States::GameOptions);
 	});
 	mEndGameContainer.pack(newGameButton);
 
@@ -183,6 +193,10 @@ std::string GameState::getClockString(float time) {
 	       std::to_string(seconds);
 }
 
+std::string GameState::getTitle() const {
+	return getContext().options->getStringType() + " - " + getContext().options->getStringMode();
+}
+
 void GameState::updateClock() {
 	mClock[0]->setText(getClockString(mGame.getRemainingTime(true)));
 	mClock[1]->setText(getClockString(mGame.getRemainingTime(false)));
@@ -198,14 +212,17 @@ void GameState::draw() {
 			getContext().sounds->play(SoundEffect::EndGame);
 			loadResult();
 		}
-		if (!mReviewMode) window.draw(mEndGameContainer);
+		if (!mReviewMode)
+			window.draw(mEndGameContainer);
 	}
 }
 
 bool GameState::update(sf::Time dt) {
 	if (mGame.isFinished()) {
-		if (!mReviewMode) mEndGameContainer.update(dt);
-		else mGUIContainer.update(dt);
+		if (!mReviewMode)
+			mEndGameContainer.update(dt);
+		else
+			mGUIContainer.update(dt);
 	} else {
 		mPlayers[mGame.getTurn()]->update(dt);
 		mGame.update(dt);
@@ -217,8 +234,10 @@ bool GameState::update(sf::Time dt) {
 
 bool GameState::handleEvent(const sf::Event& event) {
 	if (mGame.isFinished()) {
-		if (!mReviewMode) mEndGameContainer.handleEvent(event);
-		else mGUIContainer.handleEvent(event);
+		if (!mReviewMode)
+			mEndGameContainer.handleEvent(event);
+		else
+			mGUIContainer.handleEvent(event);
 	} else {
 		mPlayers[mGame.getTurn()]->handleEvent(event);
 		mGame.handleEvent(event);

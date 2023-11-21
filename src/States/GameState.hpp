@@ -37,6 +37,7 @@ class GameState : public State {
 
 	void updateClock();
 	static std::string getClockString(float time);
+	std::string getTitle() const;
 
    private:
 	Player::Ptr mPlayers[2];
