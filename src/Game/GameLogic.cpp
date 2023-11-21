@@ -46,7 +46,7 @@ std::vector<int> GameLogic::getMoveList(int from) const {
 		return moveList;
 	for (int i = 0; i < 64; i++) {
 		if (isLegalMove(from, i))
-			moveList.push_back(i);
+			moveList.push_back(i << 6 | from);
 	}
 	return moveList;
 }

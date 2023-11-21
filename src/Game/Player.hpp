@@ -17,17 +17,18 @@ class Player {
 	};
 
    public:
-	Player(GameHandler &gameHandler, int color);
+	Player(GameHandler& gameHandler, int color);
 	virtual ~Player() = default;
 
 	virtual void update(sf::Time dt) = 0;
-	virtual void handleEvent(const sf::Event &event) = 0;
+	virtual void handleEvent(const sf::Event& event) = 0;
 
 	[[nodiscard]] int getColor() const;
 	[[nodiscard]] std::string getName() const;
 
    protected:
-	GameHandler &mGameHandler;
+	void setName(const std::string& name);
+	GameHandler& mGameHandler;
 
    private:
 	std::string mName;

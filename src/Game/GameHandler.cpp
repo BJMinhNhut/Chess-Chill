@@ -107,12 +107,14 @@ bool GameHandler::isDragging() const {
 	return mDragging != nullptr;
 }
 
-void GameHandler::snapDragging(int x, int y) {
-	mDragging->snap(x, y);
+void GameHandler::snapDraggingToMouse() {
+	sf::Vector2i mouse = sf::Mouse::getPosition(mWindow);
+	mDragging->snap(mouse.x, mouse.y);
 }
 
-bool GameHandler::isLegalHover(int x, int y) const {
-	int square = getHoverSquare(x, y);
+bool GameHandler::isMouseLegalHover() const {
+	sf::Vector2i mouse = sf::Mouse::getPosition(mWindow);
+	int square = getHoverSquare(mouse.x, mouse.y);
 	return (Board::validSquare(square) && mPieces[square] != nullptr &&
 	        mPieces[square]->color() == getTurn());
 }
@@ -185,7 +187,7 @@ void GameHandler::highlightLegalMoves(int from) {
 	std::vector<int> moves = getMoveList(from);
 	for (int move : moves) {
 		int to = move >> 6;
-		highlightSquare(to, Move);
+		highlightSquare(to, Target);
 		moveCandidates.push_back(to);
 	}
 }

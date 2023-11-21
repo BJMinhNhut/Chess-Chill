@@ -7,9 +7,10 @@
 
 #include "GUI/Container.hpp"
 #include "GUI/Label.hpp"
-#include "Game/GameHandler.hpp"
-#include "Template/State.hpp"
 #include "GUI/Sprite.hpp"
+#include "Game/GameHandler.hpp"
+#include "Game/Player.hpp"
+#include "Template/State.hpp"
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
@@ -38,6 +39,7 @@ class GameState : public State {
 	static std::string getClockString(float time);
 
    private:
+	Player::Ptr mPlayers[2];
 	GameHandler mGame;
 	GUI::Container mGUIContainer;
 	GUI::Container mEndGameContainer;

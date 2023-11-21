@@ -12,5 +12,9 @@ int Player::getColor() const {
 }
 
 std::string Player::getName() const {
-	return mName;
+	return mName + " (" + (mColor ? "Black" : "White") + ")";
+}
+
+void Player::setName(const std::string& name) {
+	mName = name;
 }

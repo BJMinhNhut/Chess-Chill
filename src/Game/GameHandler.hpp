@@ -49,11 +49,11 @@ class GameHandler : public sf::NonCopyable, public GameLogic {
 	void pickUpPiece(int square, int x, int y);
 	void dropPiece(int square);
 
-	void snapDragging(int x, int y);
+	void snapDraggingToMouse();
 	void setCursor(sf::Cursor::Type type);
 
 	bool isDragging() const;
-	bool isLegalHover(int x, int y) const;
+	bool isMouseLegalHover() const;
 	int getHoverSquare(int x, int y) const;
 
    private:

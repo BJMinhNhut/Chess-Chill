@@ -6,6 +6,7 @@
 #include "GUI/Button.hpp"
 #include "GUI/Label.hpp"
 #include "GUI/Sprite.hpp"
+#include "Game/HumanPlayer.hpp"
 #include "Template/Constants.hpp"
 #include "Template/ResourceHolder.hpp"
 #include "Template/Utility.hpp"
@@ -23,17 +24,22 @@ GameState::GameState(StateStack& stack, Context context)
             BOARD_POSITION + sf::Vector2f(25.f, 25.f)),
       mGUIContainer(),
       mWinner(nullptr),
-      mDescription(nullptr) {
-	getContext().sounds->play(SoundEffect::StartGame);
-	loadBasicGUI();
-	loadGameGUI();
-	loadControllerGUI();
-	loadEndGameGUI();
+      mDescription(nullptr),
+      mPlayers() {
 
 	mGame.setClock(0, sf::seconds(context.options->getTime()),
 	               sf::seconds(context.options->getIncrement()));
 	mGame.setClock(1, sf::seconds(context.options->getTime()),
 	               sf::seconds(context.options->getIncrement()));
+
+	mPlayers[0] = std::unique_ptr<Player>(new HumanPlayer(mGame, Player::White));
+	mPlayers[1] = std::unique_ptr<Player>(new HumanPlayer(mGame, Player::Black));
+
+	getContext().sounds->play(SoundEffect::StartGame);
+	loadBasicGUI();
+	loadGameGUI();
+	loadControllerGUI();
+	loadEndGameGUI();
 }
 
 void GameState::loadBasicGUI() {
@@ -74,13 +80,13 @@ void GameState::loadGameGUI() {
 	panels->setPosition(BOARD_POSITION);
 	mGUIContainer.pack(panels);
 
-	auto player1 = std::make_shared<GUI::Label>(GUI::Label::Main, "Player 1", *context.fonts);
-	player1->setPosition(1040.f, 217.f + 8.f);
-	mGUIContainer.pack(player1);
+	auto whitePlayer = std::make_shared<GUI::Label>(GUI::Label::Main, mPlayers[0]->getName(), *context.fonts);
+	whitePlayer->setPosition(1040.f, 696.f + 8.f);
+	mGUIContainer.pack(whitePlayer);
 
-	auto player2 = std::make_shared<GUI::Label>(GUI::Label::Main, "Player 2", *context.fonts);
-	player2->setPosition(1040.f, 696.f + 8.f);
-	mGUIContainer.pack(player2);
+	auto blackPlayer = std::make_shared<GUI::Label>(GUI::Label::Main, mPlayers[1]->getName(), *context.fonts);
+	blackPlayer->setPosition(1040.f, 217.f + 8.f);
+	mGUIContainer.pack(blackPlayer);
 
 	mClock[0] =
 	    std::make_shared<GUI::Label>(GUI::Label::Clock, "--:--", *context.fonts, Constants::mBlack);
@@ -193,6 +199,7 @@ bool GameState::update(sf::Time dt) {
 	if (mGame.isFinished()) {
 		mEndGameContainer.update(dt);
 	} else {
+		mPlayers[mGame.getTurn()]->update(dt);
 		mGame.update(dt);
 		updateClock();
 		mGUIContainer.update(dt);
@@ -204,6 +211,7 @@ bool GameState::handleEvent(const sf::Event& event) {
 	if (mGame.isFinished()) {
 		mEndGameContainer.handleEvent(event);
 	} else {
+		mPlayers[mGame.getTurn()]->handleEvent(event);
 		mGame.handleEvent(event);
 		mGUIContainer.handleEvent(event);
 	}

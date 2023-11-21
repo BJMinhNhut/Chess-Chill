@@ -21,7 +21,6 @@ class HumanPlayer : public Player {
    private:
 	void handleMousePressed(int x, int y);
 	void handleMouseReleased(int x, int y);
-	void handleMouseMoved(int x, int y);
 };
 
 #endif  //CHESS_CHILL_HUMANPLAYER_HPP
