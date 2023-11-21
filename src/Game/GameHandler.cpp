@@ -71,6 +71,7 @@ void GameHandler::draw() {
 void GameHandler::update(sf::Time dt) {
 	GameLogic::updateTime(dt);
 	mSceneGraph.update(dt);
+	mSounds.removeStoppedSounds();
 }
 
 void GameHandler::rotateBoard() {
