@@ -9,6 +9,7 @@
 #include "Game/HumanPlayer.hpp"
 #include "Template/Constants.hpp"
 #include "Template/ResourceHolder.hpp"
+#include "Game/BotPlayer.hpp"
 #include "Template/Utility.hpp"
 
 #include <SFML/Graphics/RenderWindow.hpp>
@@ -32,8 +33,8 @@ GameState::GameState(StateStack& stack, Context context)
 	mGame.setClock(1, sf::seconds(context.options->getTime()),
 	               sf::seconds(context.options->getIncrement()));
 
-	mPlayers[0] = std::unique_ptr<Player>(new HumanPlayer(mGame, Player::White));
-	mPlayers[1] = std::unique_ptr<Player>(new HumanPlayer(mGame, Player::Black));
+	mPlayers[0] = std::unique_ptr<Player>(new BotPlayer(mGame, Player::White));
+	mPlayers[1] = std::unique_ptr<Player>(new BotPlayer(mGame, Player::Black));
 
 	getContext().sounds->play(SoundEffect::StartGame);
 	loadBasicGUI();

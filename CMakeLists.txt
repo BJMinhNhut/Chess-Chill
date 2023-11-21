@@ -66,6 +66,9 @@ add_executable(${TARGET_NAME}
         src/Game/Player.hpp
         src/Game/HumanPlayer.cpp
         src/Game/HumanPlayer.hpp
+        src/Game/BotPlayer.cpp
+        src/Game/BotPlayer.hpp
+        src/Template/Random.cpp
 )
 target_link_libraries(${TARGET_NAME} PRIVATE sfml-graphics sfml-audio)
 target_compile_features(${TARGET_NAME} PRIVATE cxx_std_17)

@@ -39,6 +39,19 @@ float GameLogic::getRemainingTime(bool turn) const {
 	return mClock[turn].get();
 }
 
+std::vector<int> GameLogic::getLegalMoves() const {
+	std::vector<int> moveList;
+	for (int i = 0; i < 64; i++) {
+		if (mBoard.get(i) == 0 || Piece::getColor(mBoard.get(i)) != mBoard.getTurn())
+			continue;
+		for (int j = 0; j < 64; j++) {
+			if (isLegalMove(i, j))
+				moveList.push_back(j << 6 | i);
+		}
+	}
+	return moveList;
+}
+
 std::vector<int> GameLogic::getMoveList(int from) const {
 	std::vector<int> moveList;
 	int piece = mBoard.get(from);

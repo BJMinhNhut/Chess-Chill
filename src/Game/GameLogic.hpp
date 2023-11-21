@@ -44,6 +44,7 @@ class GameLogic {
 	[[nodiscard]] std::string getWinner() const;
 	[[nodiscard]] float getRemainingTime(bool turn) const;
 	[[nodiscard]] std::vector<int> getMoveList(int from) const;
+	[[nodiscard]] std::vector<int> getLegalMoves() const;
 	[[nodiscard]] bool getTurn() const;
 
 	void makeMove(int from, int to);
