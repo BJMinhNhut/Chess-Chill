@@ -43,6 +43,7 @@ class GameLogic {
 	[[nodiscard]] Status status() const;
 	[[nodiscard]] std::string getWinner() const;
 	[[nodiscard]] float getRemainingTime(bool turn) const;
+	[[nodiscard]] std::vector<int> getMoveList(int from) const;
 
 	void makeMove(int from, int to);
 	void setClock(bool turn, sf::Time time, sf::Time bonus = sf::seconds(0));

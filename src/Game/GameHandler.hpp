@@ -17,6 +17,7 @@
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/View.hpp>
 #include <SFML/System/NonCopyable.hpp>
+#include <SFML/Window/Cursor.hpp>
 
 #include <array>
 
@@ -36,10 +37,24 @@ class GameHandler : public sf::NonCopyable, public GameLogic {
 	                     SoundPlayer& sounds, sf::Vector2f position);
 
 	void update(sf::Time dt);
-	void draw();
 	void handleEvent(const sf::Event& event);
+	void draw();
 
 	void rotateBoard();
+
+	void handleMouseMoved(int x, int y);
+	void handleMove(int from, int to);
+	void moveFromClickedSquare(int to);
+
+	void pickUpPiece(int square, int x, int y);
+	void dropPiece(int square);
+
+	void snapDragging(int x, int y);
+	void setCursor(sf::Cursor::Type type);
+
+	bool isDragging() const;
+	bool isLegalHover(int x, int y) const;
+	int getHoverSquare(int x, int y) const;
 
    private:
 	enum Layer { Background, Pieces, PopUp, LayerCount };
@@ -54,10 +69,7 @@ class GameHandler : public sf::NonCopyable, public GameLogic {
 
    private:
 	void buildScene();
-	void handleMove(int from, int to, bool drop = false);
 
-	Piece* checkHoverPiece(int x, int y) const;
-	int getHoverSquare(int x, int y) const;
 	sf::Vector2f getBoxPosition(int box) const;
 
 	void addPiece(int piece, int square);
@@ -66,11 +78,7 @@ class GameHandler : public sf::NonCopyable, public GameLogic {
 	void postMove() override;
 	void promotePiece(int square, int piece) override;
 
-	void checkDropPiece(int square);
-	void checkClick(int square);
-	void checkPickUpPiece(int x, int y);
-	void handleMouseMoved(int x, int y);
-
+	void highlightLegalMoves(int from);
 	void highlightSquare(int square, HighlightRate rate);
 	void highlightMove(int move, bool flag);
 	void clearCandidates();

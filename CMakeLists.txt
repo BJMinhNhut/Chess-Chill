@@ -62,6 +62,10 @@ add_executable(${TARGET_NAME}
         src/States/GameOptionsState.hpp
         src/Template/GameOptions.cpp
         src/Template/GameOptions.hpp
+        src/Game/Player.cpp
+        src/Game/Player.hpp
+        src/Game/HumanPlayer.cpp
+        src/Game/HumanPlayer.hpp
 )
 target_link_libraries(${TARGET_NAME} PRIVATE sfml-graphics sfml-audio)
 target_compile_features(${TARGET_NAME} PRIVATE cxx_std_17)

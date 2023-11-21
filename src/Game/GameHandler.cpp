@@ -73,22 +73,6 @@ void GameHandler::update(sf::Time dt) {
 	mSceneGraph.update(dt);
 }
 
-void GameHandler::handleEvent(const sf::Event& event) {
-	if (event.type == sf::Event::MouseMoved) {
-		handleMouseMoved(event.mouseMove.x, event.mouseMove.y);
-	} else if (event.mouseButton.button == sf::Mouse::Left) {
-		if (event.type == sf::Event::MouseButtonPressed) {
-			checkPickUpPiece(event.mouseButton.x, event.mouseButton.y);
-		} else if (event.type == sf::Event::MouseButtonReleased) {
-			int newSquare = getHoverSquare(event.mouseButton.x, event.mouseButton.y);
-			if (mDragging == nullptr) {
-				checkClick(newSquare);
-			} else
-				checkDropPiece(newSquare);
-		}
-	}
-}
-
 void GameHandler::rotateBoard() {
 	mSounds.play(SoundEffect::Castling);
 	mRotated = !mRotated;
@@ -104,49 +88,56 @@ void GameHandler::rotateBoard() {
 	}
 }
 
-void GameHandler::handleMouseMoved(int x, int y) {
-	//		std::cerr << event.mouseMove.x << ' ' << event.mouseMove.y << '\n';
-	if (mDragging) {
-		mDragging->snap(x, y);
-	} else {
-		sf::Cursor::Type type = checkHoverPiece(x, y) ? sf::Cursor::Hand : sf::Cursor::Arrow;
-		sf::Cursor cursor;
-		if (cursor.loadFromSystem(type)) {
-			mWindow.setMouseCursor(cursor);
-		} else
-			throw std::runtime_error("Cannot load hand cursor");
-	}
+void GameHandler::handleEvent(const sf::Event& event) {
+	if (event.type == sf::Event::MouseMoved)
+		handleMouseMoved(event.mouseButton.x, event.mouseButton.y);
 }
 
-void GameHandler::checkClick(int square) {
-	handleMove(mOldSquare, square);
+void GameHandler::setCursor(sf::Cursor::Type type) {
+	sf::Cursor cursor;
+	if (cursor.loadFromSystem(type)) {
+		mWindow.setMouseCursor(cursor);
+	} else
+		throw std::runtime_error("Cannot load new cursor");
 }
 
-void GameHandler::checkDropPiece(int square) {
+void GameHandler::handleMouseMoved(int x, int y) {}
+
+bool GameHandler::isDragging() const {
+	return mDragging != nullptr;
+}
+
+void GameHandler::snapDragging(int x, int y) {
+	mDragging->snap(x, y);
+}
+
+bool GameHandler::isLegalHover(int x, int y) const {
+	int square = getHoverSquare(x, y);
+	return (Board::validSquare(square) && mPieces[square] != nullptr &&
+	        mPieces[square]->color() == getTurn());
+}
+
+void GameHandler::dropPiece(int square) {
 	mPieces[mOldSquare]->setOpacity(100);
 	mSceneLayers[PopUp]->detachChild(*mDragging);
 	mDragging = nullptr;
 	if (square != mOldSquare) {
 		if (Board::validSquare(square))
-			handleMove(mOldSquare, square, true);
+			handleMove(mOldSquare, square);
 		else
 			mSounds.play(SoundEffect::OutOfBound);
 	}
 }
 
-void GameHandler::checkPickUpPiece(int x, int y) {
-	assert(mDragging == nullptr);
-	Piece* hovering = checkHoverPiece(x, y);
-
-	if (hovering == nullptr)
-		return;
+void GameHandler::pickUpPiece(int square, int x, int y) {
+	Piece* hovering = mPieces[square];
 
 	// dim old position and highlight old box
 	if ((mLastMove == -1 || (mLastMove & 0x3f) != mOldSquare) && mOldSquare != -1)
 		highlightSquare(mOldSquare, Normal);
 	clearCandidates();
 
-	mOldSquare = getHoverSquare(x, y);
+	mOldSquare = square;
 	hovering->setOpacity(50);
 	highlightSquare(mOldSquare, Click);
 	highlightMove(mLastMove, true);
@@ -156,15 +147,14 @@ void GameHandler::checkPickUpPiece(int x, int y) {
 	mDragging->snap(x, y);
 	mSceneLayers[PopUp]->attachChild(SceneNode::Ptr(mDragging));
 
-	for (int square = 0; square < GameLogic::BOARD_SIZE; ++square) {
-		if (isLegalMove(mOldSquare, square)) {
-			moveCandidates.push_back(square);
-			highlightSquare(square, Target);
-		}
-	}
+	highlightLegalMoves(square);
 }
 
-void GameHandler::handleMove(int from, int to, bool drop) {
+void GameHandler::moveFromClickedSquare(int to) {
+	handleMove(mOldSquare, to);
+}
+
+void GameHandler::handleMove(int from, int to) {
 	bool legal = isLegalMove(from, to);
 
 	clearCandidates();
@@ -174,13 +164,9 @@ void GameHandler::handleMove(int from, int to, bool drop) {
 		highlightMove(mLastMove, false);
 		highlightMove(to << 6 | from, true);
 		makeMove(from, to);
-		if (isFinished()) {
-			sf::Cursor cursor;
-			if (cursor.loadFromSystem(sf::Cursor::Arrow)) {
-				mWindow.setMouseCursor(cursor);
-			} else
-				throw std::runtime_error("Cannot load hand cursor");
-		}
+		if (isFinished())
+			setCursor(sf::Cursor::Arrow);
+
 #ifdef DEBUG_ATTACK
 		for (int i = 0; i < 64; ++i) {
 			if (isAttacked(i))
@@ -192,6 +178,15 @@ void GameHandler::handleMove(int from, int to, bool drop) {
 		mOldSquare = -1;
 	} else {
 		highlightMove(mLastMove, true);
+	}
+}
+
+void GameHandler::highlightLegalMoves(int from) {
+	std::vector<int> moves = getMoveList(from);
+	for (int move : moves) {
+		int to = move >> 6;
+		highlightSquare(to, Move);
+		moveCandidates.push_back(to);
 	}
 }
 
@@ -310,13 +305,6 @@ int GameHandler::getHoverSquare(int x, int y) const {
 	if (row >= 8 || column >= 8 || row < 0 || column < 0)
 		return -1;
 	return Board::getSquareID(row, column);
-}
-
-Piece* GameHandler::checkHoverPiece(int x, int y) const {
-	int boxID = getHoverSquare(x, y);
-	if (boxID < 0 || mPieces[boxID] == nullptr || mPieces[boxID]->color() != getTurn())
-		return nullptr;
-	return mPieces[boxID];
 }
 
 sf::Vector2f GameHandler::getBoxPosition(int box) const {

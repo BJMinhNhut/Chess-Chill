@@ -39,6 +39,18 @@ float GameLogic::getRemainingTime(bool turn) const {
 	return mClock[turn].get();
 }
 
+std::vector<int> GameLogic::getMoveList(int from) const {
+	std::vector<int> moveList;
+	int piece = mBoard.get(from);
+	if (piece == 0 || Piece::getColor(piece) != mBoard.getTurn())
+		return moveList;
+	for (int i = 0; i < 64; i++) {
+		if (isLegalMove(from, i))
+			moveList.push_back(i);
+	}
+	return moveList;
+}
+
 bool GameLogic::isLegalMove(int from, int to) const {
 	if (from == to || !Board::validSquare(from) || !Board::validSquare(to))
 		return false;
