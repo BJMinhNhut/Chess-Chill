@@ -288,7 +288,6 @@ void GameHandler::postMove() {
 
 void GameHandler::promotePiece(int square, int piece) {
 	GameLogic::promotePiece(square, piece);
-	capturePiece(square);
 	addPiece(piece, square);
 }
 

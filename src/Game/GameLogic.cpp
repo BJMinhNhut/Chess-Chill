@@ -192,6 +192,7 @@ void GameLogic::postMove() {
 
 void GameLogic::promotePiece(int square, int piece) {
 	assert(mBoard.getType(square) == Piece::Pawn);
+	capturePiece(square);
 	mBoard.set(square, piece);
 }
 
