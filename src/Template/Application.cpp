@@ -123,6 +123,10 @@ void Application::loadImages() {
 	               Constants::DATA_PREFIX + "resources/images/buttons/play_normal.png");
 	mTextures.load(Textures::PlayButtonSelected,
 	               Constants::DATA_PREFIX + "resources/images/buttons/play_selected.png");
+	mTextures.load(Textures::CloseButtonNormal,
+	               Constants::DATA_PREFIX + "resources/images/buttons/close_normal.png");
+	mTextures.load(Textures::CloseButtonSelected,
+	               Constants::DATA_PREFIX + "resources/images/buttons/close_selected.png");
 }
 
 void Application::run() {

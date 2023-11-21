@@ -37,6 +37,8 @@ enum ID {
 	RotateButtonSelected,
 	PlayButtonNormal,
 	PlayButtonSelected,
+	CloseButtonNormal,
+	CloseButtonSelected,
 
 	Board,
 	PieceSet,

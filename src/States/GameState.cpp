@@ -26,7 +26,7 @@ GameState::GameState(StateStack& stack, Context context)
       mGUIContainer(),
       mWinner(nullptr),
       mDescription(nullptr),
-      mPlayers() {
+      mPlayers(), mClock(), mEndGameContainer(), mReviewMode(false) {
 
 	mGame.setClock(0, sf::seconds(context.options->getTime()),
 	               sf::seconds(context.options->getIncrement()));
@@ -115,6 +115,12 @@ void GameState::loadEndGameGUI() {
 	panel->setPosition(377.f, 310.f);
 	mEndGameContainer.pack(panel);
 
+	auto closeButton = std::make_shared<GUI::Button>(GUI::Button::Close, *getContext().fonts,
+	                                                 *getContext().textures);
+	closeButton->setPosition(818.f + 50.f/2, 317.f + 50.f/2);
+	closeButton->setCallback([this]() { mReviewMode = true; });
+	mEndGameContainer.pack(closeButton);
+
 	auto newGameButton = std::make_shared<GUI::Button>(GUI::Button::Menu, *getContext().fonts,
 	                                                   *getContext().textures);
 	newGameButton->setPosition(547.f + 166.f / 2, 476.f + 48.f / 2);
@@ -192,13 +198,14 @@ void GameState::draw() {
 			getContext().sounds->play(SoundEffect::EndGame);
 			loadResult();
 		}
-		window.draw(mEndGameContainer);
+		if (!mReviewMode) window.draw(mEndGameContainer);
 	}
 }
 
 bool GameState::update(sf::Time dt) {
 	if (mGame.isFinished()) {
-		mEndGameContainer.update(dt);
+		if (!mReviewMode) mEndGameContainer.update(dt);
+		else mGUIContainer.update(dt);
 	} else {
 		mPlayers[mGame.getTurn()]->update(dt);
 		mGame.update(dt);
@@ -210,7 +217,8 @@ bool GameState::update(sf::Time dt) {
 
 bool GameState::handleEvent(const sf::Event& event) {
 	if (mGame.isFinished()) {
-		mEndGameContainer.handleEvent(event);
+		if (!mReviewMode) mEndGameContainer.handleEvent(event);
+		else mGUIContainer.handleEvent(event);
 	} else {
 		mPlayers[mGame.getTurn()]->handleEvent(event);
 		mGame.handleEvent(event);

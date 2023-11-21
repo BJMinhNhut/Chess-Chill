@@ -45,6 +45,7 @@ class GameState : public State {
 	GUI::Container mEndGameContainer;
 	GUI::Label::Ptr mWinner, mDescription;
 	GUI::Label::Ptr mClock[2];
+	bool mReviewMode;
 };
 
 #endif  //CHESS_GAMESTATE_HPP
