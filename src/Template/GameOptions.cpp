@@ -29,7 +29,7 @@ const std::vector<std::pair<int, int>> GameOptions::TIMES = {
     {30, 0}
 };
 
-GameOptions::GameOptions() : mMode(PvP), mType(Standard), mTimeID(6) {}
+GameOptions::GameOptions() : mMode(PvAI), mType(Standard), mTimeID(6) {}
 
 std::string GameOptions::getStringTime() const {
 	int mTime = TIMES[mTimeID].first;
