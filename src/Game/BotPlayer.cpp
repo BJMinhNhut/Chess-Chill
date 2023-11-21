@@ -7,7 +7,9 @@
 
 #include <SFML/System/Sleep.hpp>
 
-BotPlayer::BotPlayer(GameHandler & gameHandler, int color) : Player(gameHandler, color) {}
+BotPlayer::BotPlayer(GameHandler & gameHandler, int color) : Player(gameHandler, color) {
+	setName("Computer");
+}
 
 void BotPlayer::update(sf::Time dt) {
 	if (mGameHandler.getTurn() == getColor()) {
