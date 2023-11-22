@@ -40,7 +40,6 @@ void HumanPlayer::handleMousePressed(int x, int y) {
 
 void HumanPlayer::handleMouseReleased(int x, int y) {
 	int square = mGameHandler.getHoverSquare(x, y);
-	if (square == -1) return;
 	if (mGameHandler.isDragging())
 		mGameHandler.dropPiece(square);
 	else
