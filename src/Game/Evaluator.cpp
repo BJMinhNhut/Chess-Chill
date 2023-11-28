@@ -8,10 +8,10 @@
 // King, Queen, Bishop, Knight, Rook, Pawn
 const int Evaluator::PIECE_MATERIAL[6] = {20000, 900, 330, 320, 500, 100};
 
-int Evaluator::evaluate(const Board &board, int color) {
+int Evaluator::evaluateBoard(const GameLogic &board, int color) {
 	int score = 0;
 	for (int i = 0; i < 64; i++) {
-		int piece = board.get(i);
+		int piece = board.getPiece(i);
 		if (piece == 0) continue;
 		if (Piece::getColor(piece) == color) {
 			score += evaluatePiece(piece);

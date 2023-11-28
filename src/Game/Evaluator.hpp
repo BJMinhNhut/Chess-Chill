@@ -5,7 +5,7 @@
 #ifndef CHESS_CHILL_EVALUATOR_HPP
 #define CHESS_CHILL_EVALUATOR_HPP
 
-#include "Board.hpp"
+#include "GameLogic.hpp"
 
 class Evaluator {
    public:
@@ -13,7 +13,7 @@ class Evaluator {
 //	static const int PIECE_POSITION[6][64];
 
    public:
-	static int evaluate(const Board& board, int color = 0);
+	static int evaluateBoard(const GameLogic& board, int color = 0);
 	static int evaluatePiece(int piece);
 };
 

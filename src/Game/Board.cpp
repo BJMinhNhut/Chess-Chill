@@ -16,6 +16,11 @@ Board::Board(const std::string& fen)
 
 Board::Board(const Board& other) {
 	std::memcpy(mBoard, other.mBoard, sizeof mBoard);
+	mTurn = other.mTurn;
+	mCastling = other.mCastling;
+	mEnPassant = other.mEnPassant;
+	mHalfMove = other.mHalfMove;
+	mFullMove = other.mFullMove;
 }
 
 int Board::getRank(int square) {

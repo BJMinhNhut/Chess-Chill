@@ -181,6 +181,7 @@ void GameHandler::handleMove(int from, int to) {
 		mOldSquare = -1;
 	} else {
 		highlightMove(mLastMove, true);
+		std::cerr << "Illegal move\n";
 	}
 }
 

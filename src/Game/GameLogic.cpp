@@ -62,7 +62,7 @@ std::vector<int> GameLogic::getMoveList(int from) const {
 }
 
 int GameLogic::getEvaluation() const {
-	Evaluator::evaluate(mBoard);
+	return Evaluator::evaluateBoard(*this);
 }
 
 bool GameLogic::isLegalMove(int from, int to) const {
@@ -109,9 +109,9 @@ bool GameLogic::isLegalMove(int from, int to) const {
 bool GameLogic::isPseudoLegalMove(int from, int to) const {
 	GameLogic copy(*this);
 	copy.move(from, to);
-	if (copy.mAttacks.isKingInCheck(mBoard.getTurn())) {
-		std::cout << from << ' ' << to << " pseudo legal move\n";
-	}
+//	if (copy.mAttacks.isKingInCheck(mBoard.getTurn())) {
+//		std::cout << from << ' ' << to << " pseudo legal move\n";
+//	}
 	return copy.mAttacks.isKingInCheck(mBoard.getTurn());
 }
 
@@ -177,7 +177,7 @@ void GameLogic::move(int from, int to) {
 }
 
 void GameLogic::capturePiece(int square) {
-	std::cout << "capture " << square << '\n';
+//	std::cout << "capture " << square << '\n';
 	assert(mBoard.getType(square) != Piece::King);
 	mBoard.set(square, 0);
 }
@@ -206,17 +206,17 @@ void GameLogic::updateStatus() {
 	if (!hasLegalMove()) {
 		if (mAttacks.isKingInCheck()) {
 			mStatus = Checkmate;
-			std::cout << "Checkmate " << (mBoard.getTurn() ? "White" : "Black") << " wins\n";
+//			std::cout << "Checkmate " << (mBoard.getTurn() ? "White" : "Black") << " wins\n";
 		} else {
 			mStatus = Stalemate;
-			std::cout << "Stalemate\n";
+//			std::cout << "Stalemate\n";
 		}
 	} else if (isInsufficientMaterial()) {
 		mStatus = InsufficientMaterial;
-		std::cout << "Insufficient material\n";
+//		std::cout << "Insufficient material\n";
 	} else if (isThreefoldRepetition()) {
 		mStatus = ThreefoldRepetition;
-		std::cout << "Threefold repetition\n";
+//		std::cout << "Threefold repetition\n";
 	} else {
 		mStatus = OnGoing;
 	}
@@ -230,7 +230,7 @@ bool GameLogic::isThreefoldRepetition() {
 		if (mHistory.back() == mHistory[i])
 			count++;
 	}
-	std::cout << "current FEN \"" << mHistory.back() << "\" " << count << '\n';
+//	std::cout << "current FEN \"" << mHistory.back() << "\" " << count << '\n';
 	return count >= 3;
 }
 

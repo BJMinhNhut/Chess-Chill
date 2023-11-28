@@ -71,6 +71,8 @@ add_executable(${TARGET_NAME}
         src/Template/Random.cpp
         src/Game/Evaluator.cpp
         src/Game/Evaluator.hpp
+        src/Game/Engine.cpp
+        src/Game/Engine.hpp
 )
 target_link_libraries(${TARGET_NAME} PRIVATE sfml-graphics sfml-audio)
 target_compile_features(${TARGET_NAME} PRIVATE cxx_std_17)
