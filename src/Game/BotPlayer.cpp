@@ -27,7 +27,7 @@ void BotPlayer::update(sf::Time dt) {
 void BotPlayer::handleEvent(const sf::Event& event) {}
 
 void BotPlayer::makeMove() {
-	int move = Engine::getBestMove(static_cast<GameLogic>(mGameHandler), 3);
+	int move = Engine::getBestMove(static_cast<GameLogic>(mGameHandler), 4);
 	//		std::vector<int> moves = mGameHandler.getLegalMoves();
 	//		int move = moves[Random::getInt(0, moves.size() - 1)];
 	int from = move & 0x3F;
