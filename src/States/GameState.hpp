@@ -45,7 +45,7 @@ class GameState : public State {
 	GUI::Container mGUIContainer;
 	GUI::Container mEndGameContainer;
 	GUI::Label::Ptr mWinner, mDescription;
-	GUI::Label::Ptr mClock[2];
+	GUI::Label::Ptr mClock[2], mEvaluation;
 	bool mReviewMode;
 };
 

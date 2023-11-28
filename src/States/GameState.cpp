@@ -29,7 +29,8 @@ GameState::GameState(StateStack& stack, Context context)
       mPlayers(),
       mClock(),
       mEndGameContainer(),
-      mReviewMode(false) {
+      mReviewMode(false),
+      mEvaluation(nullptr) {
 
 	mGame.setClock(0, sf::seconds(context.options->getTime()),
 	               sf::seconds(context.options->getIncrement()));
@@ -81,6 +82,12 @@ void GameState::loadBasicGUI() {
 	titleLabel->setPosition(titleBar->getPosition());
 	titleLabel->alignCenter();
 	mGUIContainer.pack(titleLabel);
+
+	mEvaluation = std::make_shared<GUI::Label>(
+	    GUI::Label::Main, std::to_string(mGame.getEvaluation()), *context.fonts);
+	mEvaluation->setPosition(200.f, 450.f);
+	mEvaluation->alignCenter();
+	mGUIContainer.pack(mEvaluation);
 }
 
 void GameState::loadGameGUI() {
@@ -135,10 +142,7 @@ void GameState::loadEndGameGUI() {
 	                                                   *getContext().textures);
 	newGameButton->setPosition(547.f + 166.f / 2, 476.f + 48.f / 2);
 	newGameButton->setText("New Game");
-	newGameButton->setCallback([this]() {
-		requestStackPop();
-		requestStackPush(States::GameOptions);
-	});
+	newGameButton->setCallback([this]() { requestStackPop(); });
 	mEndGameContainer.pack(newGameButton);
 
 	auto homeButton = std::make_shared<GUI::Button>(GUI::Button::Menu, *getContext().fonts,
@@ -226,6 +230,8 @@ bool GameState::update(sf::Time dt) {
 	} else {
 		mPlayers[mGame.getTurn()]->update(dt);
 		mGame.update(dt);
+		mEvaluation->setText(std::to_string(mGame.getEvaluation()));
+		mEvaluation->alignCenter();
 		updateClock();
 		mGUIContainer.update(dt);
 	}

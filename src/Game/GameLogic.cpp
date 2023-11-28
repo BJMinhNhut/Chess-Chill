@@ -3,6 +3,7 @@
 //
 
 #include "GameLogic.hpp"
+#include "Evaluator.hpp"
 #include "Piece.hpp"
 
 #include <cassert>
@@ -58,6 +59,10 @@ std::vector<int> GameLogic::getMoveList(int from) const {
 			moveList.push_back(i << 6 | from);
 	}
 	return moveList;
+}
+
+int GameLogic::getEvaluation() const {
+	Evaluator::evaluate(mBoard);
 }
 
 bool GameLogic::isLegalMove(int from, int to) const {

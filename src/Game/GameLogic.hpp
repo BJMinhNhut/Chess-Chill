@@ -46,6 +46,7 @@ class GameLogic {
 	[[nodiscard]] std::vector<int> getMoveList(int from) const;
 	[[nodiscard]] std::vector<int> getLegalMoves() const;
 	[[nodiscard]] bool getTurn() const;
+	[[nodiscard]] int getEvaluation() const;
 
 	void makeMove(int from, int to);
 	void setClock(bool turn, sf::Time time, sf::Time bonus = sf::seconds(0));

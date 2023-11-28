@@ -13,7 +13,6 @@ class BotPlayer : public Player {
 
 	void update(sf::Time dt) override;
 	void handleEvent(const sf::Event &event) override;
-
 };
 
 #endif  //CHESS_CHILL_BOTPLAYER_HPP
