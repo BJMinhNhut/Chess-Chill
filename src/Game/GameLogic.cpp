@@ -12,7 +12,13 @@
 const int GameLogic::BOARD_SIZE = 64;
 
 GameLogic::GameLogic(const std::string& fen)
-    : mBoard(fen), mAttacks(mBoard), mStatus(OnGoing), mLastMove(Normal), mHistory(), mClock() {
+    : mBoard(fen),
+      mAttacks(mBoard),
+      mStatus(OnGoing),
+      mLastMove(Normal),
+      mHistory(),
+      mClock(),
+      mLastMovePiece(-1) {
 	updateStatus();
 }
 
@@ -61,8 +67,28 @@ std::vector<int> GameLogic::getMoveList(int from) const {
 	return moveList;
 }
 
+int GameLogic::getLastMovePiece() const {
+	return mLastMovePiece;
+}
+
+int GameLogic::getKing(int color) const {
+	return mBoard.getKing(color);
+}
+
 int GameLogic::getEvaluation() const {
 	return Evaluator::evaluateBoard(*this);
+}
+
+int GameLogic::getCastling() const {
+	return mBoard.getCastling();
+}
+
+bool GameLogic::isChecked() const {
+	return mLastMove == Check;
+}
+
+bool GameLogic::isCaptured() const {
+	return mLastMove == Capture;
 }
 
 bool GameLogic::isLegalMove(int from, int to) const {
@@ -126,6 +152,7 @@ bool GameLogic::isFinished() const {
 void GameLogic::makeMove(int from, int to) {
 	mClock[mBoard.getTurn()].increment();
 	move(from, to);
+	mLastMovePiece = to;
 	updateStatus();
 }
 

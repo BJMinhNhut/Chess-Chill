@@ -4,14 +4,17 @@
 
 #include "Engine.hpp"
 #include "Evaluator.hpp"
+#include "Piece.hpp"
 #include "Template/Random.hpp"
 
 #include <SFML/System/Clock.hpp>
 
 #include <algorithm>
+#include <cassert>
 #include <iostream>
 
 int Engine::getBestMove(const GameLogic& board, int depth) {
+	assert(board.status() == GameLogic::OnGoing);
 	std::cout << (board.getTurn() ? "White" : "Black") << " to move\n";
 	std::vector<int> moves = board.getLegalMoves();
 	int bestMove = moves[0];
@@ -26,12 +29,13 @@ int Engine::getBestMove(const GameLogic& board, int depth) {
 		GameLogic newBoard(board);
 		newBoard.makeMove(from, to);
 		int score = alphaBeta(newBoard, depth - 1, -1000000, 1000000, false);
-		if (score > bestScore) {
+		if (score > bestScore + 5 ||
+		    (score >= bestScore && score <= bestScore + 5 && Random::getInt(0, 2))) {
 			bestScore = score;
 			bestMove = move;
 		}
 		time += clock.restart();
-		if (time > sf::seconds(3)) {
+		if (time > sf::seconds(10)) {
 			break;
 		}
 	}
@@ -43,9 +47,21 @@ void Engine::sortMoves(const GameLogic& board, std::vector<int>& moves) {
 	for (int move : moves) {
 		int from = move & 0x3F;
 		int to = (move >> 6) & 0x3F;
-		GameLogic newBoard(board);
-		newBoard.makeMove(from, to);
-		scores.emplace_back(Evaluator::evaluateBoard(newBoard, board.getTurn()), move);
+		int pieceFrom = board.getPiece(from);
+		int pieceTo = board.getPiece(to);
+		int score = 0;
+		if (board.getPiece(to) != 0) {
+			score += Evaluator::PIECE_MATERIAL[Piece::getType(pieceTo)] -
+			         Evaluator::PIECE_MATERIAL[Piece::getType(pieceFrom)]/10;
+			if (to == board.getLastMovePiece())
+				score += 1001;
+			scores.emplace_back(score, move);
+			continue;
+		} else {
+			GameLogic newBoard(board);
+			newBoard.makeMove(from, to);
+			scores.emplace_back(Evaluator::evaluateBoard(newBoard, board.getTurn()), move);
+		}
 	}
 	std::sort(scores.begin(), scores.end(),
 	          [](const std::pair<int, int>& a, const std::pair<int, int>& b) {
@@ -58,37 +74,37 @@ void Engine::sortMoves(const GameLogic& board, std::vector<int>& moves) {
 }
 
 int Engine::alphaBeta(const GameLogic& board, int depth, int alpha, int beta, bool inTurn) {
-	if (board.status() == GameLogic::Checkmate) {
-		return inTurn ? 1000000 : -1000000;
-	}
-	if (board.status() &
-	    (GameLogic::Stalemate | GameLogic::InsufficientMaterial | GameLogic::ThreefoldRepetition)) {
-		return 0;
-	}
-	if (depth == 0) {
-		return Evaluator::evaluateBoard(board, inTurn ? board.getTurn() : !board.getTurn());
-	}
-	std::vector<int> moves = board.getLegalMoves();
-	Random::shuffle(moves);
-	int score = inTurn ? -1000000 : 1000000;
-	for (auto move : moves) {
-		int from = move & 0x3F;
-		int to = (move >> 6) & 0x3F;
-		GameLogic newBoard(board);
-		newBoard.makeMove(from, to);
-		if (inTurn) {
-			score = std::max(score, alphaBeta(newBoard, depth - 1, alpha, beta, false));
-			if (beta < score) {
-				break;
+	bool isFinished = depth <= -2 || (depth <= 0 && !board.isCaptured() && !board.isChecked()) ||
+	                  board.isFinished();
+	int score = 0;
+	if (isFinished) {
+		score = Evaluator::evaluateBoard(board, inTurn ? board.getTurn() : !board.getTurn());
+	} else {
+		std::vector<int> moves = board.getLegalMoves();
+		Random::shuffle(moves);
+		score = inTurn ? -1000000 : 1000000;
+		for (auto move : moves) {
+			int from = move & 0x3F;
+			int to = (move >> 6) & 0x3F;
+			GameLogic newBoard(board);
+			newBoard.makeMove(from, to);
+			if (inTurn) {
+				score = std::max(score, alphaBeta(newBoard, depth - 1, alpha, beta, false));
+				alpha = std::max(alpha, score);
+				if (beta <= score)
+					break;
+			} else {
+				score = std::min(score, alphaBeta(newBoard, depth - 1, alpha, beta, true));
+				beta = std::min(beta, score);
+				if (score <= alpha)
+					break;
 			}
-			alpha = std::max(alpha, score);
-		} else {
-			score = std::min(score, alphaBeta(newBoard, depth - 1, alpha, beta, true));
-			if (score < alpha) {
-				break;
-			}
-			beta = std::min(beta, score);
 		}
 	}
-	return score + (inTurn ? (100 - (int)moves.size()) * 10 : -(100 - (int)moves.size()) * 10);
+
+	if (score < 0)
+		score -= depth;
+	else
+		score += depth;
+	return score;
 }

@@ -40,6 +40,8 @@ class GameLogic {
 	GameLogic(const GameLogic &other);
 
 	[[nodiscard]] bool isFinished() const;
+	[[nodiscard]] bool isChecked() const;
+	[[nodiscard]] bool isCaptured() const;
 	[[nodiscard]] Status status() const;
 	[[nodiscard]] std::string getWinner() const;
 	[[nodiscard]] float getRemainingTime(bool turn) const;
@@ -48,6 +50,9 @@ class GameLogic {
 	[[nodiscard]] bool getTurn() const;
 	[[nodiscard]] int getEvaluation() const;
 	[[nodiscard]] int getPiece(int square) const;
+	[[nodiscard]] int getKing(int color) const;
+	[[nodiscard]] int getLastMovePiece() const;
+	[[nodiscard]] int getCastling() const;
 
 	void makeMove(int from, int to);
 	void setClock(bool turn, sf::Time time, sf::Time bonus = sf::seconds(0));
@@ -91,6 +96,7 @@ class GameLogic {
 
 	Status mStatus;
 	MoveStatus mLastMove;
+	int mLastMovePiece;
 
 	std::vector<std::string> mHistory;
 

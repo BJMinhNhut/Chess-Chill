@@ -15,24 +15,30 @@ BotPlayer::BotPlayer(GameHandler& gameHandler, int color)
 	setName("Computer");
 }
 
+BotPlayer::~BotPlayer() {
+	if (mRunning) {
+		mThread.detach();
+		mRunning = false;
+	}
+}
 void BotPlayer::update(sf::Time dt) {
-	if (mGameHandler.getTurn() == getColor()) {
-		if (!mRunning) {
-			mRunning = true;
-			mThread = std::thread(&BotPlayer::makeMove, this);
-		}
+	if (mGameHandler.getTurn() == getColor() && mGameHandler.status() == GameLogic::OnGoing &&
+	    !mRunning) {
+		mRunning = true;
+		mThread = std::thread(&BotPlayer::makeMove, this);
 	}
 }
 
 void BotPlayer::handleEvent(const sf::Event& event) {}
 
 void BotPlayer::makeMove() {
-	int move = Engine::getBestMove(static_cast<GameLogic>(mGameHandler), 4);
-	//		std::vector<int> moves = mGameHandler.getLegalMoves();
-	//		int move = moves[Random::getInt(0, moves.size() - 1)];
+	int depth = mGameHandler.getRemainingTime(getColor()) > 100.f ? 3 : 2;
+	int move = Engine::getBestMove(static_cast<GameLogic>(mGameHandler), depth);
 	int from = move & 0x3F;
 	int to = (move >> 6) & 0x3F;
 	std::cout << "Best move: " << from << ' ' << to << '\n';
+	if (!mRunning || mGameHandler.status() != GameLogic::OnGoing)
+		return;
 	mGameHandler.handleMove(from, to);
 	mRunning = false;
 	mThread.detach();

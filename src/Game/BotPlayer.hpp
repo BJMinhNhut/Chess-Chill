@@ -12,6 +12,7 @@
 class BotPlayer : public Player {
    public:
 	BotPlayer(GameHandler & gameHandler, int color);
+	~BotPlayer() override;
 
 	void update(sf::Time dt) override;
 	void handleEvent(const sf::Event &event) override;
