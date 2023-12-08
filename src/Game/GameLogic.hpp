@@ -52,6 +52,7 @@ class GameLogic {
 	[[nodiscard]] int getPiece(int square) const;
 	[[nodiscard]] int getKing(int color) const;
 	[[nodiscard]] int getLastMovePiece() const;
+	[[nodiscard]] int getSecondLastMovePiece() const;
 	[[nodiscard]] int getCastling() const;
 
 	void makeMove(int from, int to);
@@ -96,7 +97,7 @@ class GameLogic {
 
 	Status mStatus;
 	MoveStatus mLastMove;
-	int mLastMovePiece;
+	int mLastMovePiece, mSecondLastMovePiece;
 
 	std::vector<std::string> mHistory;
 

@@ -29,8 +29,8 @@ int Engine::getBestMove(const GameLogic& board, int depth) {
 		GameLogic newBoard(board);
 		newBoard.makeMove(from, to);
 		int score = alphaBeta(newBoard, depth - 1, -1000000, 1000000, false);
-		if (score > bestScore + 5 ||
-		    (score >= bestScore && score <= bestScore + 5 && Random::getInt(0, 2))) {
+		if (score > bestScore + 8 ||
+		    (score >= bestScore && score <= bestScore + 8 && Random::getInt(0, 2))) {
 			bestScore = score;
 			bestMove = move;
 		}
@@ -50,18 +50,21 @@ void Engine::sortMoves(const GameLogic& board, std::vector<int>& moves) {
 		int pieceFrom = board.getPiece(from);
 		int pieceTo = board.getPiece(to);
 		int score = 0;
+		if (board.getPiece(from) == board.getSecondLastMovePiece())
+			score += 4000;
 		if (board.getPiece(to) != 0) {
 			score += Evaluator::PIECE_MATERIAL[Piece::getType(pieceTo)] -
-			         Evaluator::PIECE_MATERIAL[Piece::getType(pieceFrom)]/10;
+			         Evaluator::PIECE_MATERIAL[Piece::getType(pieceFrom)] / 10;
 			if (to == board.getLastMovePiece())
 				score += 1001;
-			scores.emplace_back(score, move);
-			continue;
 		} else {
 			GameLogic newBoard(board);
 			newBoard.makeMove(from, to);
-			scores.emplace_back(Evaluator::evaluateBoard(newBoard, board.getTurn()), move);
+			score = Evaluator::evaluateBoard(newBoard, board.getTurn());
+			if (newBoard.isChecked())
+				score += 2000;
 		}
+		scores.emplace_back(score, move);
 	}
 	std::sort(scores.begin(), scores.end(),
 	          [](const std::pair<int, int>& a, const std::pair<int, int>& b) {
@@ -74,8 +77,8 @@ void Engine::sortMoves(const GameLogic& board, std::vector<int>& moves) {
 }
 
 int Engine::alphaBeta(const GameLogic& board, int depth, int alpha, int beta, bool inTurn) {
-	bool isFinished = depth <= -2 || (depth <= 0 && !board.isCaptured() && !board.isChecked()) ||
-	                  board.isFinished();
+	bool isFinished = (depth <= 0 && !board.isCaptured() && !board.isChecked()) || (depth <= -2 && !board.isCaptured()) ||
+	                  (depth <= -4 && !board.isChecked()) || board.isFinished();
 	int score = 0;
 	if (isFinished) {
 		score = Evaluator::evaluateBoard(board, inTurn ? board.getTurn() : !board.getTurn());
@@ -103,8 +106,8 @@ int Engine::alphaBeta(const GameLogic& board, int depth, int alpha, int beta, bo
 	}
 
 	if (score < 0)
-		score -= depth;
+		score -= depth*5;
 	else
-		score += depth;
+		score += depth*5;
 	return score;
 }

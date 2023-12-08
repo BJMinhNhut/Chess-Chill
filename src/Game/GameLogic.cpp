@@ -18,7 +18,8 @@ GameLogic::GameLogic(const std::string& fen)
       mLastMove(Normal),
       mHistory(),
       mClock(),
-      mLastMovePiece(-1) {
+      mLastMovePiece(-1),
+      mSecondLastMovePiece(-1) {
 	updateStatus();
 }
 
@@ -69,6 +70,10 @@ std::vector<int> GameLogic::getMoveList(int from) const {
 
 int GameLogic::getLastMovePiece() const {
 	return mLastMovePiece;
+}
+
+int GameLogic::getSecondLastMovePiece() const {
+	return mSecondLastMovePiece;
 }
 
 int GameLogic::getKing(int color) const {
@@ -152,6 +157,7 @@ bool GameLogic::isFinished() const {
 void GameLogic::makeMove(int from, int to) {
 	mClock[mBoard.getTurn()].increment();
 	move(from, to);
+	mSecondLastMovePiece = mLastMovePiece;
 	mLastMovePiece = to;
 	updateStatus();
 }

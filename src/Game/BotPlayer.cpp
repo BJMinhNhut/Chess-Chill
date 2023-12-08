@@ -32,8 +32,8 @@ void BotPlayer::update(sf::Time dt) {
 void BotPlayer::handleEvent(const sf::Event& event) {}
 
 void BotPlayer::makeMove() {
-	int depth = mGameHandler.getRemainingTime(getColor()) > 100.f ? 3 : 2;
-	int move = Engine::getBestMove(static_cast<GameLogic>(mGameHandler), depth);
+//	int depth = mGameHandler.getRemainingTime(getColor()) > 100.f ? 3 : 2;
+	int move = Engine::getBestMove(static_cast<GameLogic>(mGameHandler), 3);
 	int from = move & 0x3F;
 	int to = (move >> 6) & 0x3F;
 	std::cout << "Best move: " << from << ' ' << to << '\n';
