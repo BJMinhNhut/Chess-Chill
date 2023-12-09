@@ -28,11 +28,11 @@ class GameLogic {
 	};
 
 	enum MoveStatus {
-		Normal,
-		Check,
-		Capture,
-		Castling,
-		Promotion,
+		Normal = 0,
+		Check = 1<<0,
+		Capture = 1<<1,
+		Castling = 1<<2,
+		Promotion = 1<<3,
 	};
 
    public:
@@ -42,13 +42,19 @@ class GameLogic {
 	[[nodiscard]] bool isFinished() const;
 	[[nodiscard]] bool isChecked() const;
 	[[nodiscard]] bool isCaptured() const;
+	[[nodiscard]] bool needPromotion() const;
 	[[nodiscard]] Status status() const;
+
 	[[nodiscard]] std::string getWinner() const;
 	[[nodiscard]] float getRemainingTime(bool turn) const;
+
 	[[nodiscard]] std::vector<int> getMoveList(int from) const;
 	[[nodiscard]] std::vector<int> getLegalMoves() const;
+
 	[[nodiscard]] bool getTurn() const;
+
 	[[nodiscard]] int getEvaluation() const;
+
 	[[nodiscard]] int getPiece(int square) const;
 	[[nodiscard]] int getKing(int color) const;
 	[[nodiscard]] int getLastMovePiece() const;
@@ -58,15 +64,16 @@ class GameLogic {
 	void makeMove(int from, int to);
 	void setClock(bool turn, sf::Time time, sf::Time bonus = sf::seconds(0));
 
+	virtual void promotePiece(int square, int piece);
+
    protected:
 	virtual void capturePiece(int square);
 	virtual void movePiece(int from, int to);
 	virtual void postMove();
-	virtual void promotePiece(int square, int piece);
 
 	virtual void updateTime(sf::Time dt);
 
-	[[nodiscard]] MoveStatus lastMoveStatus() const;
+	[[nodiscard]] int lastMoveStatus() const;
 
 	[[nodiscard]] bool isLegalMove(int from, int to) const;
 	[[nodiscard]] bool isAttacked(int square) const;
@@ -96,7 +103,7 @@ class GameLogic {
 	AttackBoard mAttacks;
 
 	Status mStatus;
-	MoveStatus mLastMove;
+	int mLastMove;
 	int mLastMovePiece, mSecondLastMovePiece;
 
 	std::vector<std::string> mHistory;

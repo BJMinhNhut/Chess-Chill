@@ -89,11 +89,11 @@ int GameLogic::getCastling() const {
 }
 
 bool GameLogic::isChecked() const {
-	return mLastMove == Check;
+	return mLastMove & Check;
 }
 
 bool GameLogic::isCaptured() const {
-	return mLastMove == Capture;
+	return mLastMove & Capture;
 }
 
 bool GameLogic::isLegalMove(int from, int to) const {
@@ -154,6 +154,10 @@ bool GameLogic::isFinished() const {
 	return mStatus != OnGoing;
 }
 
+bool GameLogic::needPromotion() const {
+	return mLastMove & Promotion;
+}
+
 void GameLogic::makeMove(int from, int to) {
 	mClock[mBoard.getTurn()].increment();
 	move(from, to);
@@ -181,30 +185,28 @@ void GameLogic::move(int from, int to) {
 
 	if (isEnPassant(from, to)) {
 		capturePiece(mBoard.getEnPassant() + (mBoard.getTurn() ? 8 : -8));
-		mLastMove = Capture;
+		mLastMove |= Capture;
 	}
 	mBoard.updateEnPassant(from, to);
 
 	if (mBoard.get(to) != 0) {
 		capturePiece(to);
-		mLastMove = Capture;
+		mLastMove |= Capture;
 	}
 
 	if (isLegalCastling(from, to)) {
 		int dir = to - from < 0 ? -1 : 1;
 		int rook = dir < 0 ? from - 4 : from + 3;
 		movePiece(rook, from + dir);
-		mLastMove = Castling;
+		mLastMove |= Castling;
 	}
 
 	mBoard.updateCastling(from);
 	mBoard.updateHalfMove(from, to);
 	movePiece(from, to);
 	// check for promotion
-	if (mBoard.getType(to) == Piece::Pawn && (Board::getRank(to) == 0 || Board::getRank(to) == 7)) {
-		promotePiece(to, Piece::Queen | (Piece::getColor(mBoard.get(to)) << 3));
-		mLastMove = Promotion;
-	}
+	if (mBoard.getType(to) == Piece::Pawn && (Board::getRank(to) == 0 || Board::getRank(to) == 7))
+		mLastMove |= Promotion;
 
 	postMove();
 }
@@ -225,7 +227,7 @@ void GameLogic::postMove() {
 	mAttacks.update();
 	mBoard.nextTurn();
 	if (mAttacks.isKingInCheck())
-		mLastMove = Check;
+		mLastMove |= Check;
 }
 
 void GameLogic::promotePiece(int square, int piece) {
@@ -472,6 +474,6 @@ bool GameLogic::getTurn() const {
 	return mBoard.getTurn();
 }
 
-GameLogic::MoveStatus GameLogic::lastMoveStatus() const {
+int GameLogic::lastMoveStatus() const {
 	return mLastMove;
 }

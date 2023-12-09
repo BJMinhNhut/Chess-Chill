@@ -49,6 +49,9 @@ class GameHandler : public sf::NonCopyable, public GameLogic {
 	void pickUpPiece(int square, int x, int y);
 	void dropPiece(int square);
 
+	void displayPromoteWindow(int square);
+	void promotePiece(int square, int piece) override;
+
 	void snapDraggingToMouse();
 	void setCursor(sf::Cursor::Type type);
 
@@ -76,7 +79,6 @@ class GameHandler : public sf::NonCopyable, public GameLogic {
 	void movePiece(int from, int to) override;
 	void capturePiece(int square) override;
 	void postMove() override;
-	void promotePiece(int square, int piece) override;
 
 	void highlightLegalMoves(int from);
 	void highlightSquare(int square, HighlightRate rate);

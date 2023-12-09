@@ -13,7 +13,7 @@
 #include <cassert>
 #include <iostream>
 
-int Engine::getBestMove(const GameLogic& board, int depth) {
+int Engine::getBestMove(const GameLogic& board, int depth, int extra) {
 	assert(board.status() == GameLogic::OnGoing);
 	std::cout << (board.getTurn() ? "White" : "Black") << " to move\n";
 	std::vector<int> moves = board.getLegalMoves();
@@ -28,7 +28,8 @@ int Engine::getBestMove(const GameLogic& board, int depth) {
 		std::cout << from << ' ' << to << '\n';
 		GameLogic newBoard(board);
 		newBoard.makeMove(from, to);
-		int score = alphaBeta(newBoard, depth - 1, -1000000, 1000000, false);
+		if (newBoard.needPromotion()) newBoard.promotePiece(to, Piece::Knight);
+		int score = alphaBeta(newBoard, depth - 1, extra, -1000000, 1000000, false);
 		if (score > bestScore + 8 ||
 		    (score >= bestScore && score <= bestScore + 8 && Random::getInt(0, 2))) {
 			bestScore = score;
@@ -45,25 +46,7 @@ int Engine::getBestMove(const GameLogic& board, int depth) {
 void Engine::sortMoves(const GameLogic& board, std::vector<int>& moves) {
 	std::vector<std::pair<int, int>> scores;
 	for (int move : moves) {
-		int from = move & 0x3F;
-		int to = (move >> 6) & 0x3F;
-		int pieceFrom = board.getPiece(from);
-		int pieceTo = board.getPiece(to);
-		int score = 0;
-		if (board.getPiece(from) == board.getSecondLastMovePiece())
-			score += 4000;
-		if (board.getPiece(to) != 0) {
-			score += Evaluator::PIECE_MATERIAL[Piece::getType(pieceTo)] -
-			         Evaluator::PIECE_MATERIAL[Piece::getType(pieceFrom)] / 10;
-			if (to == board.getLastMovePiece())
-				score += 1001;
-		} else {
-			GameLogic newBoard(board);
-			newBoard.makeMove(from, to);
-			score = Evaluator::evaluateBoard(newBoard, board.getTurn());
-			if (newBoard.isChecked())
-				score += 2000;
-		}
+		int score = getMoveScore(board, move);
 		scores.emplace_back(score, move);
 	}
 	std::sort(scores.begin(), scores.end(),
@@ -76,9 +59,30 @@ void Engine::sortMoves(const GameLogic& board, std::vector<int>& moves) {
 	}
 }
 
-int Engine::alphaBeta(const GameLogic& board, int depth, int alpha, int beta, bool inTurn) {
-	bool isFinished = (depth <= 0 && !board.isCaptured() && !board.isChecked()) || (depth <= -2 && !board.isCaptured()) ||
-	                  (depth <= -4 && !board.isChecked()) || board.isFinished();
+int Engine::getMoveScore(const GameLogic& board, int move) {
+	int from = move & 0x3F;
+	int to = (move >> 6) & 0x3F;
+	int pieceFrom = board.getPiece(from);
+	int pieceTo = board.getPiece(to);
+	int score = 0;
+	if (board.getPiece(to) != 0) {
+		score += Evaluator::PIECE_MATERIAL[Piece::getType(pieceTo)] -
+		         Evaluator::PIECE_MATERIAL[Piece::getType(pieceFrom)] / 10;
+		if (to == board.getLastMovePiece())
+			score += 1001;
+	} else {
+		GameLogic newBoard(board);
+		newBoard.makeMove(from, to);
+		if (newBoard.needPromotion()) newBoard.promotePiece(to, Piece::Knight);
+		score = Evaluator::evaluateBoard(newBoard, board.getTurn());
+		if (newBoard.isChecked())
+			score += 2000;
+	}
+	return score;
+}
+
+int Engine::alphaBeta(const GameLogic& board, int depth, int extra, int alpha, int beta, bool inTurn) {
+	bool isFinished = (depth <= 0 && !board.isCaptured() && !board.isChecked()) || depth <= -extra || board.isFinished();
 	int score = 0;
 	if (isFinished) {
 		score = Evaluator::evaluateBoard(board, inTurn ? board.getTurn() : !board.getTurn());
@@ -92,12 +96,12 @@ int Engine::alphaBeta(const GameLogic& board, int depth, int alpha, int beta, bo
 			GameLogic newBoard(board);
 			newBoard.makeMove(from, to);
 			if (inTurn) {
-				score = std::max(score, alphaBeta(newBoard, depth - 1, alpha, beta, false));
+				score = std::max(score, alphaBeta(newBoard, depth - 1, extra, alpha, beta, false));
 				alpha = std::max(alpha, score);
 				if (beta <= score)
 					break;
 			} else {
-				score = std::min(score, alphaBeta(newBoard, depth - 1, alpha, beta, true));
+				score = std::min(score, alphaBeta(newBoard, depth - 1, extra, alpha, beta, true));
 				beta = std::min(beta, score);
 				if (score <= alpha)
 					break;
@@ -106,8 +110,8 @@ int Engine::alphaBeta(const GameLogic& board, int depth, int alpha, int beta, bo
 	}
 
 	if (score < 0)
-		score -= depth*5;
+		score -= depth*3;
 	else
-		score += depth*5;
+		score += depth*3;
 	return score;
 }

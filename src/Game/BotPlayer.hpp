@@ -19,6 +19,7 @@ class BotPlayer : public Player {
 
    private:
 	void makeMove();
+	int getOptimizeMove();
 
    private:
 	std::thread mThread;
