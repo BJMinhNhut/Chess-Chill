@@ -29,7 +29,7 @@ Move Engine::getBestMove(const GameLogic& board, int depth, int extra) {
 		GameLogic newBoard(board);
 		newBoard.makeMove(move);
 		int score = alphaBeta(newBoard, depth - 1, extra, -1000000, 1000000, false);
-		if (score > bestScore) {
+		if (score > bestScore || (score == bestScore && Random::getInt(0, 1))) {
 			bestScore = score;
 			bestMove = move;
 		}

@@ -36,7 +36,7 @@ GameHandler::GameHandler(sf::RenderWindow& window, TextureHolder& textures, Font
       mBoardPosition(position),
       mOldSquare(-1),
       mLastMove(-1),
-      GameLogic(PROMOTE_FEN_W),
+      GameLogic(START_FEN),
       mPromoteWindow(false),
       mPromoteFrom(-1),
       mPromoteTo(-1),
@@ -326,22 +326,12 @@ void GameHandler::movePiece(int from, int to) {
 
 void GameHandler::postMove() {
 	GameLogic::postMove();
-	switch (lastMoveStatus()) {
-		case Check:
-			mSounds.play(SoundEffect::Check);
-			break;
-		case Capture:
-			mSounds.play(SoundEffect::Capture);
-			break;
-		case Castling:
-			mSounds.play(SoundEffect::Castling);
-			break;
-		case Promotion:
-			mSounds.play(SoundEffect::Promotion);
-			break;
-		default:
-			mSounds.play(SoundEffect::Move);
-	}
+	int status = lastMoveStatus();
+	if (status & Check) mSounds.play(SoundEffect::Check);
+	else if (status & Capture) mSounds.play(SoundEffect::Capture);
+	else if (status & Castling) mSounds.play(SoundEffect::Castling);
+	else if (status & Promotion) mSounds.play(SoundEffect::Promotion);
+	else mSounds.play(SoundEffect::Move);
 }
 
 void GameHandler::promotePiece(int square, int piece) {
