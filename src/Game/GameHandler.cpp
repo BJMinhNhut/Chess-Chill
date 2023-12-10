@@ -126,7 +126,7 @@ void GameHandler::dropPiece(int square) {
 	mDragging = nullptr;
 	if (square != mOldSquare) {
 		if (Board::validSquare(square))
-			handleMove(mOldSquare, square);
+			handleMove(Move(mOldSquare, square));
 		else
 			mSounds.play(SoundEffect::OutOfBound);
 	}
@@ -154,19 +154,20 @@ void GameHandler::pickUpPiece(int square, int x, int y) {
 }
 
 void GameHandler::moveFromClickedSquare(int to) {
-	handleMove(mOldSquare, to);
+	handleMove(Move(mOldSquare, to));
 }
 
-void GameHandler::handleMove(int from, int to) {
-	bool legal = isLegalMove(from, to);
+void GameHandler::handleMove(Move move) {
+	bool legal = isLegalMove(move);
 
 	clearCandidates();
 
 	// if legal move, then highlight new move, make that move, un-highlight old move, and to squares
+	int from = move.from(), to = move.to();
 	if (legal && from != to) {
 		highlightMove(mLastMove, false);
 		highlightMove(to << 6 | from, true);
-		makeMove(from, to);
+		makeMove(move);
 		if (isFinished())
 			setCursor(sf::Cursor::Arrow);
 
@@ -186,11 +187,10 @@ void GameHandler::handleMove(int from, int to) {
 }
 
 void GameHandler::highlightLegalMoves(int from) {
-	std::vector<int> moves = getMoveList(from);
-	for (int move : moves) {
-		int to = move >> 6;
-		highlightSquare(to, Target);
-		moveCandidates.push_back(to);
+	std::vector<Move> moves = getMoveList(from);
+	for (Move move : moves) {
+		highlightSquare(move.to(), Target);
+		moveCandidates.push_back(move.to());
 	}
 }
 
@@ -205,7 +205,7 @@ void GameHandler::highlightSquare(int square, HighlightRate rate) {
 			case Click:
 				color = sf::Color(0, 150, 150, 50);
 				break;
-			case Move:
+			case MovePiece:
 				color = sf::Color(0, 150, 150, 100);
 				break;
 			case Target:
@@ -229,8 +229,8 @@ void GameHandler::highlightMove(int move, bool flag) {
 		return;  // no move
 	int oldBox = move & 0x3f, newBox = move >> 6;
 	if (flag) {
-		highlightSquare(newBox, Move);
-		highlightSquare(oldBox, Move);
+		highlightSquare(newBox, MovePiece);
+		highlightSquare(oldBox, MovePiece);
 	} else {
 		highlightSquare(newBox, Normal);
 		highlightSquare(oldBox, Normal);

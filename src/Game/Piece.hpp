@@ -13,7 +13,8 @@ class Piece : public SpriteNode {
 	const static int NAME;
 	const static int SIZE;
 	enum Type {
-		King = 1,
+		None,
+		King,
 		Queen,
 		Bishop,
 		Knight,

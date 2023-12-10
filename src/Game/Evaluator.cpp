@@ -12,13 +12,13 @@ const int Evaluator::PIECE_MATERIAL[6] = {20000, 900, 340, 325, 500, 100};
 
 const int Evaluator::PAWN_SCORE_POSITIONAL[8][8] = {
     {0, 0, 0, 0, 0, 0, 0, 0},
-    {3, 4, 10, -3, -5, 21, 19, 6},
+    {3, 10, 10, -10, -10, 21, 19, 6},
     {4, 4, 5, 15, 15, 5, 0, 6},
-    {3, 0, 12, 24, 26, 7, 1, 3},
-    {6, 7, 18, 26, 28, 14, 7, 6},
-    {7, 10, 22, 30, 30, 22, 10, 7},
-    {8, 12, 26, 32, 32, 26, 12, 8},
-    {9, 14, 30, 34, 34, 30, 14, 9}};
+    {13, 15, 15, 24, 26, 6, 6, 0},
+    {17, 19, 20, 26, 28, 9, 12, 10},
+    {21, 24, 25, 30, 30, 25, 24, 21},
+    {26, 28, 29, 32, 32, 29, 28, 26},
+    {31, 32, 33, 34, 34, 33, 32, 31}};
 
 const int Evaluator::KNIGHT_SCORE_POSITIONAL[8][8] = {{-22, -20, -20, -10, -10, -21, -21, -22},
                                                       {-10, 0, 5, -1, -1, 5, 0, -10},
@@ -30,8 +30,8 @@ const int Evaluator::KNIGHT_SCORE_POSITIONAL[8][8] = {{-22, -20, -20, -10, -10, 
                                                       {-22, -11, -5, -5, -5, -5, -11, -22}};
 
 const int Evaluator::BISHOP_SCORE_POSITIONAL[8][8] = {{-20, -21, -21, -12, -10, -22, -22, -20},
-                                                      {5, 15, 9, 8, 8, 9, 15, 5},
-                                                      {-6, 10, 9, 7, 7, 9, 10, -6},
+                                                      {5, 15, 5, 0, 0, 5, 15, 5},
+                                                      {-6, 10, 9, -5, -5, 9, 10, -6},
                                                       {-7, 3, 10, 5, 5, 10, 3, -7},
                                                       {-7, 4, 4, 3, 3, 4, 4, -7},
                                                       {-6, 0, 0, 0, 0, 0, 0, -6},
@@ -57,9 +57,9 @@ int Evaluator::evaluateBoard(const GameLogic& board, int color) {
 	// if is king in check, then bonus 60
 	if (board.status() == GameLogic::Checkmate) {
 		if (board.getTurn() == color)
-			return -1000000;
+			return -10000000;
 		else
-			return 1000000;
+			return 10000000;
 	} else if (board.status() & (GameLogic::Stalemate | GameLogic::ThreefoldRepetition |
 	                             GameLogic::InsufficientMaterial)) {
 		return 0;

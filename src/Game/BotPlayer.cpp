@@ -32,21 +32,18 @@ void BotPlayer::update(sf::Time dt) {
 void BotPlayer::handleEvent(const sf::Event& event) {}
 
 void BotPlayer::makeMove() {
-	int move = getOptimizeMove();
-	int from = move & 0x3F;
-	int to = (move >> 6) & 0x3F;
-	std::cout << "Best move: " << from << ' ' << to << '\n';
+	Move move = getOptimizeMove();
+	std::cout << "Best move: " << move.from() << ' ' << move.to() << '\n';
 	if (!mRunning || mGameHandler.status() != GameLogic::OnGoing)
 		return;
-	mGameHandler.handleMove(from, to);
-	if (mGameHandler.needPromotion()) mGameHandler.promotePiece(to, Piece::Knight);
+	mGameHandler.handleMove(move);
 	mRunning = false;
 	mThread.detach();
 }
 
-int BotPlayer::getOptimizeMove() {
-	int depth = mGameHandler.getRemainingTime(getColor()) > 120.f ? 3 : 2;
-	int extra = mGameHandler.getRemainingTime(getColor()) > 60.f ? 3 : 2;
-	int move = Engine::getBestMove(static_cast<GameLogic>(mGameHandler), depth, extra);
+Move BotPlayer::getOptimizeMove() {
+	int depth = mGameHandler.getRemainingTime(getColor()) > 100.f ? 3 : 2;
+	int extra = mGameHandler.getRemainingTime(getColor()) > 30.f ? 3 : 2;
+	Move move = Engine::getBestMove(static_cast<GameLogic>(mGameHandler), depth, extra);
 	return move;
 }

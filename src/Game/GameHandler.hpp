@@ -43,7 +43,7 @@ class GameHandler : public sf::NonCopyable, public GameLogic {
 	void rotateBoard();
 
 	void handleMouseMoved(int x, int y);
-	void handleMove(int from, int to);
+	void handleMove(Move move);
 	void moveFromClickedSquare(int to);
 
 	void pickUpPiece(int square, int x, int y);
@@ -65,7 +65,7 @@ class GameHandler : public sf::NonCopyable, public GameLogic {
 	enum HighlightRate {
 		Normal,
 		Click,
-		Move,
+		MovePiece,
 		Target,
 		Debug,
 	};

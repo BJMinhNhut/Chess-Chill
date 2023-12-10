@@ -8,6 +8,7 @@
 #include "Board.hpp"
 #include "AttackBoard.hpp"
 #include "Clock.hpp"
+#include "Move.hpp"
 
 #include <SFML/System/Time.hpp>
 
@@ -29,10 +30,10 @@ class GameLogic {
 
 	enum MoveStatus {
 		Normal = 0,
-		Check = 1<<0,
-		Capture = 1<<1,
-		Castling = 1<<2,
-		Promotion = 1<<3,
+		Check = 1,
+		Capture = 2,
+		Castling = 4,
+		Promotion = 8,
 	};
 
    public:
@@ -42,14 +43,14 @@ class GameLogic {
 	[[nodiscard]] bool isFinished() const;
 	[[nodiscard]] bool isChecked() const;
 	[[nodiscard]] bool isCaptured() const;
-	[[nodiscard]] bool needPromotion() const;
+
 	[[nodiscard]] Status status() const;
 
 	[[nodiscard]] std::string getWinner() const;
 	[[nodiscard]] float getRemainingTime(bool turn) const;
 
-	[[nodiscard]] std::vector<int> getMoveList(int from) const;
-	[[nodiscard]] std::vector<int> getLegalMoves() const;
+	[[nodiscard]] std::vector<Move> getMoveList(int from) const;
+	[[nodiscard]] std::vector<Move> getLegalMoves() const;
 
 	[[nodiscard]] bool getTurn() const;
 
@@ -61,7 +62,7 @@ class GameLogic {
 	[[nodiscard]] int getSecondLastMovePiece() const;
 	[[nodiscard]] int getCastling() const;
 
-	void makeMove(int from, int to);
+	void makeMove(Move move);
 	void setClock(bool turn, sf::Time time, sf::Time bonus = sf::seconds(0));
 
 	virtual void promotePiece(int square, int piece);
@@ -75,17 +76,17 @@ class GameLogic {
 
 	[[nodiscard]] int lastMoveStatus() const;
 
-	[[nodiscard]] bool isLegalMove(int from, int to) const;
+	[[nodiscard]] bool isLegalMove(Move move) const;
 	[[nodiscard]] bool isAttacked(int square) const;
 
    private:
-	void move(int from, int to);
+	void move(Move move);
 	void updateStatus();
 
 	[[nodiscard]] bool isInsufficientMaterial();
 	[[nodiscard]] bool isThreefoldRepetition();
 
-	[[nodiscard]] bool isPseudoLegalMove(int from, int to) const;
+	[[nodiscard]] bool isPseudoLegalMove(Move move) const;
 
 	[[nodiscard]] bool hasLegalMove() const;
 	[[nodiscard]] bool isLegalPawnMove(int from, int to) const;
@@ -96,6 +97,7 @@ class GameLogic {
 	[[nodiscard]] bool isLegalQueenMove(int from, int to) const;
 	[[nodiscard]] bool isLegalKingMove(int from, int to) const;
 	[[nodiscard]] bool isLegalCastling(int from, int to) const;
+	[[nodiscard]] bool isLegalPromotion(int from, int to) const;
 
 
    private:

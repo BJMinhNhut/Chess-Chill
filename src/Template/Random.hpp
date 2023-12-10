@@ -7,16 +7,21 @@
 
 #include <random>
 #include <vector>
+#include <chrono>
+#include <algorithm>
 
 namespace Random {
 
-    int getInt(int Min, int Max);
+int getInt(int Min, int Max);
 
-    std::vector<int> getArray(int minLength, int maxLength, int minVal, int maxVal);
+std::vector<int> getArray(int minLength, int maxLength, int minVal, int maxVal);
 
-    void shuffle(std::vector<std::pair<int, int>>& list);
-    void shuffle(std::vector<int>& list);
+template<typename T>
+void shuffle(std::vector<T>& list) {
+	std::shuffle(
+	    list.begin(), list.end(),
+	    std::default_random_engine(std::chrono::steady_clock::now().time_since_epoch().count()));
+}
+};  // namespace Random
 
-    };  // namespace Random
-
-#endif //DATAVISUALIZATION2_RANDOM_HPP
+#endif  //DATAVISUALIZATION2_RANDOM_HPP

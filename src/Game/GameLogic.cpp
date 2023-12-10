@@ -43,27 +43,41 @@ float GameLogic::getRemainingTime(bool turn) const {
 	return mClock[turn].get();
 }
 
-std::vector<int> GameLogic::getLegalMoves() const {
-	std::vector<int> moveList;
+std::vector<Move> GameLogic::getLegalMoves() const {
+	std::vector<Move> moveList;
 	for (int i = 0; i < 64; i++) {
 		if (mBoard.get(i) == 0 || Piece::getColor(mBoard.get(i)) != mBoard.getTurn())
 			continue;
 		for (int j = 0; j < 64; j++) {
-			if (isLegalMove(i, j))
-				moveList.push_back(j << 6 | i);
+			if (isLegalPromotion(i, j) && isLegalMove(Move(i, j, Piece::Queen))) {
+				int color = mBoard.getTurn() ? Piece::Black : Piece::White;
+				moveList.emplace_back(i, j, Piece::Queen|color);
+				moveList.emplace_back(i, j, Piece::Rook|color);
+				moveList.emplace_back(i, j, Piece::Bishop|color);
+				moveList.emplace_back(i, j, Piece::Knight|color);
+			} else if (isLegalMove(Move(i, j))){
+				moveList.emplace_back(i, j, Piece::None);
+			}
 		}
 	}
 	return moveList;
 }
 
-std::vector<int> GameLogic::getMoveList(int from) const {
-	std::vector<int> moveList;
+std::vector<Move> GameLogic::getMoveList(int from) const {
+	std::vector<Move> moveList;
 	int piece = mBoard.get(from);
 	if (piece == 0 || Piece::getColor(piece) != mBoard.getTurn())
 		return moveList;
-	for (int i = 0; i < 64; i++) {
-		if (isLegalMove(from, i))
-			moveList.push_back(i << 6 | from);
+	for (int j = 0; j < 64; j++) {
+		if (isLegalPromotion(from, j) && isLegalMove(Move(from, j, Piece::Queen))) {
+			int color = mBoard.getTurn() ? Piece::Black : Piece::White;
+			moveList.emplace_back(from, j, Piece::Queen|color);
+			moveList.emplace_back(from, j, Piece::Rook|color);
+			moveList.emplace_back(from, j, Piece::Bishop|color);
+			moveList.emplace_back(from, j, Piece::Knight|color);
+		} else if (isLegalMove(Move(from, j))){
+			moveList.emplace_back(from, j, Piece::None);
+		}
 	}
 	return moveList;
 }
@@ -96,7 +110,8 @@ bool GameLogic::isCaptured() const {
 	return mLastMove & Capture;
 }
 
-bool GameLogic::isLegalMove(int from, int to) const {
+bool GameLogic::isLegalMove(Move move) const {
+	int from = move.from(), to = move.to();
 	if (from == to || !Board::validSquare(from) || !Board::validSquare(to))
 		return false;
 	int piece = mBoard.get(from);
@@ -105,7 +120,8 @@ bool GameLogic::isLegalMove(int from, int to) const {
 	//	std::cout << piece << ' ' << mBoard.getTurn() << '\n';
 	if (piece == 0 || Piece::getColor(piece) != mBoard.getTurn())
 		return false;
-	if (capture != 0 && Piece::getColor(capture) == mBoard.getTurn())
+	if (capture != 0 && (Piece::getColor(capture) == mBoard.getTurn() ||
+	    Piece::getType(capture) == Piece::King))
 		return false;
 	bool legal = true;
 	switch (piece & 7) {
@@ -132,14 +148,14 @@ bool GameLogic::isLegalMove(int from, int to) const {
 	};
 
 	if (legal)
-		return !isPseudoLegalMove(from, to);
+		return !isPseudoLegalMove(move);
 	else
 		return false;
 }
 
-bool GameLogic::isPseudoLegalMove(int from, int to) const {
+bool GameLogic::isPseudoLegalMove(Move move) const {
 	GameLogic copy(*this);
-	copy.move(from, to);
+	copy.move(move);
 	//	if (copy.mAttacks.isKingInCheck(mBoard.getTurn())) {
 	//		std::cout << from << ' ' << to << " pseudo legal move\n";
 	//	}
@@ -154,15 +170,11 @@ bool GameLogic::isFinished() const {
 	return mStatus != OnGoing;
 }
 
-bool GameLogic::needPromotion() const {
-	return mLastMove & Promotion;
-}
-
-void GameLogic::makeMove(int from, int to) {
+void GameLogic::makeMove(Move move) {
 	mClock[mBoard.getTurn()].increment();
-	move(from, to);
+	this->move(move);
 	mSecondLastMovePiece = mLastMovePiece;
-	mLastMovePiece = to;
+	mLastMovePiece = move.to();
 	updateStatus();
 }
 
@@ -179,9 +191,11 @@ std::string GameLogic::getWinner() const {
 	return mBoard.getTurn() ? "White" : "Black";
 }
 
-void GameLogic::move(int from, int to) {
+void GameLogic::move(Move move) {
 	assert(mStatus == OnGoing);
 	mLastMove = Normal;
+
+	int from = move.from(), to = move.to();
 
 	if (isEnPassant(from, to)) {
 		capturePiece(mBoard.getEnPassant() + (mBoard.getTurn() ? 8 : -8));
@@ -205,8 +219,10 @@ void GameLogic::move(int from, int to) {
 	mBoard.updateHalfMove(from, to);
 	movePiece(from, to);
 	// check for promotion
-	if (mBoard.getType(to) == Piece::Pawn && (Board::getRank(to) == 0 || Board::getRank(to) == 7))
+	if (mBoard.getType(to) == Piece::Pawn && (Board::getRank(to) == 0 || Board::getRank(to) == 7)) {
 		mLastMove |= Promotion;
+		promotePiece(to, move.promote());
+	}
 
 	postMove();
 }
@@ -298,8 +314,10 @@ bool GameLogic::hasLegalMove() const {
 		int piece = mBoard.get(i);
 		if (piece == 0 || Piece::getColor(piece) != mBoard.getTurn())
 			continue;
+
 		for (int j = 0; j < 64; j++) {
-			if (isLegalMove(i, j))
+			Move move(i, j, isLegalPromotion(i, j) ? Piece::Queen : Piece::None);
+			if (isLegalMove(move))
 				return true;
 		}
 	}
@@ -464,6 +482,19 @@ bool GameLogic::isLegalCastling(int from, int to) const {
 			return mBoard.getCastling() & (color ? 8 : 2);
 	}
 	return false;
+}
+
+bool GameLogic::isLegalPromotion(int from, int to) const {
+	int piece = mBoard.get(from);
+	int color = Piece::getColor(piece);
+	int type = Piece::getType(piece);
+	if (type != Piece::Pawn)
+		return false;
+	if (color && Board::getRank(to) != 0)
+		return false;
+	if (!color && Board::getRank(to) != 7)
+		return false;
+	return isLegalPawnMove(from, to);
 }
 
 int GameLogic::getPiece(int square) const {
