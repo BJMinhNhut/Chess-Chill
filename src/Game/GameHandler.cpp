@@ -30,6 +30,7 @@ GameHandler::GameHandler(sf::RenderWindow& window, TextureHolder& textures, Font
       mHighlights(GameLogic::BOARD_SIZE, nullptr),
       mDragging(nullptr),
       mBoardIndex(nullptr),
+      mBoardSprite(nullptr),
       mBoardPosition(position),
       mOldSquare(-1),
       mLastMove(-1),
@@ -53,9 +54,10 @@ void GameHandler::buildScene() {
 	mBoardIndex->setPosition(262.f, 105.f);
 	mSceneLayers[Background]->attachChild(SceneNode::Ptr(mBoardIndex));
 
-	std::unique_ptr<SpriteNode> boardSprite(new SpriteNode(mTextures.get(Textures::Board)));
-	boardSprite->setPosition(mBoardPosition);
-	mSceneLayers[Background]->attachChild(std::move(boardSprite));
+	mBoardSprite = new SpriteNode(mTextures.get(Textures::Board));
+	mBoardSprite->centerOrigin();
+	mBoardSprite->setPosition(mBoardPosition + sf::Vector2f(BOARD_DRAW_SIZE/2.f, BOARD_DRAW_SIZE/2.f));
+	mSceneLayers[Background]->attachChild(SceneNode::Ptr(mBoardSprite));
 
 	for (int square = 0; square < GameLogic::BOARD_SIZE; ++square) {
 		int piece = getPiece(square);
@@ -79,6 +81,7 @@ void GameHandler::rotateBoard() {
 	mRotated = !mRotated;
 	mBoardIndex->setTexture(
 	    mTextures.get(mRotated ? Textures::BoardIndexBlack : Textures::BoardIndexWhite));
+	mBoardSprite->rotate(180.f);
 	for (int square = 0; square < GameLogic::BOARD_SIZE; ++square) {
 		if (mPieces[square] != nullptr) {
 			mPieces[square]->setPosition(getBoxPosition(square), false);

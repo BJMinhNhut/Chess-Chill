@@ -101,7 +101,7 @@ class GameHandler : public sf::NonCopyable, public GameLogic {
 	int mOldSquare;
 	int mLastMove;  // (newBox << 6) | oldBox;
 
-	SpriteNode* mBoardIndex;
+	SpriteNode *mBoardIndex, *mBoardSprite;
 	bool mRotated;
 
 	const sf::Vector2f mBoardPosition;

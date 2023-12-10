@@ -13,8 +13,8 @@ const std::vector<std::string> Settings::PIECESET_NAMES = {
 const std::string Settings::PIECESET_PATH = Constants::DATA_PREFIX + "resources/images/pieces/";
 
 const std::vector<std::string> Settings::BOARD_NAMES = {
-    "default", "blackwhite", "blue",         "green_plastic", "maple",
-    "metal",   "newspaper",  "pink_pyramid", "purple_diag",   "wood"};
+    "default",   "blue",         "green_plastic", "maple", "metal",
+    "newspaper", "pink_pyramid", "purple_diag",   "wood"};
 const std::string Settings::BOARD_PATH = Constants::DATA_PREFIX + "resources/images/boards/";
 
 const std::vector<std::string> Settings::SOUND_OPTIONS = {"Off", "On"};

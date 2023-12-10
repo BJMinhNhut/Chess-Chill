@@ -15,7 +15,7 @@
 
 Move Engine::getBestMove(const GameLogic& board, int depth, int extra) {
 	assert(board.status() == GameLogic::OnGoing);
-	std::cout << (board.getTurn() ? "White" : "Black") << " to move\n";
+//	std::cout << (board.getTurn() ? "White" : "Black") << " to move\n";
 	std::vector<Move> moves = board.getLegalMoves();
 	Move bestMove = moves[0];
 	int bestScore = -1000000;
@@ -25,7 +25,7 @@ Move Engine::getBestMove(const GameLogic& board, int depth, int extra) {
 	for (Move move : moves) {
 		int from = move.from();
 		int to = move.to();
-		std::cout << from << ' ' << to << '\n';
+//		std::cout << from << ' ' << to << '\n';
 		GameLogic newBoard(board);
 		newBoard.makeMove(move);
 		int score = alphaBeta(newBoard, depth - 1, extra, -1000000, 1000000, false);
