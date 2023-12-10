@@ -99,15 +99,17 @@ void GameHandler::rotateBoard() {
 }
 
 void GameHandler::handleEvent(const sf::Event& event) {
-	if (!needPromotion()) return;
+	if (!needPromotion())
+		return;
 	if (event.type == sf::Event::MouseButtonReleased) {
 		if (event.mouseButton.button == sf::Mouse::Left) {
 			sf::Vector2i mouse(event.mouseButton.x, event.mouseButton.y);
-
-			if (mouse.y < 443 || mouse.y > 443 + 85) return;
-			if (mouse.x < 456 || mouse.x > 456 + 340) return;
+			if (mouse.y < 443 || mouse.y > 443 + 85)
+				return;
+			if (mouse.x < 456 || mouse.x > 456 + 340)
+				return;
 			std::cout << "Mouse: " << mouse.x << " " << mouse.y << "\n";
-			int id = (mouse.x - 456)/ 85;
+			int id = (mouse.x - 456) / 85;
 			int type = Piece::Queen + id;
 			int color = getTurn() ? Piece::Black : Piece::White;
 			std::cout << "Promote to: " << type << "\n";
@@ -115,6 +117,12 @@ void GameHandler::handleEvent(const sf::Event& event) {
 			mSceneLayers[PopUp]->detachAllChildren();
 			handleMove(Move(mPromoteFrom, mPromoteTo, type | color));
 		}
+	} else if (event.type == sf::Event::MouseMoved) {
+		sf::Vector2i mouse(event.mouseMove.x, event.mouseMove.y);
+		if (mouse.y < 443 || mouse.y > 443 + 85 || mouse.x < 456 || mouse.x > 456 + 340)
+			setCursor(sf::Cursor::Arrow);
+		else
+			setCursor(sf::Cursor::Hand);
 	}
 }
 
@@ -192,7 +200,8 @@ void GameHandler::displayPromoteWindow() {
 	mSceneLayers[PopUp]->attachChild(SceneNode::Ptr(window));
 
 	int left = 86, top = getTurn() ? 86 : 0;
-	auto pieces = new SpriteNode(mTextures.get(Textures::PieceSet), sf::IntRect(left, top, 340, 85));
+	auto pieces =
+	    new SpriteNode(mTextures.get(Textures::PieceSet), sf::IntRect(left, top, 340, 85));
 	pieces->setPosition(456.f, 443.f);
 	mSceneLayers[PopUp]->attachChild(SceneNode::Ptr(pieces));
 }
