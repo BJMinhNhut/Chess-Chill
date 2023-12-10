@@ -17,7 +17,8 @@ const int GameHandler::BOARD_DRAW_SIZE = 680;
 const std::string GameHandler::START_FEN =
     "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 const std::string GameHandler::ONLY_KINGS_FEN = "k7/8/8/8/8/8/8/7K w - - 0 1";
-const std::string GameHandler::PROMOTE_FEN = "8/7P/8/k7/7K/8/8/8 w - - 0 1";
+const std::string GameHandler::PROMOTE_FEN_W = "8/7P/8/k7/7K/8/8/8 w - - 0 1";
+const std::string GameHandler::PROMOTE_FEN_B = "8/8/8/7k/K7/8/7p/8 b - - 0 1";
 
 GameHandler::GameHandler(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts,
                          SoundPlayer& sounds, sf::Vector2f position)
@@ -35,7 +36,7 @@ GameHandler::GameHandler(sf::RenderWindow& window, TextureHolder& textures, Font
       mBoardPosition(position),
       mOldSquare(-1),
       mLastMove(-1),
-      GameLogic(PROMOTE_FEN),
+      GameLogic(PROMOTE_FEN_B),
       mPromoteWindow(false),
       mRotated(false),
       moveCandidates() {
@@ -169,9 +170,14 @@ bool GameHandler::needPromotion() const {
 
 void GameHandler::displayPromoteWindow() {
 	mPromoteWindow = true;
-	SpriteNode* window = new SpriteNode(mTextures.get(Textures::PromoteWindow));
+	auto* window = new SpriteNode(mTextures.get(Textures::PromoteWindow));
 	window->setPosition(417.f, 384.f);
 	mSceneLayers[PopUp]->attachChild(SceneNode::Ptr(window));
+
+	int left = 86, top = getTurn() ? 86 : 0;
+	auto pieces = new SpriteNode(mTextures.get(Textures::PieceSet), sf::IntRect(left, top, 340, 85));
+	pieces->setPosition(456.f, 443.f);
+	mSceneLayers[PopUp]->attachChild(SceneNode::Ptr(pieces));
 }
 
 void GameHandler::handleMove(Move move) {
