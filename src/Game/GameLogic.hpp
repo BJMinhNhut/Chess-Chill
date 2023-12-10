@@ -78,6 +78,7 @@ class GameLogic {
 
 	[[nodiscard]] bool isLegalMove(Move move) const;
 	[[nodiscard]] bool isAttacked(int square) const;
+	[[nodiscard]] bool isLegalPromotion(int from, int to) const;
 
    private:
 	void move(Move move);
@@ -97,7 +98,6 @@ class GameLogic {
 	[[nodiscard]] bool isLegalQueenMove(int from, int to) const;
 	[[nodiscard]] bool isLegalKingMove(int from, int to) const;
 	[[nodiscard]] bool isLegalCastling(int from, int to) const;
-	[[nodiscard]] bool isLegalPromotion(int from, int to) const;
 
 
    private:

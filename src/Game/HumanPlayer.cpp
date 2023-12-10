@@ -14,14 +14,15 @@ HumanPlayer::HumanPlayer(GameHandler& gameHandler, int color) : Player(gameHandl
 void HumanPlayer::update(sf::Time dt) {
 	if (mGameHandler.isDragging()) {
 		mGameHandler.snapDraggingToMouse();
-	} else {
+	} else if (!mGameHandler.needPromotion()) {
 		sf::Cursor::Type type = mGameHandler.isMouseLegalHover() ? sf::Cursor::Hand : sf::Cursor::Arrow;
 		mGameHandler.setCursor(type);
 	}
 }
 
 void HumanPlayer::handleEvent(const sf::Event& event) {
-	if (event.mouseButton.button == sf::Mouse::Left) {
+	if (mGameHandler.needPromotion()) mGameHandler.handleEvent(event);
+	else if (event.mouseButton.button == sf::Mouse::Left) {
 		if (event.type == sf::Event::MouseButtonPressed) {
 			handleMousePressed(event.mouseButton.x, event.mouseButton.y);
 		} else if (event.type == sf::Event::MouseButtonReleased) {

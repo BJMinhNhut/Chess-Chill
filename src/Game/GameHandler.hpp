@@ -29,7 +29,7 @@ class Event;
 class GameHandler : public sf::NonCopyable, public GameLogic {
    public:
 	const static std::string START_FEN;
-	const static std::string ONLY_KINGS_FEN;
+	const static std::string ONLY_KINGS_FEN, PROMOTE_FEN;
 	const static int BOARD_DRAW_SIZE;
 
    public:
@@ -49,7 +49,7 @@ class GameHandler : public sf::NonCopyable, public GameLogic {
 	void pickUpPiece(int square, int x, int y);
 	void dropPiece(int square);
 
-	void displayPromoteWindow(int square);
+	void displayPromoteWindow();
 	void promotePiece(int square, int piece) override;
 
 	void snapDraggingToMouse();
@@ -58,6 +58,8 @@ class GameHandler : public sf::NonCopyable, public GameLogic {
 	bool isDragging() const;
 	bool isMouseLegalHover() const;
 	int getHoverSquare(int x, int y) const;
+
+	bool needPromotion() const;
 
    private:
 	enum Layer { Background, Pieces, PopUp, LayerCount };
@@ -100,6 +102,7 @@ class GameHandler : public sf::NonCopyable, public GameLogic {
 	Piece* mDragging;
 	int mOldSquare;
 	int mLastMove;  // (newBox << 6) | oldBox;
+	bool mPromoteWindow;
 
 	SpriteNode *mBoardIndex, *mBoardSprite;
 	bool mRotated;

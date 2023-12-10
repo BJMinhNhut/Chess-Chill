@@ -97,6 +97,8 @@ void Application::loadImages() {
 	               Constants::DATA_PREFIX + "resources/images/gui/chess_standard.png");
 	mTextures.load(Textures::Chess960,
 	               Constants::DATA_PREFIX + "resources/images/gui/chess_960.png");
+	mTextures.load(Textures::PromoteWindow,
+	               Constants::DATA_PREFIX + "resources/images/gui/promote_window.png");
 
 	// Buttons
 	mTextures.load(Textures::MenuButtonNormal,

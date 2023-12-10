@@ -45,6 +45,7 @@ enum ID {
 	GameGUI,
 	BoardIndexWhite,
 	BoardIndexBlack,
+	PromoteWindow,
 
 	NumTextures,
 };

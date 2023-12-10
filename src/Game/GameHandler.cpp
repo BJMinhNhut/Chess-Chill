@@ -17,6 +17,7 @@ const int GameHandler::BOARD_DRAW_SIZE = 680;
 const std::string GameHandler::START_FEN =
     "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 const std::string GameHandler::ONLY_KINGS_FEN = "k7/8/8/8/8/8/8/7K w - - 0 1";
+const std::string GameHandler::PROMOTE_FEN = "8/7P/8/k7/7K/8/8/8 w - - 0 1";
 
 GameHandler::GameHandler(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts,
                          SoundPlayer& sounds, sf::Vector2f position)
@@ -34,7 +35,8 @@ GameHandler::GameHandler(sf::RenderWindow& window, TextureHolder& textures, Font
       mBoardPosition(position),
       mOldSquare(-1),
       mLastMove(-1),
-      GameLogic(START_FEN),
+      GameLogic(PROMOTE_FEN),
+      mPromoteWindow(false),
       mRotated(false),
       moveCandidates() {
 	mWindow.setView(mWindow.getDefaultView());
@@ -56,7 +58,8 @@ void GameHandler::buildScene() {
 
 	mBoardSprite = new SpriteNode(mTextures.get(Textures::Board));
 	mBoardSprite->centerOrigin();
-	mBoardSprite->setPosition(mBoardPosition + sf::Vector2f(BOARD_DRAW_SIZE/2.f, BOARD_DRAW_SIZE/2.f));
+	mBoardSprite->setPosition(mBoardPosition +
+	                          sf::Vector2f(BOARD_DRAW_SIZE / 2.f, BOARD_DRAW_SIZE / 2.f));
 	mSceneLayers[Background]->attachChild(SceneNode::Ptr(mBoardSprite));
 
 	for (int square = 0; square < GameLogic::BOARD_SIZE; ++square) {
@@ -128,9 +131,9 @@ void GameHandler::dropPiece(int square) {
 	mSceneLayers[PopUp]->detachChild(*mDragging);
 	mDragging = nullptr;
 	if (square != mOldSquare) {
-		if (Board::validSquare(square))
+		if (Board::validSquare(square)) {
 			handleMove(Move(mOldSquare, square));
-		else
+		} else
 			mSounds.play(SoundEffect::OutOfBound);
 	}
 }
@@ -160,6 +163,17 @@ void GameHandler::moveFromClickedSquare(int to) {
 	handleMove(Move(mOldSquare, to));
 }
 
+bool GameHandler::needPromotion() const {
+	return mPromoteWindow;
+}
+
+void GameHandler::displayPromoteWindow() {
+	mPromoteWindow = true;
+	SpriteNode* window = new SpriteNode(mTextures.get(Textures::PromoteWindow));
+	window->setPosition(417.f, 384.f);
+	mSceneLayers[PopUp]->attachChild(SceneNode::Ptr(window));
+}
+
 void GameHandler::handleMove(Move move) {
 	bool legal = isLegalMove(move);
 
@@ -168,6 +182,11 @@ void GameHandler::handleMove(Move move) {
 	// if legal move, then highlight new move, make that move, un-highlight old move, and to squares
 	int from = move.from(), to = move.to();
 	if (legal && from != to) {
+		if (isLegalPromotion(from, to)) {
+			movePiece(from, to);
+			displayPromoteWindow();
+			return;
+		}
 		highlightMove(mLastMove, false);
 		highlightMove(to << 6 | from, true);
 		makeMove(move);
