@@ -36,8 +36,10 @@ GameHandler::GameHandler(sf::RenderWindow& window, TextureHolder& textures, Font
       mBoardPosition(position),
       mOldSquare(-1),
       mLastMove(-1),
-      GameLogic(PROMOTE_FEN_B),
+      GameLogic(PROMOTE_FEN_W),
       mPromoteWindow(false),
+      mPromoteFrom(-1),
+      mPromoteTo(-1),
       mRotated(false),
       moveCandidates() {
 	mWindow.setView(mWindow.getDefaultView());
@@ -97,8 +99,23 @@ void GameHandler::rotateBoard() {
 }
 
 void GameHandler::handleEvent(const sf::Event& event) {
-	if (event.type == sf::Event::MouseMoved)
-		handleMouseMoved(event.mouseButton.x, event.mouseButton.y);
+	if (!needPromotion()) return;
+	if (event.type == sf::Event::MouseButtonReleased) {
+		if (event.mouseButton.button == sf::Mouse::Left) {
+			sf::Vector2i mouse(event.mouseButton.x, event.mouseButton.y);
+
+			if (mouse.y < 443 || mouse.y > 443 + 85) return;
+			if (mouse.x < 456 || mouse.x > 456 + 340) return;
+			std::cout << "Mouse: " << mouse.x << " " << mouse.y << "\n";
+			int id = (mouse.x - 456)/ 85;
+			int type = Piece::Queen + id;
+			int color = getTurn() ? Piece::Black : Piece::White;
+			std::cout << "Promote to: " << type << "\n";
+			mPromoteWindow = false;
+			mSceneLayers[PopUp]->detachAllChildren();
+			handleMove(Move(mPromoteFrom, mPromoteTo, type | color));
+		}
+	}
 }
 
 void GameHandler::setCursor(sf::Cursor::Type type) {
@@ -181,6 +198,7 @@ void GameHandler::displayPromoteWindow() {
 }
 
 void GameHandler::handleMove(Move move) {
+	std::cout << "Move called \n";
 	bool legal = isLegalMove(move);
 
 	clearCandidates();
@@ -188,8 +206,9 @@ void GameHandler::handleMove(Move move) {
 	// if legal move, then highlight new move, make that move, un-highlight old move, and to squares
 	int from = move.from(), to = move.to();
 	if (legal && from != to) {
-		if (isLegalPromotion(from, to)) {
-			movePiece(from, to);
+		if (isLegalPromotion(from, to) && move.promote() == Piece::None) {
+			mPromoteFrom = from;
+			mPromoteTo = to;
 			displayPromoteWindow();
 			return;
 		}

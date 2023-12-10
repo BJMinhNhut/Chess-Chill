@@ -228,12 +228,12 @@ bool GameState::update(sf::Time dt) {
 		else
 			mGUIContainer.update(dt);
 	} else {
+		mGUIContainer.update(dt);
 		mPlayers[mGame.getTurn()]->update(dt);
 		mGame.update(dt);
 		mEvaluation->setText(std::to_string(mGame.getEvaluation()));
 		mEvaluation->alignCenter();
 		updateClock();
-		mGUIContainer.update(dt);
 	}
 	return false;
 }
@@ -245,9 +245,9 @@ bool GameState::handleEvent(const sf::Event& event) {
 		else
 			mGUIContainer.handleEvent(event);
 	} else {
+		mGUIContainer.handleEvent(event);
 		mPlayers[mGame.getTurn()]->handleEvent(event);
 		mGame.handleEvent(event);
-		mGUIContainer.handleEvent(event);
 	}
 	return false;
 }

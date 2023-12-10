@@ -28,6 +28,12 @@ SceneNode::Ptr SceneNode::detachChild(const SceneNode& node) {
 	return result;
 }
 
+void SceneNode::detachAllChildren() {
+	for(auto &child : mChildren)
+		child->mParent = nullptr;
+	mChildren.clear();
+}
+
 void SceneNode::update(sf::Time dt) {
 	updateCurrent(dt);
 	updateChildren(dt);

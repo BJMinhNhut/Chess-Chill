@@ -102,7 +102,9 @@ class GameHandler : public sf::NonCopyable, public GameLogic {
 	Piece* mDragging;
 	int mOldSquare;
 	int mLastMove;  // (newBox << 6) | oldBox;
+
 	bool mPromoteWindow;
+	int mPromoteFrom, mPromoteTo;
 
 	SpriteNode *mBoardIndex, *mBoardSprite;
 	bool mRotated;
