@@ -476,7 +476,7 @@ bool GameLogic::isLegalCastling(int from, int to) const {
 		if (mBoard.get(from + dir) != 0 || mBoard.get(from + 2 * dir) != 0)  // check for blocking
 			return false;
 		if (to == (color ? 58 : 2)) {  // Queen side castling
-			if (mBoard.get(from + 3 * dir) != 0 || mAttacks.isAttacked(from + 3 * dir))
+			if (mBoard.get(from + 3 * dir) != 0)
 				return false;
 		}
 
