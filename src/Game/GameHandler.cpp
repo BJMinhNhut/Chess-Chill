@@ -51,7 +51,6 @@ void GameHandler::buildScene() {
 	for (std::size_t i = 0; i < LayerCount; ++i) {
 		SceneNode::Ptr layer(new SceneNode());
 		mSceneLayers[i] = layer.get();
-
 		mSceneGraph.attachChild(std::move(layer));
 	}
 
@@ -207,7 +206,6 @@ void GameHandler::displayPromoteWindow() {
 }
 
 void GameHandler::handleMove(Move move) {
-	std::cout << "Move called \n";
 	bool legal = isLegalMove(move);
 
 	clearCandidates();
