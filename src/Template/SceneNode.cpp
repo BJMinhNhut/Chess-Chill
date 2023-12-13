@@ -44,8 +44,10 @@ void SceneNode::updateCurrent(sf::Time) {
 }
 
 void SceneNode::updateChildren(sf::Time dt) {
-	for (Ptr& child : mChildren)
+	for (Ptr& child : mChildren) {
+		assert(child.get() != nullptr);
 		child->update(dt);
+	}
 }
 
 void SceneNode::draw(sf::RenderTarget& target, sf::RenderStates states) const {
@@ -62,8 +64,10 @@ void SceneNode::drawCurrent(sf::RenderTarget&, sf::RenderStates) const {
 }
 
 void SceneNode::drawChildren(sf::RenderTarget& target, sf::RenderStates states) const {
-	for (const Ptr& child : mChildren)
+	for (const Ptr& child : mChildren) {
+		assert(child.get() != nullptr);
 		child->draw(target, states);
+	}
 }
 
 sf::Vector2f SceneNode::getWorldPosition() const {
