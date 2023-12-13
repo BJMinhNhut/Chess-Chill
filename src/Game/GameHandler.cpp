@@ -19,6 +19,7 @@ const std::string GameHandler::START_FEN =
 const std::string GameHandler::ONLY_KINGS_FEN = "k7/8/8/8/8/8/8/7K w - - 0 1";
 const std::string GameHandler::PROMOTE_FEN_W = "8/7P/8/k7/7K/8/8/8 w - - 0 1";
 const std::string GameHandler::PROMOTE_FEN_B = "8/8/8/7k/K7/8/7p/8 b - - 0 1";
+const std::string GameHandler::PROMOTE_MATE = "8/5P1k/8/3B3K/3B4/8/8/8 w - - 0 1";
 
 GameHandler::GameHandler(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts,
                          SoundPlayer& sounds, sf::Vector2f position)
@@ -36,7 +37,7 @@ GameHandler::GameHandler(sf::RenderWindow& window, TextureHolder& textures, Font
       mBoardPosition(position),
       mOldSquare(-1),
       mLastMove(-1),
-      GameLogic(START_FEN),
+      GameLogic(PROMOTE_MATE),
       mPromoteWindow(false),
       mPromoteFrom(-1),
       mPromoteTo(-1),
@@ -222,8 +223,10 @@ void GameHandler::handleMove(Move move) {
 		highlightMove(mLastMove, false);
 		highlightMove(to << 6 | from, true);
 		makeMove(move);
-		if (isFinished())
+		if (isFinished()) {
 			setCursor(sf::Cursor::Arrow);
+			highlightSquare(getKing(getTurn()), Debug);
+		}
 
 #ifdef DEBUG_ATTACK
 		for (int i = 0; i < 64; ++i) {

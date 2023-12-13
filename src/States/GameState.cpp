@@ -13,7 +13,7 @@
 #include "Template/Utility.hpp"
 
 #include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Graphics/View.hpp>
+#include <SFML/System/Sleep.hpp>
 
 #include <iostream>
 
@@ -30,7 +30,8 @@ GameState::GameState(StateStack& stack, Context context)
       mClock(),
       mEndGameContainer(),
       mReviewMode(false),
-      mEvaluation(nullptr) {
+      mEvaluation(nullptr),
+      mCoolDown(sf::Time::Zero) {
 
 	mGame.setClock(0, sf::seconds(context.options->getTime()),
 	               sf::seconds(context.options->getIncrement()));
@@ -214,18 +215,20 @@ void GameState::draw() {
 	if (mGame.isFinished()) {
 		if (mWinner->isEmpty()) {
 			getContext().sounds->play(SoundEffect::EndGame);
+			mCoolDown = sf::milliseconds(1500);
 			loadResult();
 		}
-		if (!mReviewMode)
+		if (!mReviewMode && mCoolDown < sf::milliseconds(100))
 			window.draw(mEndGameContainer);
 	}
 }
 
 bool GameState::update(sf::Time dt) {
 	if (mGame.isFinished()) {
-		if (!mReviewMode)
-			mEndGameContainer.update(dt);
-		else
+		if (!mReviewMode) {
+			if (mCoolDown < sf::milliseconds(100)) mEndGameContainer.update(dt);
+			else mCoolDown -= dt;
+		} else
 			mGUIContainer.update(dt);
 	} else {
 		mGame.update(dt);
@@ -240,9 +243,9 @@ bool GameState::update(sf::Time dt) {
 
 bool GameState::handleEvent(const sf::Event& event) {
 	if (mGame.isFinished()) {
-		if (!mReviewMode)
-			mEndGameContainer.handleEvent(event);
-		else
+		if (!mReviewMode) {
+			if (mCoolDown < sf::milliseconds(100)) mEndGameContainer.handleEvent(event);
+		} else
 			mGUIContainer.handleEvent(event);
 	} else {
 		mPlayers[mGame.getTurn()]->handleEvent(event);
