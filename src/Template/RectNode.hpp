@@ -19,7 +19,7 @@ class RectNode : public SceneNode {
    private:
 	void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;
 
-   protected:
+   private:
 	sf::RectangleShape mRect;
 };
 
