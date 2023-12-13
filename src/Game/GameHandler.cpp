@@ -37,7 +37,7 @@ GameHandler::GameHandler(sf::RenderWindow& window, TextureHolder& textures, Font
       mBoardPosition(position),
       mOldSquare(-1),
       mLastMove(-1),
-      GameLogic(PROMOTE_MATE),
+      GameLogic(START_FEN),
       mPromoteWindow(false),
       mPromoteFrom(-1),
       mPromoteTo(-1),

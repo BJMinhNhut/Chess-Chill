@@ -215,7 +215,7 @@ void GameState::draw() {
 	if (mGame.isFinished()) {
 		if (mWinner->isEmpty()) {
 			getContext().sounds->play(SoundEffect::EndGame);
-			mCoolDown = sf::milliseconds(1500);
+			mCoolDown = sf::milliseconds(2000);
 			loadResult();
 		}
 		if (!mReviewMode && mCoolDown < sf::milliseconds(100))
