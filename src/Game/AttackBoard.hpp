@@ -9,7 +9,7 @@
 
 class AttackBoard {
    public:
-	AttackBoard(const Board &board);
+	explicit AttackBoard(const Board &board);
 
 	[[nodiscard]] bool isAttacked(int square) const;
 	[[nodiscard]] bool isAttacked(int square, bool turn) const;
