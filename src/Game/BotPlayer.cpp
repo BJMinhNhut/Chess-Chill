@@ -11,39 +11,45 @@
 #include <iostream>
 
 BotPlayer::BotPlayer(GameHandler& gameHandler, int color)
-    : Player(gameHandler, color), mRunning(false) {
+    : Player(gameHandler, color), mStatus(Waiting), mMove(0, 0) {
 	setName("Computer");
 }
 
 BotPlayer::~BotPlayer() {
-	if (mRunning) {
+	if (mStatus == Thinking)
 		mThread.detach();
-		mRunning = false;
-	}
 }
 void BotPlayer::update(sf::Time dt) {
-	if (mGameHandler.getTurn() == getColor() && mGameHandler.status() == GameLogic::OnGoing &&
-	    !mRunning) {
-		mRunning = true;
-		mThread = std::thread(&BotPlayer::makeMove, this);
+	if (mGameHandler.getTurn() == getColor()) {
+		if (mStatus == Waiting) {
+			mStatus = Thinking;
+			mThread = std::thread(&BotPlayer::makeMove, this);
+		} else if (mStatus == Finished) {
+			mGameHandler.handleMove(mMove);
+			mStatus = Waiting;
+			mThread.detach();
+		}
 	}
 }
 
 void BotPlayer::handleEvent(const sf::Event& event) {}
 
 void BotPlayer::makeMove() {
-	Move move = getOptimizeMove();
-	std::cout << "Best move: " << move.from() << ' ' << move.to() << '\n';
-	if (!mRunning || mGameHandler.status() != GameLogic::OnGoing)
+	if (mGameHandler.status() != GameLogic::OnGoing) {
+		mThread.detach();
+		mStatus = Waiting;
 		return;
-	mGameHandler.handleMove(move);
-	mRunning = false;
-	mThread.detach();
+	}
+	std::cout << "Searching for best move...\n";
+	mMove = getOptimizeMove();
+	std::cout << "Best move: " << mMove.from() << ' ' << mMove.to() << '\n';
+	mStatus = Finished;
 }
 
 Move BotPlayer::getOptimizeMove() {
-	int depth = mGameHandler.getRemainingTime(getColor()) > 100.f ? 3 : 2;
-	int extra = mGameHandler.getRemainingTime(getColor()) > 30.f ? 3 : 2;
-	Move move = Engine::getBestMove(static_cast<GameLogic>(mGameHandler), depth, extra);
+	int depth = mGameHandler.getRemainingTime(getColor()) > 100.f ? Random::getInt(2, 4) : 2;
+	int extra = mGameHandler.getRemainingTime(getColor()) > 50.f ? Random::getInt(2, 3)
+	                                                             : Random::getInt(1, 2);
+	Move move = Engine::getBestMove(mGameHandler.GameLogic::clone(), depth, extra);
 	return move;
 }

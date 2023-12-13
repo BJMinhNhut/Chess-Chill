@@ -11,6 +11,11 @@
 
 class BotPlayer : public Player {
    public:
+	enum Status {
+		Thinking,
+		Finished,
+		Waiting,
+	};
 	BotPlayer(GameHandler & gameHandler, int color);
 	~BotPlayer() override;
 
@@ -23,7 +28,8 @@ class BotPlayer : public Player {
 
    private:
 	std::thread mThread;
-	bool mRunning;
+	Status mStatus;
+	Move mMove;
 };
 
 #endif  //CHESS_CHILL_BOTPLAYER_HPP
