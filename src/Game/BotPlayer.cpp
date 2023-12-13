@@ -47,7 +47,7 @@ void BotPlayer::makeMove() {
 }
 
 Move BotPlayer::getOptimizeMove() {
-	int depth = mGameHandler.getRemainingTime(getColor()) > 100.f ? Random::getInt(2, 4) : 2;
+	int depth = mGameHandler.getRemainingTime(getColor()) > 100.f ? Random::getInt(3, 4) : 2;
 	int extra = mGameHandler.getRemainingTime(getColor()) > 50.f ? Random::getInt(2, 3)
 	                                                             : Random::getInt(1, 2);
 	Move move = Engine::getBestMove(mGameHandler.GameLogic::clone(), depth, extra);

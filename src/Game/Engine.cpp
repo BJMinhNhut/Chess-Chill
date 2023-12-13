@@ -109,8 +109,8 @@ int Engine::alphaBeta(const GameLogic& board, int depth, int extra, int alpha, i
 	}
 
 	if (score < 0)
-		score -= depth * 2;
+		score -= depth << 2;
 	else
-		score += depth * 2;
+		score += depth << 2;
 	return score;
 }
