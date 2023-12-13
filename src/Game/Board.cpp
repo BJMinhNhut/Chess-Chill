@@ -10,18 +10,17 @@
 #include <sstream>
 
 Board::Board(const std::string& fen)
-    : mTurn(false), mCastling(0), mEnPassant(-1), mHalfMove(0), mFullMove(0) {
+    : mTurn(false), mCastling(0), mEnPassant(-1), mHalfMove(0), mFullMove(0), mBoard(64, 0) {
 	loadFEN(fen);
 }
 
-Board::Board(const Board& other) {
-	std::memcpy(mBoard, other.mBoard, sizeof mBoard);
-	mTurn = other.mTurn;
-	mCastling = other.mCastling;
-	mEnPassant = other.mEnPassant;
-	mHalfMove = other.mHalfMove;
-	mFullMove = other.mFullMove;
-}
+Board::Board(const Board& other)
+    : mTurn(other.mTurn),
+      mCastling(other.mCastling),
+      mEnPassant(other.mEnPassant),
+      mHalfMove(other.mHalfMove),
+      mFullMove(other.mFullMove),
+      mBoard(other.mBoard) {}
 
 int Board::getRank(int square) {
 	return square >> 3;
@@ -135,7 +134,8 @@ std::string Board::getFEN(bool withMove) const {
 }
 
 void Board::clear() {
-	std::memset(mBoard, 0, sizeof mBoard);
+	mBoard.clear();
+	mBoard.resize(64);
 }
 
 void Board::set(int square, int piece) {

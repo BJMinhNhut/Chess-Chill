@@ -8,12 +8,12 @@
 
 #include <cassert>
 
-AttackBoard::AttackBoard(const Board& board) : mBoard(board) {
+AttackBoard::AttackBoard(const Board& board) : mBoard(&board) {
 	update();
 }
 
 bool AttackBoard::isAttacked(int square) const {
-	return isAttacked(square, !mBoard.getTurn());
+	return isAttacked(square, !mBoard->getTurn());
 }
 
 bool AttackBoard::isAttacked(int square, bool turn) const {
@@ -21,11 +21,11 @@ bool AttackBoard::isAttacked(int square, bool turn) const {
 }
 
 bool AttackBoard::isKingInCheck() const {
-	return isKingInCheck(mBoard.getTurn());
+	return isKingInCheck(mBoard->getTurn());
 }
 
 bool AttackBoard::isKingInCheck(bool turn) const {
-	return isAttacked(mBoard.getKing(turn), !turn);
+	return isAttacked(mBoard->getKing(turn), !turn);
 }
 
 void AttackBoard::update() {
@@ -36,7 +36,7 @@ void AttackBoard::update() {
 void AttackBoard::update(bool turn) {
 	mAttackBoard[turn] = 0;
 	for (int i = 0; i < 64; i++) {
-		int piece = mBoard.get(i);
+		int piece = mBoard->get(i);
 		if (piece == 0 || Piece::getColor(piece) != turn)
 			continue;
 		switch (Piece::getType(piece)) {
@@ -47,13 +47,13 @@ void AttackBoard::update(bool turn) {
 				mAttackBoard[turn] |= AttackGenerator::generateKnightAttacks(i);
 				break;
 			case Piece::Bishop:
-				mAttackBoard[turn] |= AttackGenerator::generateBishopAttacks(i, mBoard);
+				mAttackBoard[turn] |= AttackGenerator::generateBishopAttacks(i, *mBoard);
 				break;
 			case Piece::Rook:
-				mAttackBoard[turn] |= AttackGenerator::generateRookAttacks(i, mBoard);
+				mAttackBoard[turn] |= AttackGenerator::generateRookAttacks(i, *mBoard);
 				break;
 			case Piece::Queen:
-				mAttackBoard[turn] |= AttackGenerator::generateQueenAttacks(i, mBoard);
+				mAttackBoard[turn] |= AttackGenerator::generateQueenAttacks(i, *mBoard);
 				break;
 			case Piece::King:
 				mAttackBoard[turn] |= AttackGenerator::generateKingAttacks(i);

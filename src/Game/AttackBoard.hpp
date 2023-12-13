@@ -9,7 +9,7 @@
 
 class AttackBoard {
    public:
-	AttackBoard(const Board& board);
+	AttackBoard(const Board &board);
 
 	[[nodiscard]] bool isAttacked(int square) const;
 	[[nodiscard]] bool isAttacked(int square, bool turn) const;
@@ -22,7 +22,7 @@ class AttackBoard {
 	void update(bool turn);
 
    private:
-	const Board& mBoard;
+	const Board *mBoard;
 	int64_t mAttackBoard[2]{};  // 0: white, 1: black
 };
 

@@ -6,10 +6,11 @@
 #define CHESS_BOARD_HPP
 
 #include <string>
+#include <vector>
 
 class Board {
    public:
-	Board(const std::string &fen);
+	explicit Board(const std::string &fen);
 	Board(const Board &other);
 
 	static int getRank(int square);
@@ -56,7 +57,7 @@ class Board {
 	void loadFEN(const std::string &fen);
 
    private:
-	int mBoard[64]{};
+	std::vector<int> mBoard;
 	bool mTurn;
 	int mCastling;
 	int mEnPassant;
