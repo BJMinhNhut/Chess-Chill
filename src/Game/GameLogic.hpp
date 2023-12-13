@@ -39,6 +39,7 @@ class GameLogic {
    public:
 	explicit GameLogic(const std::string &fen);
 	GameLogic(const GameLogic &other);
+	GameLogic &clone() const;
 
 	[[nodiscard]] bool isFinished() const;
 	[[nodiscard]] bool isChecked() const;

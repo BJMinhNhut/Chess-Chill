@@ -31,6 +31,10 @@ GameLogic::GameLogic(const GameLogic& other) : mBoard(other.mBoard), mAttacks(mB
 	mClock[1] = other.mClock[1];
 }
 
+GameLogic &GameLogic::clone() const {
+	return *new GameLogic(*this);
+}
+
 void GameLogic::updateTime(sf::Time dt) {
 	if (mStatus != OnGoing || mHistory.size() < 2)
 		return;
