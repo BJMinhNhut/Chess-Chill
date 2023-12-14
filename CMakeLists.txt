@@ -75,6 +75,8 @@ add_executable(${TARGET_NAME}
         src/Game/Engine.hpp
         src/Game/Move.cpp
         src/Game/Move.hpp
+        src/Game/MoveTable.cpp
+        src/Game/MoveTable.hpp
 )
 target_link_libraries(${TARGET_NAME} PRIVATE sfml-graphics sfml-audio)
 target_compile_features(${TARGET_NAME} PRIVATE cxx_std_17)

@@ -35,12 +35,12 @@ Move Engine::getBestMove(const GameLogic& board, int depth, int extra) {
 			bestMove = move;
 		}
 		time += clock.restart();
-		if (time > sf::seconds(5)) {
+		if (time > sf::seconds(10)) {
 			std::cerr << "Time out: " + std::to_string(time.asSeconds()) + "s\n";
 			break;
 		}
 	}
-	std::cout << "Processed: " << called << '\n';
+	std::cout << "Processed " << called << ", in " << time.asSeconds() << "s\n";
 	return bestMove;
 }
 
@@ -65,27 +65,21 @@ int Engine::getMoveScore(const GameLogic& board, Move move) {
 	int to = move.to();
 	int pieceFrom = board.getPiece(from);
 	int pieceTo = board.getPiece(to);
-	int score = from == board.getSecondLastMovePiece() ? 1000 : 0;
+	int score = 0;
 	if (move.promote() > 0) {
-		score = 4000;
+		score = 2000;
 	} else if (board.getPiece(to) != 0) {
 		score += Evaluator::PIECE_MATERIAL[Piece::getType(pieceTo)] -
 		         Evaluator::PIECE_MATERIAL[Piece::getType(pieceFrom)] / 10;
 		if (to == board.getLastMovePiece())
 			score += 1001;
-	} else {
-		GameLogic newBoard(board);
-		newBoard.makeMove(move);
-		score = Evaluator::evaluateBoard(newBoard, board.getTurn());
-		if (newBoard.isChecked())
-			score += 500;
 	}
 	return score;
 }
 
 int Engine::alphaBeta(const GameLogic& board, int depth, int extra, int alpha, int beta,
                       bool inTurn, int &called) {
-	if (called > 0 && called % 100000 == 0) {
+	if (called > 0 && (called & (~(~0 << 16))) == 0) {
 		std::cout << "Processed " << called << '\n';
 	}
 	bool isFinished = (depth <= 0 && !board.isCaptured() && !board.isChecked()) ||

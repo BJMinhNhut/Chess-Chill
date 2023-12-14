@@ -6,6 +6,7 @@
 #include "GameHandler.hpp"
 #include "Evaluator.hpp"
 #include "Piece.hpp"
+#include "MoveTable.hpp"
 
 #include <cassert>
 #include <iostream>
@@ -21,8 +22,7 @@ GameLogic::GameLogic(const std::string& fen, GameHandler* handler)
       mLastMove(Normal),
       mFENs(),
       mClock(),
-      mLastMovePiece(-1),
-      mSecondLastMovePiece(-1) {
+      mLastMovePiece(-1) {
 	updateStatus();
 }
 
@@ -32,30 +32,32 @@ GameLogic::GameLogic(const GameLogic& other, GameHandler* handler)
       mHandler(handler),
       mStatus(other.mStatus),
       mLastMove(other.mLastMove),
+      mClock(other.mClock),
       mFENs(other.mFENs),
-      mClock(),
       mLastMovePiece(other.mLastMovePiece) {
-	std::memcpy(mClock, other.mClock, sizeof(mClock));
 }
 
 void GameLogic::updateTime(sf::Time dt) {
 	if (mStatus != OnGoing || mBoard.getFullMove() < 2)
 		return;
-	mClock[mBoard.getTurn()].update(dt);
-	if (mClock[mBoard.getTurn()].isTimeOut())
+	mClock.update(mBoard.getTurn(), dt);
+	if (mClock.isTimeOut(mBoard.getTurn()))
 		mStatus = Timeout;
 }
 
 float GameLogic::getRemainingTime(bool turn) const {
-	return mClock[turn].get();
+	return mClock.get(turn);
 }
 
 std::vector<Move> GameLogic::getLegalMoves() const {
 	std::vector<Move> moveList;
+	MoveTable *table = MoveTable::getInstance();
 	for (int i = 0; i < 64; i++) {
 		if (mBoard.get(i) == 0 || Piece::getColor(mBoard.get(i)) != mBoard.getTurn())
 			continue;
-		for (int j = 0; j < 64; j++) {
+		int64_t moves = table->getMoves(mBoard.get(i), i);
+		for (int j; moves; moves &= ~(1LL << j)) {
+			j = __builtin_ctzll(moves);
 			if (isLegalPromotion(i, j) && isLegalMove(Move(i, j, Piece::Queen))) {
 				int color = mBoard.getTurn() ? Piece::Black : Piece::White;
 				moveList.emplace_back(i, j, Piece::Queen | color);
@@ -75,7 +77,10 @@ std::vector<Move> GameLogic::getMoveList(int from) const {
 	int piece = mBoard.get(from);
 	if (piece == 0 || Piece::getColor(piece) != mBoard.getTurn())
 		return moveList;
-	for (int j = 0; j < 64; j++) {
+	MoveTable *table = MoveTable::getInstance();
+	int64_t moves = table->getMoves(piece, from);
+	for (int j; moves; moves &= ~(1LL << j)) {
+		j = __builtin_ctzll(moves);
 		if (isLegalPromotion(from, j) && isLegalMove(Move(from, j, Piece::Queen))) {
 			int color = mBoard.getTurn() ? Piece::Black : Piece::White;
 			moveList.emplace_back(from, j, Piece::Queen | color);
@@ -91,10 +96,6 @@ std::vector<Move> GameLogic::getMoveList(int from) const {
 
 int GameLogic::getLastMovePiece() const {
 	return mLastMovePiece;
-}
-
-int GameLogic::getSecondLastMovePiece() const {
-	return mSecondLastMovePiece;
 }
 
 int GameLogic::getKing(int color) const {
@@ -186,15 +187,14 @@ bool GameLogic::isFinished() const {
 }
 
 void GameLogic::makeMove(Move move) {
-	mClock[mBoard.getTurn()].increment();
+	mClock.increment(mBoard.getTurn());
 	pureMove(move);
-	mSecondLastMovePiece = mLastMovePiece;
 	mLastMovePiece = move.to();
 	updateStatus();
 }
 
-void GameLogic::setClock(bool turn, sf::Time time, sf::Time bonus) {
-	mClock[turn].set(time, bonus);
+void GameLogic::setClock(sf::Time time, sf::Time bonus) {
+	mClock.set(time, bonus);
 }
 
 GameLogic::Status GameLogic::status() const {
@@ -518,6 +518,3 @@ bool GameLogic::getTurn() const {
 	return mBoard.getTurn();
 }
 
-int GameLogic::lastMoveStatus() const {
-	return mLastMove;
-}

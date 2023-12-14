@@ -69,7 +69,7 @@ class GameLogic {
 	[[nodiscard]] int getCastling() const;
 
 	void makeMove(Move move);
-	void setClock(bool turn, sf::Time time, sf::Time bonus = sf::seconds(0));
+	void setClock(sf::Time time, sf::Time bonus = sf::seconds(0));
 
 	void updateTime(sf::Time dt);
 
@@ -78,7 +78,6 @@ class GameLogic {
 	[[nodiscard]] bool isLegalPromotion(int from, int to) const;
 
    private:
-	[[nodiscard]] int lastMoveStatus() const;
 
 	void pureMove(Move move);
 	void promotePiece(int square, int piece);
@@ -105,10 +104,10 @@ class GameLogic {
 
    private:
 	GameHandler* mHandler;
-	int mLastMove, mLastMovePiece, mSecondLastMovePiece;
+	int8_t mLastMovePiece, mLastMove;
 	Status mStatus;
-	std::map<std::string, int> mFENs;
-	Clock mClock[2];
+	std::map<std::string, int8_t> mFENs;
+	Clock mClock;
 	Board mBoard;
 	AttackBoard mAttacks;
 };

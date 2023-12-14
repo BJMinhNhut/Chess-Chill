@@ -57,9 +57,9 @@ int Evaluator::evaluateBoard(const GameLogic& board, int color) {
 	// if is king in check, then bonus 60
 	if (board.status() == GameLogic::Checkmate) {
 		if (board.getTurn() == color)
-			return -10000000;
+			return -1000000;
 		else
-			return 10000000;
+			return 1000000;
 	} else if (board.status() & (GameLogic::Stalemate | GameLogic::ThreefoldRepetition |
 	                             GameLogic::InsufficientMaterial)) {
 		return 0;

@@ -10,8 +10,8 @@
 
 class Board {
    public:
-	explicit Board(const std::string &fen);
-	Board(const Board &other);
+	explicit Board(const std::string& fen);
+	Board(const Board& other);
 
 	static int getRank(int square);
 	static int getFile(int square);
@@ -27,7 +27,7 @@ class Board {
 	[[nodiscard]] int getType(int square) const;
 	[[nodiscard]] int getType(int rank, int file) const;
 
-	[[nodiscard]] int getKing(bool turn) const; // if not found return -1
+	[[nodiscard]] int getKing(bool turn) const;  // if not found return -1
 	[[nodiscard]] bool getTurn() const;
 	[[nodiscard]] int getCastling() const;
 	[[nodiscard]] int getEnPassant() const;
@@ -50,20 +50,17 @@ class Board {
 	[[nodiscard]] int getHashFEN(bool withMove) const;
 
 	void clear();
-	void set(int square, int piece);
-	void set(int rank, int file, int piece);
+	void set(int square, int8_t piece);
+	void set(int rank, int file, int8_t piece);
 	void move(int from, int to);
 
    private:
-	void loadFEN(const std::string &fen);
+	void loadFEN(const std::string& fen);
 
    private:
-	std::vector<int> mBoard;
 	bool mTurn;
-	int mCastling;
-	int mEnPassant;
-	int mHalfMove;
-	int mFullMove;
+	int8_t mCastling, mEnPassant, mHalfMove, mFullMove;
+	int8_t mBoard[64];
 };
 
 #endif  //CHESS_BOARD_HPP

@@ -7,6 +7,7 @@
 #include "State.hpp"
 #include "States/StatesList.hpp"
 #include "Utility.hpp"
+#include "Game/MoveTable.hpp"
 
 #include <iostream>
 
@@ -45,6 +46,8 @@ Application::Application()
 
 	if (!mSettings.useSound())
 		mSounds.setMute(true);
+
+	MoveTable::getInstance();
 }
 
 void Application::registerStates() {

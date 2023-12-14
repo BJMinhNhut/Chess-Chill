@@ -32,10 +32,10 @@ GameState::GameState(StateStack& stack, Context context)
       mReviewMode(false),
       mCoolDown(sf::Time::Zero) {
 
-	mGame.mLogic.setClock(0, sf::seconds(context.options->getTime()),
-	               sf::seconds(context.options->getIncrement()));
-	mGame.mLogic.setClock(1, sf::seconds(context.options->getTime()),
-	               sf::seconds(context.options->getIncrement()));
+	if (context.options->getTime() > 0) {
+		mGame.mLogic.setClock(sf::seconds(context.options->getTime()),
+		                      sf::seconds(context.options->getIncrement()));
+	}
 
 	if (context.options->getMode() != GameOptions::AIvAI)
 		mPlayers[0] = std::unique_ptr<Player>(new HumanPlayer(mGame, Player::White));

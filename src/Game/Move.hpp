@@ -15,7 +15,7 @@ class Move {
 	int promote() const;
 
    private:
-	int mMove;
+	short mMove;
 	int mPromote;
 };
 
