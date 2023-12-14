@@ -16,11 +16,12 @@ BotPlayer::BotPlayer(GameHandler& gameHandler, int color)
 }
 
 BotPlayer::~BotPlayer() {
-	if (mStatus == Thinking)
+	if (mStatus == Thinking) {
 		mThread.detach();
+	}
 }
 void BotPlayer::update(sf::Time dt) {
-	if (mGameHandler.getTurn() == getColor()) {
+	if (mGameHandler.mLogic.getTurn() == getColor()) {
 		if (mStatus == Waiting) {
 			mStatus = Thinking;
 			mThread = std::thread(&BotPlayer::makeMove, this);
@@ -35,21 +36,20 @@ void BotPlayer::update(sf::Time dt) {
 void BotPlayer::handleEvent(const sf::Event& event) {}
 
 void BotPlayer::makeMove() {
-	if (mGameHandler.status() != GameLogic::OnGoing) {
+	if (mGameHandler.mLogic.status() != GameLogic::OnGoing) {
 		mThread.detach();
 		mStatus = Waiting;
 		return;
 	}
-	std::cout << "Searching for best move...\n";
+	std::cout << "\nSearching for best move...\n";
 	mMove = getOptimizeMove();
 	std::cout << "Best move: " << mMove.from() << ' ' << mMove.to() << '\n';
 	mStatus = Finished;
 }
 
 Move BotPlayer::getOptimizeMove() {
-	int depth = mGameHandler.getRemainingTime(getColor()) > 100.f ? Random::getInt(3, 4) : 2;
-	int extra = mGameHandler.getRemainingTime(getColor()) > 50.f ? Random::getInt(2, 3)
-	                                                             : Random::getInt(1, 2);
-	Move move = Engine::getBestMove(mGameHandler.GameLogic::clone(), depth, extra);
+	int depth = mGameHandler.mLogic.getRemainingTime(getColor()) > 100.f ? 3 : 2;
+	int extra = mGameHandler.mLogic.getRemainingTime(getColor()) > 50.f ? 2 : 1;
+	Move move = Engine::getBestMove(mGameHandler.cloneLogic(), depth, extra);
 	return move;
 }

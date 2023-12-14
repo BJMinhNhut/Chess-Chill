@@ -47,6 +47,7 @@ class Board {
 	void updateHalfMove(int from, int to);
 
 	[[nodiscard]] std::string getFEN(bool withMove = true) const;
+	[[nodiscard]] int getHashFEN(bool withMove) const;
 
 	void clear();
 	void set(int square, int piece);

@@ -30,12 +30,11 @@ GameState::GameState(StateStack& stack, Context context)
       mClock(),
       mEndGameContainer(),
       mReviewMode(false),
-      mEvaluation(nullptr),
       mCoolDown(sf::Time::Zero) {
 
-	mGame.setClock(0, sf::seconds(context.options->getTime()),
+	mGame.mLogic.setClock(0, sf::seconds(context.options->getTime()),
 	               sf::seconds(context.options->getIncrement()));
-	mGame.setClock(1, sf::seconds(context.options->getTime()),
+	mGame.mLogic.setClock(1, sf::seconds(context.options->getTime()),
 	               sf::seconds(context.options->getIncrement()));
 
 	if (context.options->getMode() != GameOptions::AIvAI)
@@ -83,12 +82,6 @@ void GameState::loadBasicGUI() {
 	titleLabel->setPosition(titleBar->getPosition());
 	titleLabel->alignCenter();
 	mGUIContainer.pack(titleLabel);
-
-	mEvaluation = std::make_shared<GUI::Label>(
-	    GUI::Label::Main, std::to_string(mGame.getEvaluation()), *context.fonts);
-	mEvaluation->setPosition(200.f, 450.f);
-	mEvaluation->alignCenter();
-	mGUIContainer.pack(mEvaluation);
 }
 
 void GameState::loadGameGUI() {
@@ -118,6 +111,11 @@ void GameState::loadGameGUI() {
 	mClock[1]->setPosition(1015.f + 320.f / 2, 605.f + 80.f / 2);
 	mClock[1]->alignCenter();
 	mGUIContainer.pack(mClock[1]);
+
+	mEvaluation = std::make_shared<GUI::Label>(GUI::Label::Main, "", *context.fonts);
+	mEvaluation->setPosition(50.f, 450.f);
+	mEvaluation->alignCenter();
+	mGUIContainer.pack(mEvaluation);
 }
 
 void GameState::loadControllerGUI() {
@@ -166,22 +164,22 @@ void GameState::loadEndGameGUI() {
 }
 
 void GameState::loadResult() {
-	if (mGame.status() == GameLogic::Checkmate) {
-		mWinner->setText(mGame.getWinner() + " wins");
+	if (mGame.mLogic.status() == GameLogic::Checkmate) {
+		mWinner->setText(mGame.mLogic.getWinner() + " wins");
 		mDescription->setText("by checkmate");
-	} else if (mGame.status() == GameLogic::Resign) {
-		mWinner->setText(mGame.getWinner() + " wins");
+	} else if (mGame.mLogic.status() == GameLogic::Resign) {
+		mWinner->setText(mGame.mLogic.getWinner() + " wins");
 		mDescription->setText("by resignation");
-	} else if (mGame.status() == GameLogic::Timeout) {
-		mWinner->setText(mGame.getWinner() + " wins");
+	} else if (mGame.mLogic.status() == GameLogic::Timeout) {
+		mWinner->setText(mGame.mLogic.getWinner() + " wins");
 		mDescription->setText("by timeout");
-	} else if (mGame.status() == GameLogic::Stalemate) {
+	} else if (mGame.mLogic.status() == GameLogic::Stalemate) {
 		mWinner->setText("Draw");
 		mDescription->setText("by stalemate");
-	} else if (mGame.status() == GameLogic::InsufficientMaterial) {
+	} else if (mGame.mLogic.status() == GameLogic::InsufficientMaterial) {
 		mWinner->setText("Draw");
 		mDescription->setText("by insufficient material");
-	} else if (mGame.status() == GameLogic::ThreefoldRepetition) {
+	} else if (mGame.mLogic.status() == GameLogic::ThreefoldRepetition) {
 		mWinner->setText("Draw");
 		mDescription->setText("by threefold repetition");
 	}
@@ -203,8 +201,8 @@ std::string GameState::getTitle() const {
 }
 
 void GameState::updateClock() {
-	mClock[0]->setText(getClockString(mGame.getRemainingTime(true)));
-	mClock[1]->setText(getClockString(mGame.getRemainingTime(false)));
+	mClock[0]->setText(getClockString(mGame.mLogic.getRemainingTime(true)));
+	mClock[1]->setText(getClockString(mGame.mLogic.getRemainingTime(false)));
 }
 
 void GameState::draw() {
@@ -212,7 +210,7 @@ void GameState::draw() {
 	window.setView(window.getDefaultView());
 	window.draw(mGUIContainer);
 	mGame.draw();
-	if (mGame.isFinished()) {
+	if (mGame.mLogic.isFinished()) {
 		if (mWinner->isEmpty()) {
 			getContext().sounds->play(SoundEffect::EndGame);
 			mCoolDown = sf::milliseconds(2000);
@@ -224,7 +222,7 @@ void GameState::draw() {
 }
 
 bool GameState::update(sf::Time dt) {
-	if (mGame.isFinished()) {
+	if (mGame.mLogic.isFinished()) {
 		if (!mReviewMode) {
 			if (mCoolDown < sf::milliseconds(100)) mEndGameContainer.update(dt);
 			else mCoolDown -= dt;
@@ -233,22 +231,21 @@ bool GameState::update(sf::Time dt) {
 	} else {
 		mGame.update(dt);
 		updateClock();
-		mPlayers[mGame.getTurn()]->update(dt);
+		mPlayers[mGame.mLogic.getTurn()]->update(dt);
 		mGUIContainer.update(dt);
-		mEvaluation->setText(std::to_string(mGame.getEvaluation()));
-		mEvaluation->alignCenter();
+		mEvaluation->setText(std::to_string(mGame.mLogic.getEvaluation()));
 	}
 	return false;
 }
 
 bool GameState::handleEvent(const sf::Event& event) {
-	if (mGame.isFinished()) {
+	if (mGame.mLogic.isFinished()) {
 		if (!mReviewMode) {
 			if (mCoolDown < sf::milliseconds(100)) mEndGameContainer.handleEvent(event);
 		} else
 			mGUIContainer.handleEvent(event);
 	} else {
-		mPlayers[mGame.getTurn()]->handleEvent(event);
+		mPlayers[mGame.mLogic.getTurn()]->handleEvent(event);
 		mGUIContainer.handleEvent(event);
 	}
 	return false;

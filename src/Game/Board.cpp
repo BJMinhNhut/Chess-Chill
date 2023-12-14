@@ -133,6 +133,18 @@ std::string Board::getFEN(bool withMove) const {
 	return oss.str();
 }
 
+int Board::getHashFEN(bool withMove) const {
+	int hash = 0;
+	for (int i = 0; i < 64; ++i)
+		hash ^= mBoard[i] * (i + 1);
+	hash ^= mTurn * 65;
+	hash ^= mCastling * 67;
+	hash ^= mEnPassant * 71;
+	hash ^= mHalfMove * 73;
+	hash ^= mFullMove * 79;
+	return hash;
+}
+
 void Board::clear() {
 	mBoard.clear();
 	mBoard.resize(64);

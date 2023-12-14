@@ -26,15 +26,21 @@ class RenderWindow;
 class Event;
 }  // namespace sf
 
-class GameHandler : public sf::NonCopyable, public GameLogic {
+class GameHandler : public sf::NonCopyable {
+	friend GameLogic;
+
    public:
 	const static std::string START_FEN;
 	const static std::string ONLY_KINGS_FEN, PROMOTE_FEN_W, PROMOTE_FEN_B, PROMOTE_MATE;
 	const static int BOARD_DRAW_SIZE;
 
    public:
+	GameLogic mLogic;
+
+   public:
 	explicit GameHandler(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts,
 	                     SoundPlayer& sounds, sf::Vector2f position);
+	GameLogic &cloneLogic() const;
 
 	void update(sf::Time dt);
 	void handleEvent(const sf::Event& event);
@@ -42,7 +48,6 @@ class GameHandler : public sf::NonCopyable, public GameLogic {
 
 	void rotateBoard();
 
-	void handleMouseMoved(int x, int y);
 	void handleMove(Move move);
 	void moveFromClickedSquare(int to);
 
@@ -50,7 +55,6 @@ class GameHandler : public sf::NonCopyable, public GameLogic {
 	void dropPiece(int square);
 
 	void displayPromoteWindow();
-	void promotePiece(int square, int piece) override;
 
 	void snapDraggingToMouse();
 	void setCursor(sf::Cursor::Type type);
@@ -78,9 +82,10 @@ class GameHandler : public sf::NonCopyable, public GameLogic {
 	sf::Vector2f getBoxPosition(int box) const;
 
 	void addPiece(int piece, int square);
-	void movePiece(int from, int to) override;
-	void capturePiece(int square) override;
-	void postMove() override;
+	void movePiece(int from, int to);
+	void capturePiece(int square);
+	void promotePiece(int square, int piece);
+	void postMove();
 
 	void highlightLegalMoves(int from);
 	void highlightSquare(int square, HighlightRate rate);

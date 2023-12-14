@@ -27,7 +27,7 @@ Application::Application()
       mOptions(),
       mStateStack(State::Context(mWindow, mTextures, mFonts, mSounds, mSettings, mOptions)) {
 
-	mWindow.setFramerateLimit(60);
+	mWindow.setFramerateLimit(120);
 
 	loadFonts();
 	loadIcon();

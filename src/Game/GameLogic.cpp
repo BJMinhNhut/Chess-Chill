@@ -3,40 +3,43 @@
 //
 
 #include "GameLogic.hpp"
+#include "GameHandler.hpp"
 #include "Evaluator.hpp"
 #include "Piece.hpp"
 
 #include <cassert>
 #include <iostream>
+#include <cstring>
 
 const int GameLogic::BOARD_SIZE = 64;
 
-GameLogic::GameLogic(const std::string& fen)
+GameLogic::GameLogic(const std::string& fen, GameHandler* handler)
     : mBoard(fen),
       mAttacks(mBoard),
+      mHandler(handler),
       mStatus(OnGoing),
       mLastMove(Normal),
-      mHistory(),
+      mFENs(),
       mClock(),
       mLastMovePiece(-1),
       mSecondLastMovePiece(-1) {
 	updateStatus();
 }
 
-GameLogic::GameLogic(const GameLogic& other) : mBoard(other.mBoard), mAttacks(mBoard) {
-	mStatus = other.mStatus;
-	mLastMove = other.mLastMove;
-	mHistory = other.mHistory;
-	mClock[0] = other.mClock[0];
-	mClock[1] = other.mClock[1];
-}
-
-GameLogic &GameLogic::clone() const {
-	return *new GameLogic(*this);
+GameLogic::GameLogic(const GameLogic& other, GameHandler* handler)
+    : mBoard(other.mBoard),
+      mAttacks(mBoard),
+      mHandler(handler),
+      mStatus(other.mStatus),
+      mLastMove(other.mLastMove),
+      mFENs(other.mFENs),
+      mClock(),
+      mLastMovePiece(other.mLastMovePiece) {
+	std::memcpy(mClock, other.mClock, sizeof(mClock));
 }
 
 void GameLogic::updateTime(sf::Time dt) {
-	if (mStatus != OnGoing || mHistory.size() < 2)
+	if (mStatus != OnGoing || mBoard.getFullMove() < 2)
 		return;
 	mClock[mBoard.getTurn()].update(dt);
 	if (mClock[mBoard.getTurn()].isTimeOut())
@@ -55,11 +58,11 @@ std::vector<Move> GameLogic::getLegalMoves() const {
 		for (int j = 0; j < 64; j++) {
 			if (isLegalPromotion(i, j) && isLegalMove(Move(i, j, Piece::Queen))) {
 				int color = mBoard.getTurn() ? Piece::Black : Piece::White;
-				moveList.emplace_back(i, j, Piece::Queen|color);
-				moveList.emplace_back(i, j, Piece::Rook|color);
-				moveList.emplace_back(i, j, Piece::Bishop|color);
-				moveList.emplace_back(i, j, Piece::Knight|color);
-			} else if (isLegalMove(Move(i, j))){
+				moveList.emplace_back(i, j, Piece::Queen | color);
+				moveList.emplace_back(i, j, Piece::Rook | color);
+				moveList.emplace_back(i, j, Piece::Bishop | color);
+				moveList.emplace_back(i, j, Piece::Knight | color);
+			} else if (isLegalMove(Move(i, j))) {
 				moveList.emplace_back(i, j, Piece::None);
 			}
 		}
@@ -75,11 +78,11 @@ std::vector<Move> GameLogic::getMoveList(int from) const {
 	for (int j = 0; j < 64; j++) {
 		if (isLegalPromotion(from, j) && isLegalMove(Move(from, j, Piece::Queen))) {
 			int color = mBoard.getTurn() ? Piece::Black : Piece::White;
-			moveList.emplace_back(from, j, Piece::Queen|color);
-			moveList.emplace_back(from, j, Piece::Rook|color);
-			moveList.emplace_back(from, j, Piece::Bishop|color);
-			moveList.emplace_back(from, j, Piece::Knight|color);
-		} else if (isLegalMove(Move(from, j))){
+			moveList.emplace_back(from, j, Piece::Queen | color);
+			moveList.emplace_back(from, j, Piece::Rook | color);
+			moveList.emplace_back(from, j, Piece::Bishop | color);
+			moveList.emplace_back(from, j, Piece::Knight | color);
+		} else if (isLegalMove(Move(from, j))) {
 			moveList.emplace_back(from, j, Piece::None);
 		}
 	}
@@ -114,6 +117,14 @@ bool GameLogic::isCaptured() const {
 	return mLastMove & Capture;
 }
 
+bool GameLogic::isCastled() const {
+	return mLastMove & Castling;
+}
+
+bool GameLogic::isPromoted() const {
+	return mLastMove & Promotion;
+}
+
 bool GameLogic::isLegalMove(Move move) const {
 	int from = move.from(), to = move.to();
 	if (from == to || !Board::validSquare(from) || !Board::validSquare(to))
@@ -124,8 +135,8 @@ bool GameLogic::isLegalMove(Move move) const {
 	//	std::cout << piece << ' ' << mBoard.getTurn() << '\n';
 	if (piece == 0 || Piece::getColor(piece) != mBoard.getTurn())
 		return false;
-	if (capture != 0 && (Piece::getColor(capture) == mBoard.getTurn() ||
-	    Piece::getType(capture) == Piece::King))
+	if (capture != 0 &&
+	    (Piece::getColor(capture) == mBoard.getTurn() || Piece::getType(capture) == Piece::King))
 		return false;
 	bool legal = true;
 	switch (piece & 7) {
@@ -158,10 +169,10 @@ bool GameLogic::isLegalMove(Move move) const {
 }
 
 bool GameLogic::isPseudoLegalMove(Move move) const {
-	GameLogic copy(*this);
-	copy.move(move);
+	GameLogic copy(*this, nullptr);
+	copy.pureMove(move);
 	//	if (copy.mAttacks.isKingInCheck(mBoard.getTurn())) {
-	//		std::cout << from << ' ' << to << " pseudo legal move\n";
+	//		std::cout << from << ' ' << to << " pseudo legal pureMove\n";
 	//	}
 	return copy.mAttacks.isKingInCheck(mBoard.getTurn());
 }
@@ -176,7 +187,7 @@ bool GameLogic::isFinished() const {
 
 void GameLogic::makeMove(Move move) {
 	mClock[mBoard.getTurn()].increment();
-	this->move(move);
+	pureMove(move);
 	mSecondLastMovePiece = mLastMovePiece;
 	mLastMovePiece = move.to();
 	updateStatus();
@@ -195,7 +206,7 @@ std::string GameLogic::getWinner() const {
 	return mBoard.getTurn() ? "White" : "Black";
 }
 
-void GameLogic::move(Move move) {
+void GameLogic::pureMove(Move move) {
 	assert(mStatus == OnGoing);
 	mLastMove = Normal;
 
@@ -235,10 +246,12 @@ void GameLogic::capturePiece(int square) {
 	//	std::cout << "capture " << square << '\n';
 	assert(mBoard.getType(square) != Piece::King);
 	mBoard.set(square, 0);
+	if (mHandler) mHandler->capturePiece(square);
 }
 
 void GameLogic::movePiece(int from, int to) {
 	mBoard.move(from, to);
+	if (mHandler) mHandler->movePiece(from, to);
 }
 
 void GameLogic::postMove() {
@@ -248,16 +261,18 @@ void GameLogic::postMove() {
 	mBoard.nextTurn();
 	if (mAttacks.isKingInCheck())
 		mLastMove |= Check;
+	if (mHandler) mHandler->postMove();
 }
 
 void GameLogic::promotePiece(int square, int piece) {
 	assert(mBoard.getType(square) == Piece::Pawn);
-	capturePiece(square);
+	mBoard.set(square, 0);
 	mBoard.set(square, piece);
+	if (mHandler) mHandler->promotePiece(square, piece);
 }
 
 void GameLogic::updateStatus() {
-	mHistory.push_back(mBoard.getFEN(false));
+	mFENs[mBoard.getFEN(false)]++;
 	if (!hasLegalMove()) {
 		if (mAttacks.isKingInCheck()) {
 			mStatus = Checkmate;
@@ -279,14 +294,8 @@ void GameLogic::updateStatus() {
 
 bool GameLogic::isThreefoldRepetition() {
 	// check for threefold repetition
-	// not really a correct way, but I will use this for simplification
-	int count = 0;
-	for (int i = 0; i < mHistory.size(); i++) {
-		if (mHistory.back() == mHistory[i])
-			count++;
-	}
 	//	std::cout << "current FEN \"" << mHistory.back() << "\" " << count << '\n';
-	return count >= 3;
+	return mFENs[mBoard.getFEN(false)] >= 3;
 }
 
 bool GameLogic::isInsufficientMaterial() {
@@ -453,7 +462,7 @@ bool GameLogic::isLegalKingMove(int from, int to) const {
 	if (absDiffRank <= 1 && absDiffFile <= 1 && !mAttacks.isAttacked(to))
 		return true;
 
-	// check whether move is castling, and castling is legal, using mCastling
+	// check whether pureMove is castling, and castling is legal, using mCastling
 	return isLegalCastling(from, to);
 }
 

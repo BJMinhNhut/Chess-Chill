@@ -5,8 +5,8 @@
 #ifndef CHESS_GAMELOGIC_HPP
 #define CHESS_GAMELOGIC_HPP
 
-#include "Board.hpp"
 #include "AttackBoard.hpp"
+#include "Board.hpp"
 #include "Clock.hpp"
 #include "Move.hpp"
 
@@ -14,8 +14,12 @@
 
 #include <string>
 #include <vector>
+#include <map>
+
+class GameHandler;
 
 class GameLogic {
+
    public:
 	static const int BOARD_SIZE;
 	enum Status {
@@ -37,13 +41,14 @@ class GameLogic {
 	};
 
    public:
-	explicit GameLogic(const std::string &fen);
-	GameLogic(const GameLogic &other);
-	[[nodiscard]] GameLogic &clone() const;
+	explicit GameLogic(const std::string& fen, GameHandler* handler);
+	GameLogic(const GameLogic& other, GameHandler* handler);
 
 	[[nodiscard]] bool isFinished() const;
 	[[nodiscard]] bool isChecked() const;
 	[[nodiscard]] bool isCaptured() const;
+	[[nodiscard]] bool isCastled() const;
+	[[nodiscard]] bool isPromoted() const;
 
 	[[nodiscard]] Status status() const;
 
@@ -66,23 +71,21 @@ class GameLogic {
 	void makeMove(Move move);
 	void setClock(bool turn, sf::Time time, sf::Time bonus = sf::seconds(0));
 
-	virtual void promotePiece(int square, int piece);
-
-   protected:
-	virtual void capturePiece(int square);
-	virtual void movePiece(int from, int to);
-	virtual void postMove();
-
-	virtual void updateTime(sf::Time dt);
-
-	[[nodiscard]] int lastMoveStatus() const;
+	void updateTime(sf::Time dt);
 
 	[[nodiscard]] bool isLegalMove(Move move) const;
 	[[nodiscard]] bool isAttacked(int square) const;
 	[[nodiscard]] bool isLegalPromotion(int from, int to) const;
 
    private:
-	void move(Move move);
+	[[nodiscard]] int lastMoveStatus() const;
+
+	void pureMove(Move move);
+	void promotePiece(int square, int piece);
+	void capturePiece(int square);
+	void movePiece(int from, int to);
+	void postMove();
+
 	void updateStatus();
 
 	[[nodiscard]] bool isInsufficientMaterial();
@@ -101,16 +104,13 @@ class GameLogic {
 	[[nodiscard]] bool isLegalCastling(int from, int to) const;
 
    private:
+	GameHandler* mHandler;
+	int mLastMove, mLastMovePiece, mSecondLastMovePiece;
+	Status mStatus;
+	std::map<std::string, int> mFENs;
+	Clock mClock[2];
 	Board mBoard;
 	AttackBoard mAttacks;
-
-	Status mStatus;
-	int mLastMove;
-	int mLastMovePiece, mSecondLastMovePiece;
-
-	std::vector<std::string> mHistory;
-
-	Clock mClock[2];
 };
 
 #endif  //CHESS_GAMELOGIC_HPP
