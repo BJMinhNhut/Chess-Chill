@@ -15,29 +15,32 @@
 
 Move Engine::getBestMove(const GameLogic& board, int depth, int extra) {
 	assert(board.status() == GameLogic::OnGoing);
-//	std::cout << (board.getTurn() ? "White" : "Black") << " to move\n";
+	//	std::cout << (board.getTurn() ? "White" : "Black") << " to move\n";
 	std::vector<Move> moves = board.getLegalMoves();
 	Move bestMove = moves[0];
 	int bestScore = -1000000;
 	sortMoves(board, moves);
 	sf::Time time = sf::seconds(0);
 	sf::Clock clock;
+	int called = 0;
 	for (Move move : moves) {
-		int from = move.from();
-		int to = move.to();
-//		std::cout << from << ' ' << to << '\n';
+		//		int from = move.from();
+		//		int to = move.to();
+		//		std::cout << from << ' ' << to << '\n';
 		GameLogic newBoard(board);
 		newBoard.makeMove(move);
-		int score = alphaBeta(newBoard, depth - 1, extra, -1000000, 1000000, false);
+		int score = alphaBeta(newBoard, depth - 1, extra, -1000000, 1000000, false, ++called);
 		if (score > bestScore || (score == bestScore && Random::getInt(0, 1))) {
 			bestScore = score;
 			bestMove = move;
 		}
 		time += clock.restart();
-		if (time > sf::seconds(10)) {
+		if (time > sf::seconds(5)) {
+			std::cerr << "Time out: " + std::to_string(time.asSeconds()) + "s\n";
 			break;
 		}
 	}
+	std::cout << "Processed: " << called << '\n';
 	return bestMove;
 }
 
@@ -62,7 +65,7 @@ int Engine::getMoveScore(const GameLogic& board, Move move) {
 	int to = move.to();
 	int pieceFrom = board.getPiece(from);
 	int pieceTo = board.getPiece(to);
-	int score = 0;
+	int score = from == board.getSecondLastMovePiece() ? 1000 : 0;
 	if (move.promote() > 0) {
 		score = 4000;
 	} else if (board.getPiece(to) != 0) {
@@ -75,13 +78,16 @@ int Engine::getMoveScore(const GameLogic& board, Move move) {
 		newBoard.makeMove(move);
 		score = Evaluator::evaluateBoard(newBoard, board.getTurn());
 		if (newBoard.isChecked())
-			score += 2000;
+			score += 500;
 	}
 	return score;
 }
 
 int Engine::alphaBeta(const GameLogic& board, int depth, int extra, int alpha, int beta,
-                      bool inTurn) {
+                      bool inTurn, int &called) {
+	if (called > 0 && called % 100000 == 0) {
+		std::cout << "Processed " << called << '\n';
+	}
 	bool isFinished = (depth <= 0 && !board.isCaptured() && !board.isChecked()) ||
 	                  depth <= -extra || board.isFinished();
 	int score = 0;
@@ -89,18 +95,18 @@ int Engine::alphaBeta(const GameLogic& board, int depth, int extra, int alpha, i
 		score = Evaluator::evaluateBoard(board, inTurn ? board.getTurn() : !board.getTurn());
 	} else {
 		std::vector<Move> moves = board.getLegalMoves();
-		Random::shuffle(moves);
+		sortMoves(board, moves);
 		score = inTurn ? -1000000 : 1000000;
 		for (auto move : moves) {
 			GameLogic newBoard(board);
 			newBoard.makeMove(move);
 			if (inTurn) {
-				score = std::max(score, alphaBeta(newBoard, depth - 1, extra, alpha, beta, false));
+				score = std::max(score, alphaBeta(newBoard, depth - 1, extra, alpha, beta, false, ++called));
 				alpha = std::max(alpha, score);
 				if (beta <= score)
 					break;
 			} else {
-				score = std::min(score, alphaBeta(newBoard, depth - 1, extra, alpha, beta, true));
+				score = std::min(score, alphaBeta(newBoard, depth - 1, extra, alpha, beta, true, ++called));
 				beta = std::min(beta, score);
 				if (score <= alpha)
 					break;
