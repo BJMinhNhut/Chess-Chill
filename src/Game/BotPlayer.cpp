@@ -41,7 +41,7 @@ void BotPlayer::makeMove() {
 		mStatus = Waiting;
 		return;
 	}
-	std::cout << "\nSearching for best move...\n";
+
 	mMove = getOptimizeMove();
 	std::cout << "Best move: " << mMove.from() << ' ' << mMove.to() << '\n';
 	mStatus = Finished;

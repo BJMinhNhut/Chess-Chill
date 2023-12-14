@@ -15,10 +15,9 @@
 
 Move Engine::getBestMove(const GameLogic& board, int depth, int extra) {
 	assert(board.status() == GameLogic::OnGoing);
-	//	std::cout << (board.getTurn() ? "White" : "Black") << " to move\n";
+	std::cout << "\n" << (board.getTurn() ? "Black" : "White") << " - Searching for best move...\n";
 	std::vector<Move> moves = board.getLegalMoves();
 	if (moves.size() == 1) return moves[0];
-
 	Move bestMove = moves[0];
 	int bestScore = board.getTurn() ? 1000000 : -1000000;
 	sortMoves(board, moves);
@@ -43,7 +42,8 @@ Move Engine::getBestMove(const GameLogic& board, int depth, int extra) {
 			break;
 		}
 	}
-	std::cout << "Processed " << called << ", in " << time.asSeconds() << "s\n";
+	std::cout << "Processed " << called << ", in " << time.asSeconds() << "s, score: " << bestScore
+	          << '\n';
 	return bestMove;
 }
 

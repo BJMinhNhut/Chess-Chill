@@ -225,6 +225,13 @@ void GameHandler::handleMove(Move move) {
 		highlightMove(mLastMove, false);
 		highlightMove(to << 6 | from, true);
 		mLogic.makeMove(move);
+
+		if (mLogic.isFinished()) {
+			setCursor(sf::Cursor::Arrow);
+			if (mLogic.status() == GameLogic::Checkmate) {
+				highlightSquare(mLogic.getKing(mLogic.getTurn()), Debug);
+			}
+		}
 	} else {
 		highlightMove(mLastMove, true);
 //		std::cerr << "Illegal pureMove\n";
@@ -317,11 +324,6 @@ void GameHandler::postMove() {
 	else if (mLogic.isCastled()) mSounds.play(SoundEffect::Castling);
 	else if (mLogic.isPromoted()) mSounds.play(SoundEffect::Promotion);
 	else mSounds.play(SoundEffect::Move);
-
-	if (mLogic.isFinished()) {
-		setCursor(sf::Cursor::Arrow);
-		highlightSquare(mLogic.getKing(mLogic.getTurn()), Debug);
-	}
 
 #ifdef DEBUG_ATTACK
 	for (int i = 0; i < 64; ++i) {
