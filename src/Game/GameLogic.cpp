@@ -16,7 +16,7 @@ const int GameLogic::BOARD_SIZE = 64;
 
 GameLogic::GameLogic(const std::string& fen, GameHandler* handler)
     : mBoard(fen),
-      mAttacks(mBoard),
+      mAttacks(&mBoard),
       mHandler(handler),
       mStatus(OnGoing),
       mLastMove(Normal),
@@ -28,8 +28,8 @@ GameLogic::GameLogic(const std::string& fen, GameHandler* handler)
 
 GameLogic::GameLogic(const GameLogic& other, GameHandler* handler)
     : mBoard(other.mBoard),
-      mAttacks(mBoard),
-      mHandler(handler),
+      mAttacks(&mBoard),
+      mHandler(nullptr),
       mStatus(other.mStatus),
       mLastMove(other.mLastMove),
       mClock(other.mClock),
@@ -257,8 +257,8 @@ void GameLogic::movePiece(int from, int to) {
 void GameLogic::postMove() {
 	if (mBoard.getTurn())
 		mBoard.nextFullMove();
-	mAttacks.update();
 	mBoard.nextTurn();
+	mAttacks.update();
 	if (mAttacks.isKingInCheck())
 		mLastMove |= Check;
 	if (mHandler) mHandler->postMove();

@@ -60,7 +60,7 @@ class Board {
    private:
 	bool mTurn;
 	int8_t mCastling, mEnPassant, mHalfMove, mFullMove;
-	int8_t mBoard[64];
+	int8_t mBoard[64]{};
 };
 
 #endif  //CHESS_BOARD_HPP

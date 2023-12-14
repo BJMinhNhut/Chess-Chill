@@ -43,6 +43,7 @@ class GameLogic {
    public:
 	explicit GameLogic(const std::string& fen, GameHandler* handler);
 	GameLogic(const GameLogic& other, GameHandler* handler);
+	GameLogic(const GameLogic& other) = delete;
 
 	[[nodiscard]] bool isFinished() const;
 	[[nodiscard]] bool isChecked() const;
@@ -65,7 +66,6 @@ class GameLogic {
 	[[nodiscard]] int getPiece(int square) const;
 	[[nodiscard]] int getKing(int color) const;
 	[[nodiscard]] int getLastMovePiece() const;
-	[[nodiscard]] int getSecondLastMovePiece() const;
 	[[nodiscard]] int getCastling() const;
 
 	void makeMove(Move move);

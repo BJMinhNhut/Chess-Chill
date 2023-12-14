@@ -8,7 +8,7 @@
 
 #include <cassert>
 
-AttackBoard::AttackBoard(const Board& board) : mBoard(&board) {
+AttackBoard::AttackBoard(Board* board) : mBoard(board) {
 	update();
 }
 

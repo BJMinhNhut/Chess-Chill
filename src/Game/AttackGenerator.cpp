@@ -24,22 +24,6 @@ int64_t generatePawnAttacks(int square, bool color) {
 	return attacks;
 }
 
-int64_t generatePawnMoves(int square, bool color) {
-	int64_t moves = 0;
-	int rank = Board::getRank(square);
-	int file = Board::getFile(square);
-	int direction = color ? -1 : 1;
-
-	if (rank + direction >= 0 && rank + direction < 8) {
-		moves |= 1LL << Board::getSquareID(rank + direction, file);
-		if ((color && rank == 6) || (!color && rank == 1)) {
-			moves |= 1LL << Board::getSquareID(rank + 2 * direction, file);
-		}
-	}
-
-	return moves;
-}
-
 int64_t generateKnightAttacks(int square) {
 	int64_t attacks = 0;
 	int rank = Board::getRank(square);

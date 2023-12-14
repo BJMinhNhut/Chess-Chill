@@ -17,10 +17,12 @@ class Evaluator {
 	static const int KING_SCORE_POSITIONAL[8][8];
 
    public:
-	static int evaluateBoard(const GameLogic& board, int color = 0);
+	static int evaluateBoard(const GameLogic& board);
+
+   private:
 	static int evaluatePiece(int piece, int square);
-	static int distanceToKing(const GameLogic& board, int color);
-	static int checkCastling(const GameLogic& board, int color);
+	static int distanceToKing(const GameLogic& board);
+	static int checkCastling(const GameLogic& board);
 };
 
 #endif  //CHESS_CHILL_EVALUATOR_HPP
