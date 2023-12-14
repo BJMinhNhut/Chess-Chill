@@ -11,17 +11,17 @@ class Clock {
    public:
 	Clock();
 
-	void update(sf::Time dt);
+	void update(bool turn, sf::Time dt);
 	void set(sf::Time time, sf::Time increment = sf::seconds(0));
 
-	void increment();
+	void increment(bool turn);
 
-	[[nodiscard]] bool isTimeOut() const;
-	[[nodiscard]] float get() const;
+	[[nodiscard]] bool isTimeOut(bool turn) const;
+	[[nodiscard]] float get(bool turn) const;
 
    private:
 	bool mActive;
-	sf::Time mTime, mIncrement;
+	sf::Time mTime[2], mIncrement;
 };
 
 #endif  //CHESS_CHILL_CLOCK_HPP

@@ -4,29 +4,32 @@
 
 #include "Clock.hpp"
 
-Clock::Clock(): mActive(false), mTime(sf::seconds(0)) {}
+Clock::Clock(): mActive(false), mTime(), mIncrement() {
+	mTime[0] = mTime[1] = sf::Time::Zero;
+	mIncrement = sf::Time::Zero;
+}
 
-void Clock::update(sf::Time dt) {
-	if (mActive && mTime > sf::seconds(0))
-		mTime -= dt;
+void Clock::update(bool turn, sf::Time dt) {
+	if (mActive && mTime[turn] > sf::seconds(0))
+		mTime[turn] -= dt;
 }
 
 void Clock::set(sf::Time time, sf::Time increment) {
 	mActive = true;
-	mTime = time;
+	mTime[0] = mTime[1] = time;
 	mIncrement = increment;
 }
 
-void Clock::increment() {
-	mTime += mIncrement;
+void Clock::increment(bool turn) {
+	mTime[turn] += mIncrement;
 }
 
-bool Clock::isTimeOut() const {
-	return mActive && mTime <= sf::seconds(0);
+bool Clock::isTimeOut(bool turn) const {
+	return mActive && mTime[turn] <= sf::seconds(0);
 }
 
-float Clock::get() const {
+float Clock::get(bool turn) const {
 	if (!mActive)
 		return 9999.f;
-	return mTime.asSeconds();
+	return mTime[turn].asSeconds();
 }
