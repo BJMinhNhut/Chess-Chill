@@ -9,6 +9,7 @@
 #include "Board.hpp"
 #include "Clock.hpp"
 #include "Move.hpp"
+#include "Template/GameOptions.hpp"
 
 #include <SFML/System/Time.hpp>
 
@@ -41,7 +42,7 @@ class GameLogic {
 	};
 
    public:
-	explicit GameLogic(const std::string& fen, GameHandler* handler);
+	explicit GameLogic(GameOptions::Type type, GameHandler* handler);
 	GameLogic(const GameLogic& other, GameHandler* handler);
 	GameLogic(const GameLogic& other) = delete;
 
@@ -78,6 +79,7 @@ class GameLogic {
 	[[nodiscard]] bool isLegalPromotion(int from, int to) const;
 
    private:
+	static std::string getFENByType(GameOptions::Type type);
 
 	void pureMove(Move move);
 	void promotePiece(int square, int piece);

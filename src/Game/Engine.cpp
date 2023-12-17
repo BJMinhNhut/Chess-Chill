@@ -114,11 +114,11 @@ int Engine::alphaBeta(const GameLogic& board, int depth, int extra, int alpha, i
 	}
 
 	if (maximizer) {
-		if (score > 0) score += (depth << 2);
-		if (score < 0) score -= (depth << 2);
+		if (score > 0) score += (depth << 3);
+		if (score < 0) score -= (depth << 3);
 	} else {
-		if (score > 0) score -= (depth << 2);
-		if (score < 0) score += (depth << 2);
+		if (score > 0) score -= (depth << 3);
+		if (score < 0) score += (depth << 3);
 	}
 	return score;
 }

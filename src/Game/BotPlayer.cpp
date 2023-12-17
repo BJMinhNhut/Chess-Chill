@@ -49,7 +49,7 @@ void BotPlayer::makeMove() {
 
 Move BotPlayer::getOptimizeMove() {
 	int depth = mGameHandler.mLogic.getRemainingTime(getColor()) > 100.f ? 3 : 2;
-	int extra = 1;
+	int extra = 2;
 	Move move = Engine::getBestMove(mGameHandler.cloneLogic(), depth, extra);
 	return move;
 }

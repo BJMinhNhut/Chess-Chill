@@ -21,7 +21,7 @@ const sf::Vector2f GameState::BOARD_POSITION(262.f, 105.f);
 
 GameState::GameState(StateStack& stack, Context context)
     : State(stack, context),
-      mGame(*context.window, *context.textures, *context.fonts, *context.sounds,
+      mGame(context,
             BOARD_POSITION + sf::Vector2f(25.f, 25.f)),
       mGUIContainer(),
       mWinner(nullptr),

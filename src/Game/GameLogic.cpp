@@ -7,6 +7,7 @@
 #include "Evaluator.hpp"
 #include "Piece.hpp"
 #include "MoveTable.hpp"
+#include "FenGenerator.hpp"
 
 #include <cassert>
 #include <iostream>
@@ -14,8 +15,8 @@
 
 const int GameLogic::BOARD_SIZE = 64;
 
-GameLogic::GameLogic(const std::string& fen, GameHandler* handler)
-    : mBoard(fen),
+GameLogic::GameLogic(GameOptions::Type type, GameHandler* handler)
+    : mBoard(getFENByType(type)),
       mAttacks(&mBoard),
       mHandler(handler),
       mStatus(OnGoing),
@@ -24,6 +25,17 @@ GameLogic::GameLogic(const std::string& fen, GameHandler* handler)
       mClock(),
       mLastMovePiece(-1) {
 	updateStatus();
+}
+
+std::string GameLogic::getFENByType(GameOptions::Type type) {
+	switch (type) {
+		case GameOptions::Type::Chess960:
+			return FenGenerator::getRandom960();
+		case GameOptions::Type::Standard:
+			return FenGenerator::START_FEN;
+		default:
+			return FenGenerator::START_FEN;
+	}
 }
 
 GameLogic::GameLogic(const GameLogic& other, GameHandler* handler)

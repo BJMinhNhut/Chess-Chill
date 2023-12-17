@@ -13,6 +13,7 @@
 #include "Template/SceneNode.hpp"
 #include "Template/SoundPlayer.hpp"
 #include "Template/SpriteNode.hpp"
+#include "Template/State.hpp"
 
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/View.hpp>
@@ -30,16 +31,13 @@ class GameHandler : public sf::NonCopyable {
 	friend GameLogic;
 
    public:
-	const static std::string START_FEN;
-	const static std::string ONLY_KINGS_FEN, PROMOTE_FEN_W, PROMOTE_FEN_B, PROMOTE_MATE;
 	const static int BOARD_DRAW_SIZE;
 
    public:
 	GameLogic mLogic;
 
    public:
-	explicit GameHandler(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts,
-	                     SoundPlayer& sounds, sf::Vector2f position);
+	explicit GameHandler(State::Context context, sf::Vector2f position);
 	GameLogic &cloneLogic() const;
 
 	void update(sf::Time dt);
@@ -78,6 +76,7 @@ class GameHandler : public sf::NonCopyable {
 
    private:
 	void buildScene();
+	std::string getFENByOption() const;
 
 	sf::Vector2f getBoxPosition(int box) const;
 
