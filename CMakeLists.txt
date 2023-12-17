@@ -79,6 +79,10 @@ add_executable(${TARGET_NAME}
         src/Game/MoveTable.hpp
         src/Game/FenGenerator.cpp
         src/Game/FenGenerator.hpp
+        src/Game/StandardLogic.cpp
+        src/Game/StandardLogic.hpp
+        src/Game/Chess960Logic.cpp
+        src/Game/Chess960Logic.hpp
 )
 target_link_libraries(${TARGET_NAME} PRIVATE sfml-graphics sfml-audio)
 target_compile_features(${TARGET_NAME} PRIVATE cxx_std_17)

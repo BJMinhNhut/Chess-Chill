@@ -25,9 +25,9 @@ Move Engine::getBestMove(const GameLogic& board, int depth, int extra) {
 	sf::Clock clock;
 	int called = 0;
 	for (Move move : moves) {
-		GameLogic newBoard(board, nullptr);
-		newBoard.makeMove(move);
-		int score = alphaBeta(newBoard, depth - 1, extra, -1000000, 1000000, board.getTurn(), ++called);
+		GameLogic::Ptr newBoard(board.clone());
+		newBoard->makeMove(move);
+		int score = alphaBeta(*newBoard, depth - 1, extra, -1000000, 1000000, board.getTurn(), ++called);
 		if ((board.getTurn() ? score < bestScore : score > bestScore) ||
 		    (score == bestScore && Random::getInt(0, 1) == 0)) {
 			bestScore = score;
@@ -95,21 +95,22 @@ int Engine::alphaBeta(const GameLogic& board, int depth, int extra, int alpha, i
 		sortMoves(board, moves);
 		score = maximizer ? -1000000 : 1000000;
 		for (auto move : moves) {
-			GameLogic newBoard(board, nullptr);
-			newBoard.makeMove(move);
+			GameLogic::Ptr newBoard(board.clone());
+			newBoard->makeMove(move);
 			if (maximizer) {
 				score = std::max(
-				    score, alphaBeta(newBoard, depth - 1, extra, alpha, beta, false, ++called));
+				    score, alphaBeta(*newBoard, depth - 1, extra, alpha, beta, false, ++called));
 				alpha = std::max(alpha, score);
 				if (beta <= score)
 					break;
 			} else {
 				score = std::min(
-				    score, alphaBeta(newBoard, depth - 1, extra, alpha, beta, true, ++called));
+				    score, alphaBeta(*newBoard, depth - 1, extra, alpha, beta, true, ++called));
 				beta = std::min(beta, score);
 				if (score <= alpha)
 					break;
 			}
+
 		}
 	}
 

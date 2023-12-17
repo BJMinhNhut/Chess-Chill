@@ -13,15 +13,15 @@
 
 #include <SFML/System/Time.hpp>
 
+#include <map>
 #include <string>
 #include <vector>
-#include <map>
 
 class GameHandler;
 
 class GameLogic {
-
    public:
+	typedef std::unique_ptr<GameLogic> Ptr;
 	static const int BOARD_SIZE;
 	enum Status {
 		OnGoing,
@@ -42,9 +42,11 @@ class GameLogic {
 	};
 
    public:
-	explicit GameLogic(GameOptions::Type type, GameHandler* handler);
+	explicit GameLogic(const std::string &fen, GameHandler* handler);
 	GameLogic(const GameLogic& other, GameHandler* handler);
 	GameLogic(const GameLogic& other) = delete;
+	virtual ~GameLogic();
+	[[nodiscard]] virtual GameLogic* clone() const = 0;
 
 	[[nodiscard]] bool isFinished() const;
 	[[nodiscard]] bool isChecked() const;
@@ -78,6 +80,13 @@ class GameLogic {
 	[[nodiscard]] bool isAttacked(int square) const;
 	[[nodiscard]] bool isLegalPromotion(int from, int to) const;
 
+   protected:
+	[[nodiscard]] bool hasLegalMove() const;
+	[[nodiscard]] bool isInsufficientMaterial();
+	[[nodiscard]] bool isThreefoldRepetition();
+
+	void saveHistory();
+
    private:
 	static std::string getFENByType(GameOptions::Type type);
 
@@ -87,14 +96,7 @@ class GameLogic {
 	void movePiece(int from, int to);
 	void postMove();
 
-	void updateStatus();
-
-	[[nodiscard]] bool isInsufficientMaterial();
-	[[nodiscard]] bool isThreefoldRepetition();
-
 	[[nodiscard]] bool isPseudoLegalMove(Move move) const;
-
-	[[nodiscard]] bool hasLegalMove() const;
 	[[nodiscard]] bool isLegalPawnMove(int from, int to) const;
 	[[nodiscard]] bool isEnPassant(int from, int to) const;
 	static bool isLegalKnightMove(int from, int to);
@@ -102,16 +104,20 @@ class GameLogic {
 	[[nodiscard]] bool isLegalRookMove(int from, int to) const;
 	[[nodiscard]] bool isLegalQueenMove(int from, int to) const;
 	[[nodiscard]] bool isLegalKingMove(int from, int to) const;
-	[[nodiscard]] bool isLegalCastling(int from, int to) const;
+
+	virtual void updateStatus() = 0;
+	[[nodiscard]] virtual bool isLegalCastling(int from, int to) const = 0;
+
+   protected:
+	Board mBoard;
+	AttackBoard mAttacks;
+	Status mStatus;
 
    private:
 	GameHandler* mHandler;
 	int8_t mLastMovePiece, mLastMove;
-	Status mStatus;
 	std::map<std::string, int8_t> mFENs;
 	Clock mClock;
-	Board mBoard;
-	AttackBoard mAttacks;
 };
 
 #endif  //CHESS_GAMELOGIC_HPP

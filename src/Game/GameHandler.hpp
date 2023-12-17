@@ -34,11 +34,10 @@ class GameHandler : public sf::NonCopyable {
 	const static int BOARD_DRAW_SIZE;
 
    public:
-	GameLogic mLogic;
+	GameLogic::Ptr mLogic;
 
    public:
 	explicit GameHandler(State::Context context, sf::Vector2f position);
-	GameLogic &cloneLogic() const;
 
 	void update(sf::Time dt);
 	void handleEvent(const sf::Event& event);
@@ -76,7 +75,7 @@ class GameHandler : public sf::NonCopyable {
 
    private:
 	void buildScene();
-	std::string getFENByOption() const;
+	GameLogic* getLogic(GameOptions::Type type);
 
 	sf::Vector2f getBoxPosition(int box) const;
 
@@ -94,7 +93,6 @@ class GameHandler : public sf::NonCopyable {
    private:
 	sf::RenderWindow& mWindow;
 	TextureHolder& mTextures;
-	FontHolder& mFonts;
 	SoundPlayer& mSounds;
 
 	SceneNode mSceneGraph;

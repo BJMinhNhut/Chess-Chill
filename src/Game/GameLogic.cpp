@@ -15,8 +15,8 @@
 
 const int GameLogic::BOARD_SIZE = 64;
 
-GameLogic::GameLogic(GameOptions::Type type, GameHandler* handler)
-    : mBoard(getFENByType(type)),
+GameLogic::GameLogic(const std::string &fen, GameHandler* handler)
+    : mBoard(fen),
       mAttacks(&mBoard),
       mHandler(handler),
       mStatus(OnGoing),
@@ -24,7 +24,13 @@ GameLogic::GameLogic(GameOptions::Type type, GameHandler* handler)
       mFENs(),
       mClock(),
       mLastMovePiece(-1) {
-	updateStatus();
+}
+
+GameLogic::~GameLogic() {
+}
+
+void GameLogic::saveHistory() {
+	mFENs[mBoard.getFEN(false)]++;
 }
 
 std::string GameLogic::getFENByType(GameOptions::Type type) {
@@ -182,12 +188,12 @@ bool GameLogic::isLegalMove(Move move) const {
 }
 
 bool GameLogic::isPseudoLegalMove(Move move) const {
-	GameLogic copy(*this, nullptr);
-	copy.pureMove(move);
+	GameLogic::Ptr copy(clone());
+	copy->pureMove(move);
 	//	if (copy.mAttacks.isKingInCheck(mBoard.getTurn())) {
 	//		std::cout << from << ' ' << to << " pseudo legal pureMove\n";
 	//	}
-	return copy.mAttacks.isKingInCheck(mBoard.getTurn());
+	return copy->mAttacks.isKingInCheck(mBoard.getTurn());
 }
 
 bool GameLogic::isAttacked(int square) const {
@@ -281,27 +287,6 @@ void GameLogic::promotePiece(int square, int piece) {
 	mBoard.set(square, 0);
 	mBoard.set(square, piece);
 	if (mHandler) mHandler->promotePiece(square, piece);
-}
-
-void GameLogic::updateStatus() {
-	mFENs[mBoard.getFEN(false)]++;
-	if (!hasLegalMove()) {
-		if (mAttacks.isKingInCheck()) {
-			mStatus = Checkmate;
-			//			std::cout << "Checkmate " << (mBoard.getTurn() ? "White" : "Black") << " wins\n";
-		} else {
-			mStatus = Stalemate;
-			//			std::cout << "Stalemate\n";
-		}
-	} else if (isInsufficientMaterial()) {
-		mStatus = InsufficientMaterial;
-		//		std::cout << "Insufficient material\n";
-	} else if (isThreefoldRepetition()) {
-		mStatus = ThreefoldRepetition;
-		//		std::cout << "Threefold repetition\n";
-	} else {
-		mStatus = OnGoing;
-	}
 }
 
 bool GameLogic::isThreefoldRepetition() {
@@ -476,37 +461,6 @@ bool GameLogic::isLegalKingMove(int from, int to) const {
 
 	// check whether pureMove is castling, and castling is legal, using mCastling
 	return isLegalCastling(from, to);
-}
-
-// [BUG] castling when a piece blocks the way
-bool GameLogic::isLegalCastling(int from, int to) const {
-	int diffRank = (to >> 3) - (from >> 3);
-	int diffFile = (to & 7) - (from & 7);
-	int absDiffRank = diffRank < 0 ? -diffRank : diffRank;
-	int absDiffFile = diffFile < 0 ? -diffFile : diffFile;
-	if (absDiffFile == 2 && absDiffRank == 0) {
-		bool color = mBoard.getTurn();
-		int dir = diffFile < 0 ? -1 : 1;
-		if (Board::getFile(from) != 4)
-			return false;
-		if (Board::getRank(from) != (color ? 7 : 0))
-			return false;
-		if (mAttacks.isAttacked(from) || mAttacks.isAttacked(from + dir) ||
-		    mAttacks.isAttacked(from + 2 * dir))
-			return false;
-		if (mBoard.get(from + dir) != 0 || mBoard.get(from + 2 * dir) != 0)  // check for blocking
-			return false;
-		if (to == (color ? 58 : 2)) {  // Queen side castling
-			if (mBoard.get(from + 3 * dir) != 0)
-				return false;
-		}
-
-		if (dir == 1)
-			return mBoard.getCastling() & (color ? 4 : 1);
-		else
-			return mBoard.getCastling() & (color ? 8 : 2);
-	}
-	return false;
 }
 
 bool GameLogic::isLegalPromotion(int from, int to) const {

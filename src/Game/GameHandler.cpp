@@ -7,6 +7,7 @@
 #include "Template/ResourceHolder.hpp"
 #include "Template/Utility.hpp"
 #include "FenGenerator.hpp"
+#include "StandardLogic.hpp"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Event.hpp>
@@ -18,7 +19,6 @@ const int GameHandler::BOARD_DRAW_SIZE = 680;
 
 GameHandler::GameHandler(State::Context context, sf::Vector2f position)
     : mWindow(*context.window),
-      mFonts(*context.fonts),
       mSounds(*context.sounds),
       mTextures(*context.textures),
       mSceneGraph(),
@@ -31,7 +31,7 @@ GameHandler::GameHandler(State::Context context, sf::Vector2f position)
       mBoardPosition(position),
       mOldSquare(-1),
       mLastMove(-1),
-      mLogic(context.options->getType(), this),
+      mLogic(getLogic(context.options->getType())),
       mPromoteWindow(false),
       mPromoteFrom(-1),
       mPromoteTo(-1),
@@ -41,8 +41,11 @@ GameHandler::GameHandler(State::Context context, sf::Vector2f position)
 	buildScene();
 }
 
-GameLogic& GameHandler::cloneLogic() const {
-	return *new GameLogic(mLogic, nullptr);
+GameLogic* GameHandler::getLogic(GameOptions::Type type) {
+	switch (type) {
+		default:
+			return new StandardLogic(this);
+	}
 }
 
 void GameHandler::buildScene() {
@@ -64,7 +67,7 @@ void GameHandler::buildScene() {
 	mSceneLayers[Background]->attachChild(SceneNode::Ptr(mBoardSprite));
 
 	for (int square = 0; square < GameLogic::BOARD_SIZE; ++square) {
-		int piece = mLogic.getPiece(square);
+		int piece = mLogic->getPiece(square);
 		if (piece != 0)
 			addPiece(piece, square);
 	}
@@ -75,7 +78,7 @@ void GameHandler::draw() {
 }
 
 void GameHandler::update(sf::Time dt) {
-	mLogic.updateTime(dt);
+	mLogic->updateTime(dt);
 	mSceneGraph.update(dt);
 	mSounds.removeStoppedSounds();
 }
@@ -109,7 +112,7 @@ void GameHandler::handleEvent(const sf::Event& event) {
 			std::cout << "Mouse: " << mouse.x << " " << mouse.y << "\n";
 			int id = (mouse.x - 456) / 85;
 			int type = Piece::Queen + id;
-			int color = mLogic.getTurn() ? Piece::Black : Piece::White;
+			int color = mLogic->getTurn() ? Piece::Black : Piece::White;
 			std::cout << "Promote to: " << type << "\n";
 			mPromoteWindow = false;
 			mSceneLayers[PopUp]->detachAllChildren();
@@ -145,7 +148,7 @@ bool GameHandler::isMouseLegalHover() const {
 	sf::Vector2i mouse = sf::Mouse::getPosition(mWindow);
 	int square = getHoverSquare(mouse.x, mouse.y);
 	return (Board::validSquare(square) && mPieces[square] != nullptr &&
-	        mPieces[square]->color() == mLogic.getTurn());
+	        mPieces[square]->color() == mLogic->getTurn());
 }
 
 void GameHandler::dropPiece(int square) {
@@ -195,7 +198,7 @@ void GameHandler::displayPromoteWindow() {
 	window->setPosition(417.f, 384.f);
 	mSceneLayers[PopUp]->attachChild(SceneNode::Ptr(window));
 
-	int left = 86, top = mLogic.getTurn() ? 86 : 0;
+	int left = 86, top = mLogic->getTurn() ? 86 : 0;
 	auto pieces =
 	    new SpriteNode(mTextures.get(Textures::PieceSet), sf::IntRect(left, top, 340, 85));
 	pieces->setPosition(456.f, 443.f);
@@ -203,14 +206,14 @@ void GameHandler::displayPromoteWindow() {
 }
 
 void GameHandler::handleMove(Move move) {
-	bool legal = mLogic.isLegalMove(move);
+	bool legal = mLogic->isLegalMove(move);
 
 	clearCandidates();
 
 	// if legal move, then highlight new move, make that move, un-highlight old pureMove, and to squares
 	int from = move.from(), to = move.to();
 	if (legal && from != to) {
-		if (mLogic.isLegalPromotion(from, to) && move.promote() == Piece::None) {
+		if (mLogic->isLegalPromotion(from, to) && move.promote() == Piece::None) {
 			mPromoteFrom = from;
 			mPromoteTo = to;
 			displayPromoteWindow();
@@ -218,12 +221,12 @@ void GameHandler::handleMove(Move move) {
 		}
 		highlightMove(mLastMove, false);
 		highlightMove(to << 6 | from, true);
-		mLogic.makeMove(move);
+		mLogic->makeMove(move);
 
-		if (mLogic.isFinished()) {
+		if (mLogic->isFinished()) {
 			setCursor(sf::Cursor::Arrow);
-			if (mLogic.status() == GameLogic::Checkmate) {
-				highlightSquare(mLogic.getKing(mLogic.getTurn()), Debug);
+			if (mLogic->status() == GameLogic::Checkmate) {
+				highlightSquare(mLogic->getKing(mLogic->getTurn()), Debug);
 			}
 		}
 	} else {
@@ -233,7 +236,7 @@ void GameHandler::handleMove(Move move) {
 }
 
 void GameHandler::highlightLegalMoves(int from) {
-	std::vector<Move> moves = mLogic.getMoveList(from);
+	std::vector<Move> moves = mLogic->getMoveList(from);
 	for (Move move : moves) {
 		highlightSquare(move.to(), Target);
 		moveCandidates.push_back(move.to());
@@ -313,10 +316,10 @@ void GameHandler::movePiece(int from, int to) {
 }
 
 void GameHandler::postMove() {
-	if (mLogic.isChecked()) mSounds.play(SoundEffect::Check);
-	else if (mLogic.isCaptured()) mSounds.play(SoundEffect::Capture);
-	else if (mLogic.isCastled()) mSounds.play(SoundEffect::Castling);
-	else if (mLogic.isPromoted()) mSounds.play(SoundEffect::Promotion);
+	if (mLogic->isChecked()) mSounds.play(SoundEffect::Check);
+	else if (mLogic->isCaptured()) mSounds.play(SoundEffect::Capture);
+	else if (mLogic->isCastled()) mSounds.play(SoundEffect::Castling);
+	else if (mLogic->isPromoted()) mSounds.play(SoundEffect::Promotion);
 	else mSounds.play(SoundEffect::Move);
 
 #ifdef DEBUG_ATTACK
