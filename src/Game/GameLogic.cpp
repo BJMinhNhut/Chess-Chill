@@ -230,8 +230,8 @@ void GameLogic::pureMove(Move move) {
 		int rook = getRook(Piece::getColor(piece), side);
 		int rookNewPos = Board::getSquareID(Board::getRank(from), side ? 5 : 3);
 		capturePiece(rook);
-		addPiece(rookNewPos, Piece::Rook | (Piece::getColor(piece) ? Piece::Black : Piece::White));
 		movePiece(from, kingNewPos);
+		addPiece(rookNewPos, Piece::Rook | (Piece::getColor(piece) ? Piece::Black : Piece::White));
 		mLastMove |= Castling;
 	} else {
 		if (mBoard.get(to) != 0) {
