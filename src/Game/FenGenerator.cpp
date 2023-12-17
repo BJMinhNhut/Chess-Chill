@@ -32,5 +32,5 @@ std::string FenGenerator::getRandom960() {
 
 void FenGenerator::format960(std::string& fen) {
 	while (std::isdigit(fen.back())) fen.pop_back();
-	fen += " 0 1";
+	fen += "0 1";
 }
