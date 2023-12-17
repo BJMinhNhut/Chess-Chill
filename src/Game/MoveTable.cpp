@@ -7,6 +7,7 @@
 #include "Piece.hpp"
 
 #include <cassert>
+#include <iostream>
 
 MoveTable *MoveTable::getInstance() {
 	static MoveTable* instance = nullptr;
@@ -246,9 +247,9 @@ void MoveTable::generateKingMoves(int square) {
 	//chess960
 	castling = 0;
 	if (rank == 0) {
-		castling = 255;
+		castling = 0xff;
 	} else if (rank == 7) {
-		castling = 255ll << 56;
+		castling = (int64_t)0xff << 56;
 	}
 	mKingMoves[GameOptions::Chess960][square] |= castling;
 }
