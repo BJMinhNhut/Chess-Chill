@@ -8,21 +8,12 @@
 #include "GameHandler.hpp"
 
 Chess960Logic::Chess960Logic(GameHandler* handler)
-    : GameLogic(FenGenerator::getRandom960(), handler), aRook(-1), hRook(-1) {
+    : GameLogic(FenGenerator::getRandom960(), handler) {
 	updateStatus();
-	for (int8_t col = 0; col < 8; ++col) {
-		if (mBoard.get(col) == Piece::Rook) {
-			if (aRook == -1) {
-				aRook = col;
-			} else {
-				hRook = col;
-			}
-		}
-	}
 }
 
 Chess960Logic::Chess960Logic(const Chess960Logic& other, GameHandler* handler)
-    : GameLogic(other, handler), aRook(other.aRook), hRook(other.hRook) {}
+    : GameLogic(other, handler) {}
 
 Chess960Logic* Chess960Logic::clone() const {
 	return new Chess960Logic(*this, nullptr);
@@ -56,5 +47,23 @@ GameOptions::Type Chess960Logic::getType() const {
 }
 
 bool Chess960Logic::isLegalCastling(int from, int to) const {
-	return false;
+	int color = mBoard.getTurn();
+	if (mBoard.get(from) != Piece::King || mBoard.get(to) != Piece::Rook)
+		return false;
+	if (Board::getRank(from) != Board::getRank(to))
+		return false;
+	if (Board::getRank(from) != (color ? 7 : 0))
+			return false;
+
+	bool side = to-from < 0 ? 0 : 1; // queen side = 0, king side = 1
+	int kingNewPos = Board::getSquareID(color ? 7 : 0, side ? 6 : 2);
+
+	for(int i = std::min(from, kingNewPos); i <= std::max(from, kingNewPos); i++) {
+		if (mAttacks.isAttacked(i))
+			return false;
+		if (i != from && mBoard.get(i) != 0)
+			return false;
+	}
+
+	return true;
 }

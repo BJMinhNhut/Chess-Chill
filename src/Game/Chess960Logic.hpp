@@ -19,9 +19,6 @@ class Chess960Logic: public GameLogic {
 
 	[[nodiscard]] GameOptions::Type getType() const override;
 	[[nodiscard]] bool isLegalCastling(int from, int to) const override;
-
-   private:
-	int8_t aRook, hRook; // 0->7
 };
 
 #endif  //CHESS_CHILL_CHESS960LOGIC_HPP
