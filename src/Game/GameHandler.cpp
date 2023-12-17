@@ -16,6 +16,8 @@
 #include <cmath>
 #include <iostream>
 
+//#define DEBUG_ATTACK
+
 const int GameHandler::BOARD_DRAW_SIZE = 680;
 
 GameHandler::GameHandler(State::Context context, sf::Vector2f position)
@@ -72,7 +74,7 @@ void GameHandler::buildScene() {
 	for (int square = 0; square < GameLogic::BOARD_SIZE; ++square) {
 		int piece = mLogic->getPiece(square);
 		if (piece != 0)
-			addPiece(piece, square);
+			addPiece(square, piece);
 	}
 }
 
@@ -223,8 +225,8 @@ void GameHandler::handleMove(Move move) {
 			return;
 		}
 		highlightMove(mLastMove, false);
-		highlightMove(to << 6 | from, true);
 		mLogic->makeMove(move);
+		highlightMove(mLastMove, true);
 
 		if (mLogic->isFinished()) {
 			setCursor(sf::Cursor::Arrow);
@@ -241,6 +243,9 @@ void GameHandler::handleMove(Move move) {
 void GameHandler::highlightLegalMoves(int from) {
 	std::vector<Move> moves = mLogic->getMoveList(from);
 	for (Move move : moves) {
+		if (Piece::getType(mLogic->getPiece(move.from())) == Piece::King) {
+			std::cout << "King: " << move.to() << "\n";
+		}
 		highlightSquare(move.to(), Target);
 		moveCandidates.push_back(move.to());
 	}
@@ -289,7 +294,7 @@ void GameHandler::highlightMove(int move, bool flag) {
 	}
 }
 
-void GameHandler::addPiece(int piece, int square) {
+void GameHandler::addPiece(int square, int piece) {
 	mPieces[square] = new Piece(mTextures.get(Textures::PieceSet), piece);
 	mPieces[square]->setPosition(getBoxPosition(square), false);
 	mPieces[square]->updateTargetPosition();
@@ -312,10 +317,12 @@ void GameHandler::capturePiece(int square) {
 }
 
 void GameHandler::movePiece(int from, int to) {
-	mPieces[to] = mPieces[from];
-	mPieces[from] = nullptr;
+	if (from != to) {
+		mPieces[to] = mPieces[from];
+		mPieces[from] = nullptr;
+		mPieces[to]->setPosition(getBoxPosition(to), Piece::None);
+	}
 	mLastMove = (to << 6) | from;
-	mPieces[to]->setPosition(getBoxPosition(to), Piece::None);
 }
 
 void GameHandler::postMove() {
@@ -327,7 +334,7 @@ void GameHandler::postMove() {
 
 #ifdef DEBUG_ATTACK
 	for (int i = 0; i < 64; ++i) {
-		if (isAttacked(i))
+		if (mLogic->isAttacked(i))
 			highlightSquare(i, Debug);
 		else
 			highlightSquare(i, Normal);

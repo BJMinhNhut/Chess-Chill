@@ -79,7 +79,7 @@ class GameHandler : public sf::NonCopyable {
 
 	sf::Vector2f getBoxPosition(int box) const;
 
-	void addPiece(int piece, int square);
+	void addPiece(int square, int piece);
 	void movePiece(int from, int to);
 	void capturePiece(int square);
 	void promotePiece(int square, int piece);
