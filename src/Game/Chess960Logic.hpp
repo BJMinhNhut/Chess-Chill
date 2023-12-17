@@ -18,7 +18,11 @@ class Chess960Logic: public GameLogic {
 	void updateStatus() override;
 
 	[[nodiscard]] GameOptions::Type getType() const override;
+	[[nodiscard]] int getRook(bool color, bool side) const override;
 	[[nodiscard]] bool isLegalCastling(int from, int to) const override;
+
+   private:
+	int8_t aRookFile, hRookFile;
 };
 
 #endif  //CHESS_CHILL_CHESS960LOGIC_HPP

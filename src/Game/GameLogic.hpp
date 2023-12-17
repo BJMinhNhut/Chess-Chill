@@ -91,6 +91,7 @@ class GameLogic {
 	[[nodiscard]] virtual GameOptions::Type getType() const = 0;
 
 	void pureMove(Move move);
+	void addPiece(int square, int piece);
 	void promotePiece(int square, int piece);
 	void capturePiece(int square);
 	void movePiece(int from, int to);
@@ -107,6 +108,7 @@ class GameLogic {
 
 	virtual void updateStatus() = 0;
 	[[nodiscard]] virtual bool isLegalCastling(int from, int to) const = 0;
+	[[nodiscard]] virtual int getRook(bool color, bool side) const = 0;
 
    protected:
 	Board mBoard;
