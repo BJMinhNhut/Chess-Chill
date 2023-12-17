@@ -80,9 +80,6 @@ void Board::loadFEN(const std::string& fen) {
 	else
 		mEnPassant = Board::getSquareID(enPassant[1] - '1', enPassant[0] - 'a');
 	iss >> mHalfMove >> mFullMove;
-	//	updateAttacks(false);
-	//	updateAttacks(true);
-	//	updateStatus();
 	assert(getKing(0) != -1 && getKing(1) != -1);
 }
 
@@ -164,6 +161,7 @@ void Board::set(int rank, int file, int8_t piece) {
 
 void Board::move(int from, int to) {
 	assert(validSquare(from) && validSquare(to));
+	assert(from != to);
 	mBoard[to] = mBoard[from];
 	mBoard[from] = 0;
 }
@@ -271,9 +269,9 @@ void Board::updateCastling(int piece, bool side) {
 	if (type == Piece::King) {
 		mCastling &= ~(color ? 12 : 3);
 	} else if (type == Piece::Rook) {
-		if (side == 0)  // Queen side
+		if (side)  // King side
 			mCastling &= ~(color ? 4 : 1);
-		else  // King side
+		else  // Queen side
 			mCastling &= ~(color ? 8 : 2);
 	}
 }
