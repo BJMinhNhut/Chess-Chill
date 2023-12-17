@@ -70,6 +70,12 @@ bool StandardLogic::isLegalCastling(int from, int to) const {
 	return false;
 }
 
+int StandardLogic::getRook(bool color, bool side) const {
+	// queen side = 0, king side = 1
+	// color black = 1, white = 0
+	return Board::getSquareID(color ? 7 : 0, side ? 7 : 0);
+}
+
 GameOptions::Type StandardLogic::getType() const {
-	return GameOptions::Type::Chess960;
+	return GameOptions::Type::Standard;
 }

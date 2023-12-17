@@ -17,6 +17,7 @@ class StandardLogic: public GameLogic {
 	void updateStatus() override;
 
 	[[nodiscard]] bool isLegalCastling(int from, int to) const override;
+	[[nodiscard]] int getRook(bool color, bool side) const override;
 	[[nodiscard]] GameOptions::Type getType() const override;
 };
 
