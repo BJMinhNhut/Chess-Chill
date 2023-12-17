@@ -88,7 +88,7 @@ class GameLogic {
 	void saveHistory();
 
    private:
-	static std::string getFENByType(GameOptions::Type type);
+	[[nodiscard]] virtual GameOptions::Type getType() const = 0;
 
 	void pureMove(Move move);
 	void promotePiece(int square, int piece);

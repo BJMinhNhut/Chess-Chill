@@ -31,7 +31,7 @@ void MoveTable::generate() {
 	mIsGenerated = true;
 }
 
-int64_t MoveTable::getMoves(int piece, int square) {
+int64_t MoveTable::getMoves(GameOptions::Type type, int piece, int square) {
 	assert(mIsGenerated);
 	switch (Piece::getType(piece)) {
 		case Piece::Pawn:
@@ -45,7 +45,7 @@ int64_t MoveTable::getMoves(int piece, int square) {
 		case Piece::Queen:
 			return getQueenMoves(square);
 		case Piece::King:
-			return getKingMoves(square);
+			return getKingMoves(type, square);
 		default:
 			assert(false);
 			return 0;
@@ -72,8 +72,8 @@ int64_t MoveTable::getQueenMoves(int square) {
 	return mQueenMoves[square];
 }
 
-int64_t MoveTable::getKingMoves(int square) {
-	return mKingMoves[square];
+int64_t MoveTable::getKingMoves(GameOptions::Type type, int square) {
+	return mKingMoves[type][square];
 }
 
 void MoveTable::generatePawnMoves(int square, bool color) {
@@ -227,16 +227,28 @@ void MoveTable::generateKingMoves(int square) {
 	if (file - 1 >= 0)
 		moves |= 1LL << Board::getSquareID(rank, file - 1);
 
-	// castling
+	mKingMoves[GameOptions::Standard][square] = moves;
+	mKingMoves[GameOptions::Chess960][square] = moves;
+
+
+	// standard
+	int64_t castling = 0;
 	if (rank == 0 && file == 4) {
-		moves |= 1LL << Board::getSquareID(0, 6);
-		moves |= 1LL << Board::getSquareID(0, 2);
+		castling |= 1LL << Board::getSquareID(0, 6);
+		castling |= 1LL << Board::getSquareID(0, 2);
 	}
-
 	if (rank == 7 && file == 4) {
-		moves |= 1LL << Board::getSquareID(7, 6);
-		moves |= 1LL << Board::getSquareID(7, 2);
+		castling |= 1LL << Board::getSquareID(7, 6);
+		castling |= 1LL << Board::getSquareID(7, 2);
 	}
+	mKingMoves[GameOptions::Standard][square] |= castling;
 
-	mKingMoves[square] = moves;
+	//chess960
+	castling = 0;
+	if (rank == 0) {
+		castling = 255;
+	} else if (rank == 7) {
+		castling = 255ll << 56;
+	}
+	mKingMoves[GameOptions::Chess960][square] |= castling;
 }

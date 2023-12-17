@@ -265,15 +265,15 @@ void Board::nextFullMove() {
 	mFullMove++;
 }
 
-void Board::updateCastling(int from) {
-	int piece = get(from);
+void Board::updateCastling(int piece, bool side) {
 	int color = Piece::getColor(piece);
-	if (Piece::getType(piece) == Piece::King) {
+	int type = Piece::getType(piece);
+	if (type == Piece::King) {
 		mCastling &= ~(color ? 12 : 3);
-	} else if (Piece::getType(piece) == Piece::Rook) {
-		if (from == (color ? 63 : 7))
+	} else if (type == Piece::Rook) {
+		if (side == 0)  // Queen side
 			mCastling &= ~(color ? 4 : 1);
-		else if (from == (color ? 56 : 0))
+		else  // King side
 			mCastling &= ~(color ? 8 : 2);
 	}
 }
@@ -286,9 +286,8 @@ void Board::updateEnPassant(int from, int to) {
 		mEnPassant = -1;
 }
 
-void Board::updateHalfMove(int from, int to) {
-	int piece = get(from);
-	if (Piece::getType(piece) == Piece::Pawn || get(to) != 0)
+void Board::updateHalfMove(int pieceFrom, int pieceTo) {
+	if (Piece::getType(pieceFrom) == Piece::Pawn || pieceTo != 0)
 		mHalfMove = 0;
 	else
 		mHalfMove++;

@@ -42,7 +42,7 @@ class Board {
 	void setFullMove(int fullMove);
 	void nextFullMove();
 
-	void updateCastling(int from);
+	void updateCastling(int piece, bool side);
 	void updateEnPassant(int from, int to);
 	void updateHalfMove(int from, int to);
 

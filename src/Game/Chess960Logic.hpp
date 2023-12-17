@@ -16,6 +16,8 @@ class Chess960Logic: public GameLogic {
 
    private:
 	void updateStatus() override;
+
+	[[nodiscard]] GameOptions::Type getType() const override;
 	[[nodiscard]] bool isLegalCastling(int from, int to) const override;
 
    private:

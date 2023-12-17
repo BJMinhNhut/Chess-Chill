@@ -33,17 +33,6 @@ void GameLogic::saveHistory() {
 	mFENs[mBoard.getFEN(false)]++;
 }
 
-std::string GameLogic::getFENByType(GameOptions::Type type) {
-	switch (type) {
-		case GameOptions::Type::Chess960:
-			return FenGenerator::getRandom960();
-		case GameOptions::Type::Standard:
-			return FenGenerator::START_FEN;
-		default:
-			return FenGenerator::START_FEN;
-	}
-}
-
 GameLogic::GameLogic(const GameLogic& other, GameHandler* handler)
     : mBoard(other.mBoard),
       mAttacks(&mBoard),
@@ -73,7 +62,7 @@ std::vector<Move> GameLogic::getLegalMoves() const {
 	for (int i = 0; i < 64; i++) {
 		if (mBoard.get(i) == 0 || Piece::getColor(mBoard.get(i)) != mBoard.getTurn())
 			continue;
-		int64_t moves = table->getMoves(mBoard.get(i), i);
+		int64_t moves = table->getMoves(getType(), mBoard.get(i), i);
 		for (int j; moves; moves &= ~(1LL << j)) {
 			j = __builtin_ctzll(moves);
 			if (isLegalPromotion(i, j) && isLegalMove(Move(i, j, Piece::Queen))) {
@@ -96,7 +85,7 @@ std::vector<Move> GameLogic::getMoveList(int from) const {
 	if (piece == 0 || Piece::getColor(piece) != mBoard.getTurn())
 		return moveList;
 	MoveTable *table = MoveTable::getInstance();
-	int64_t moves = table->getMoves(piece, from);
+	int64_t moves = table->getMoves(getType(), piece, from);
 	for (int j; moves; moves &= ~(1LL << j)) {
 		j = __builtin_ctzll(moves);
 		if (isLegalPromotion(from, j) && isLegalMove(Move(from, j, Piece::Queen))) {
@@ -229,6 +218,7 @@ void GameLogic::pureMove(Move move) {
 	mLastMove = Normal;
 
 	int from = move.from(), to = move.to();
+	int piece = mBoard.get(from);
 
 	if (isEnPassant(from, to)) {
 		capturePiece(mBoard.getEnPassant() + (mBoard.getTurn() ? 8 : -8));
@@ -243,14 +233,17 @@ void GameLogic::pureMove(Move move) {
 
 	if (isLegalCastling(from, to)) {
 		int dir = to - from < 0 ? -1 : 1;
-		int rook = dir < 0 ? from - 4 : from + 3;
-		movePiece(rook, from + dir);
+		int kingNewPos = Board::getSquareID(Board::getRank(from), dir < 0 ? 2 : 6);
+		int rook = Board::getSquareID(Board::getRank(from), dir < 0 ? 0 : 7);
+		int rookNewPos = Board::getSquareID(Board::getRank(from), dir < 0 ? 3 : 5);
+		movePiece(rook, rookNewPos);
+		movePiece(from, kingNewPos);
 		mLastMove |= Castling;
-	}
+	} else movePiece(from, to);
 
-	mBoard.updateCastling(from);
+	mBoard.updateCastling(piece, (to-from < 0) ? 0 : 1);
 	mBoard.updateHalfMove(from, to);
-	movePiece(from, to);
+
 	// check for promotion
 	if (mBoard.getType(to) == Piece::Pawn && (Board::getRank(to) == 0 || Board::getRank(to) == 7)) {
 		mLastMove |= Promotion;

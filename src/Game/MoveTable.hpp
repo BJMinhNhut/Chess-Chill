@@ -5,6 +5,8 @@
 #ifndef CHESS_CHILL_MOVETABLE_HPP
 #define CHESS_CHILL_MOVETABLE_HPP
 
+#include "Template/GameOptions.hpp"
+
 #include <cstdint>
 
 class MoveTable {
@@ -15,7 +17,7 @@ class MoveTable {
 
 	static MoveTable *getInstance();
 
-	[[nodiscard]] int64_t getMoves(int piece, int square);
+	[[nodiscard]] int64_t getMoves(GameOptions::Type type, int piece, int square);
 
    private:
 	void generate();
@@ -25,7 +27,7 @@ class MoveTable {
 	int64_t getBishopMoves(int square);
 	int64_t getRookMoves(int square);
 	int64_t getQueenMoves(int square);
-	int64_t getKingMoves(int square);
+	int64_t getKingMoves(GameOptions::Type type, int square);
 
 	void generatePawnMoves(int square, bool color);
 	void generateKnightMoves(int square);
@@ -40,7 +42,7 @@ class MoveTable {
 	int64_t mBishopMoves[64];
 	int64_t mRookMoves[64];
 	int64_t mQueenMoves[64];
-	int64_t mKingMoves[64];
+	int64_t mKingMoves[GameOptions::NumTypes][64];
 	bool mIsGenerated;
 };
 

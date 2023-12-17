@@ -15,7 +15,9 @@ class StandardLogic: public GameLogic {
 
    private:
 	void updateStatus() override;
+
 	[[nodiscard]] bool isLegalCastling(int from, int to) const override;
+	[[nodiscard]] GameOptions::Type getType() const override;
 };
 
 #endif  //CHESS_CHILL_STANDARDLOGIC_HPP

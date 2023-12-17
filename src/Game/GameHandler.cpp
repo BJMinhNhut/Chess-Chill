@@ -8,6 +8,7 @@
 #include "Template/Utility.hpp"
 #include "FenGenerator.hpp"
 #include "StandardLogic.hpp"
+#include "Chess960Logic.hpp"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Event.hpp>
@@ -43,6 +44,8 @@ GameHandler::GameHandler(State::Context context, sf::Vector2f position)
 
 GameLogic* GameHandler::getLogic(GameOptions::Type type) {
 	switch (type) {
+		case GameOptions::Chess960:
+			return new Chess960Logic(this);
 		default:
 			return new StandardLogic(this);
 	}

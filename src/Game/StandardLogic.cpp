@@ -69,3 +69,7 @@ bool StandardLogic::isLegalCastling(int from, int to) const {
 	}
 	return false;
 }
+
+GameOptions::Type StandardLogic::getType() const {
+	return GameOptions::Type::Chess960;
+}
