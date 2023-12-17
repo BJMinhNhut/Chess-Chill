@@ -345,7 +345,7 @@ void GameHandler::postMove() {
 
 void GameHandler::promotePiece(int square, int piece) {
 	capturePiece(square);
-	addPiece(piece, square);
+	addPiece(square, piece);
 }
 
 int GameHandler::getHoverSquare(int x, int y) const {
