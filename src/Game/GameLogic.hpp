@@ -112,6 +112,7 @@ class GameLogic {
 	virtual void updateStatus() = 0;
 	[[nodiscard]] virtual bool isLegalCastling(int from, int to) const = 0;
 	[[nodiscard]] virtual int getRook(bool color, bool side) const = 0;
+	[[nodiscard]] virtual bool getRookSide(int square) const = 0;
 
    protected:
 	Board mBoard;

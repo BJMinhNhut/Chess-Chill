@@ -163,7 +163,7 @@ void Board::move(int from, int to) {
 	assert(validSquare(from) && validSquare(to));
 	assert(from != to);
 	mBoard[to] = mBoard[from];
-	mBoard[from] = 0;
+	mBoard[from] = Piece::None;
 }
 
 int Board::get(int square) const {

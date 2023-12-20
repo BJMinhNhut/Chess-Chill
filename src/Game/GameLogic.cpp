@@ -171,8 +171,10 @@ bool GameLogic::isLegalMove(Move move) const {
 	};
 	if (!legal)
 		return false;
-	if (isPseudoLegalMove(move)) return false;
-	if (isLegalPromotion(from, to) && move.promote() == Piece::None) return false;
+	if (isPseudoLegalMove(move))
+		return false;
+	if (isLegalPromotion(from, to) && move.promote() == Piece::None)
+		return false;
 	return true;
 }
 
@@ -229,11 +231,13 @@ void GameLogic::pureMove(Move move) {
 	if (isLegalCastling(from, to)) {
 		bool side = to - from < 0 ? 0 : 1;
 		int kingNewPos = Board::getSquareID(Board::getRank(from), side ? 6 : 2);
-		int rook = getRook(Piece::getColor(pieceFrom), side);
+		int rookPos = getRook(Piece::getColor(pieceFrom), side);
+
+		int rookPiece = mBoard.get(rookPos);
 		int rookNewPos = Board::getSquareID(Board::getRank(from), side ? 5 : 3);
-		capturePiece(rook);
+		capturePiece(rookPos);
 		movePiece(from, kingNewPos);
-		addPiece(rookNewPos, Piece::Rook | (Piece::getColor(pieceFrom) ? Piece::Black : Piece::White));
+		addPiece(rookNewPos, rookPiece);
 		mLastMove |= Castling;
 	} else {
 		if (mBoard.get(to) != 0) {
@@ -243,7 +247,7 @@ void GameLogic::pureMove(Move move) {
 		movePiece(from, to);
 	}
 
-	mBoard.updateCastling(pieceFrom, (to - from < 0) ? 0 : 1);
+	mBoard.updateCastling(pieceFrom, getRookSide(from));
 	mBoard.updateHalfMove(pieceFrom, pieceTo);
 
 	// check for promotion
@@ -268,7 +272,8 @@ void GameLogic::addPiece(int square, int piece) {
 void GameLogic::capturePiece(int square) {
 	//	std::cout << "capture " << square << '\n';
 	assert(mBoard.getType(square) != Piece::King);
-	mBoard.set(square, 0);
+	assert(mBoard.get(square) != 0);
+	mBoard.set(square, Piece::None);
 	if (mHandler)
 		mHandler->capturePiece(square);
 }

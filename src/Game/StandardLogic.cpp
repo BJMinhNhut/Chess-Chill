@@ -80,6 +80,10 @@ int StandardLogic::getRook(bool color, bool side) const {
 	return Board::getSquareID(color ? 7 : 0, side ? 7 : 0);
 }
 
+bool StandardLogic::getRookSide(int square) const {
+	return Board::getFile(square) == 7;
+}
+
 GameOptions::Type StandardLogic::getType() const {
 	return GameOptions::Type::Standard;
 }

@@ -19,6 +19,7 @@ class Chess960Logic: public GameLogic {
 
 	[[nodiscard]] GameOptions::Type getType() const override;
 	[[nodiscard]] int getRook(bool color, bool side) const override;
+	[[nodiscard]] bool getRookSide(int square) const override;
 	[[nodiscard]] bool isLegalCastling(int from, int to) const override;
 
    private:

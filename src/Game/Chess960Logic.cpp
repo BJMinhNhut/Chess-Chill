@@ -18,6 +18,7 @@ Chess960Logic::Chess960Logic(GameHandler* handler)
 			else
 				hRookFile = i;
 		}
+	std::cerr << "aRookFile = " << (int)aRookFile << ", hRookFile = " << (int)hRookFile << '\n';
 	assert(aRookFile != -1 && hRookFile != -1);
 }
 
@@ -60,7 +61,8 @@ GameOptions::Type Chess960Logic::getType() const {
 
 bool Chess960Logic::isLegalCastling(int from, int to) const {
 	int castling = mBoard.getCastling();
-	if (castling == 0) return false;
+	if (castling == 0)
+		return false;
 
 	int color = mBoard.getTurn();
 	if (mBoard.getType(from) != Piece::King || mBoard.getType(to) != Piece::Rook)
@@ -70,7 +72,7 @@ bool Chess960Logic::isLegalCastling(int from, int to) const {
 	if (Board::getRank(from) != (color ? 7 : 0))
 		return false;
 
-//	std::cout << "Check for castle " << from << ' ' << to << '\n';
+	//	std::cout << "Check for castle " << from << ' ' << to << '\n';
 	if (mAttacks.isAttacked(from))  // check for check
 		return false;
 	bool side = to - from < 0 ? 0 : 1;  // queen side = 0, king side = 1
@@ -89,14 +91,21 @@ bool Chess960Logic::isLegalCastling(int from, int to) const {
 
 	int kingNewPos = Board::getSquareID(color ? 7 : 0, side ? 6 : 2);
 	int rookNewPos = Board::getSquareID(color ? 7 : 0, side ? 5 : 3);
-	if (mAttacks.isAttacked(kingNewPos) || mAttacks.isAttacked(rookNewPos))
+	if (mAttacks.isAttacked(kingNewPos))
 		return false;
 	if (kingNewPos != from && kingNewPos != to && mBoard.get(kingNewPos) != 0)
 		return false;
-	if (rookNewPos != from && rookNewPos != to && mBoard.get(rookNewPos) != 0)  // check for blocking
+	if (rookNewPos != from && rookNewPos != to &&
+	    mBoard.get(rookNewPos) != 0)  // check for blocking
 		return false;
 	for (int i = std::min(from, to) + 1; i < std::max(from, to); i++) {
-		if (mAttacks.isAttacked(i) || mBoard.get(i) != 0)
+		if (mBoard.get(i) != 0)
+			return false;
+	}
+
+	for (int i = std::min(from, kingNewPos); i <= std::max(from, kingNewPos);
+	     i++) {  // check for attacked
+		if (mAttacks.isAttacked(i))
 			return false;
 	}
 
@@ -105,4 +114,8 @@ bool Chess960Logic::isLegalCastling(int from, int to) const {
 
 int Chess960Logic::getRook(bool color, bool side) const {
 	return Board::getSquareID(color ? 7 : 0, side ? hRookFile : aRookFile);
+}
+
+bool Chess960Logic::getRookSide(int square) const {
+	return Board::getFile(square) == hRookFile;
 }
