@@ -44,7 +44,7 @@ class Board {
 
 	void updateCastling(int piece, bool side);
 	void updateEnPassant(int from, int to);
-	void updateHalfMove(int from, int to);
+	void updateHalfMove(int pieceFrom, int pieceTo);
 
 	[[nodiscard]] std::string getFEN(bool withMove = true) const;
 	[[nodiscard]] int getHashFEN(bool withMove) const;

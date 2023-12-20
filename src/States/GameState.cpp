@@ -182,6 +182,9 @@ void GameState::loadResult() {
 	} else if (mGame.mLogic->status() == GameLogic::ThreefoldRepetition) {
 		mWinner->setText("Draw");
 		mDescription->setText("by threefold repetition");
+	} else if (mGame.mLogic->status() == GameLogic::FiftyMoveRule) {
+		mWinner->setText("Draw");
+		mDescription->setText("by fifty move rule");
 	}
 	mWinner->alignCenter();
 	mDescription->alignCenter();

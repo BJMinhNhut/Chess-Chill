@@ -46,6 +46,9 @@ void Chess960Logic::updateStatus() {
 	} else if (isThreefoldRepetition()) {
 		mStatus = ThreefoldRepetition;
 		//		std::cout << "Threefold repetition\n";
+	} else if (isFiftyMoveRule()) {
+		mStatus = FiftyMoveRule;
+		//		std::cout << "Fifty move rule\n";
 	} else {
 		mStatus = OnGoing;
 	}

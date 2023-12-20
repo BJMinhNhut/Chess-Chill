@@ -47,7 +47,7 @@ int Evaluator::evaluateBoard(const GameLogic& board) {
 	if (board.status() == GameLogic::Checkmate) {
 		return board.getTurn() ? 1000000 : -1000000;
 	} else if (board.status() & (GameLogic::Stalemate | GameLogic::ThreefoldRepetition |
-	                             GameLogic::InsufficientMaterial)) {
+	                             GameLogic::InsufficientMaterial | GameLogic::FiftyMoveRule)) {
 		return 0;
 	}
 

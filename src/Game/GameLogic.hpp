@@ -29,6 +29,7 @@ class GameLogic {
 		Stalemate,
 		InsufficientMaterial,
 		ThreefoldRepetition,
+		FiftyMoveRule,
 		Resign,
 		Timeout,
 	};
@@ -63,6 +64,7 @@ class GameLogic {
 	[[nodiscard]] std::vector<Move> getLegalMoves() const;
 
 	[[nodiscard]] bool getTurn() const;
+	[[nodiscard]] int getHalfMove() const;
 
 	[[nodiscard]] int getEvaluation() const;
 
@@ -84,6 +86,7 @@ class GameLogic {
 	[[nodiscard]] bool hasLegalMove() const;
 	[[nodiscard]] bool isInsufficientMaterial();
 	[[nodiscard]] bool isThreefoldRepetition();
+	[[nodiscard]] bool isFiftyMoveRule();
 
 	void saveHistory();
 

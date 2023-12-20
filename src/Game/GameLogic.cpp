@@ -169,10 +169,11 @@ bool GameLogic::isLegalMove(Move move) const {
 		default:
 			assert(false);
 	};
-	if (legal)
-		return !isPseudoLegalMove(move);
-	else
+	if (!legal)
 		return false;
+	if (isPseudoLegalMove(move)) return false;
+	if (isLegalPromotion(from, to) && move.promote() == Piece::None) return false;
+	return true;
 }
 
 bool GameLogic::isPseudoLegalMove(Move move) const {
@@ -216,7 +217,8 @@ void GameLogic::pureMove(Move move) {
 	mLastMove = Normal;
 
 	int from = move.from(), to = move.to();
-	int piece = mBoard.get(from);
+	int pieceFrom = mBoard.get(from);
+	int pieceTo = mBoard.get(to);
 
 	if (isEnPassant(from, to)) {
 		capturePiece(mBoard.getEnPassant() + (mBoard.getTurn() ? 8 : -8));
@@ -227,11 +229,11 @@ void GameLogic::pureMove(Move move) {
 	if (isLegalCastling(from, to)) {
 		bool side = to - from < 0 ? 0 : 1;
 		int kingNewPos = Board::getSquareID(Board::getRank(from), side ? 6 : 2);
-		int rook = getRook(Piece::getColor(piece), side);
+		int rook = getRook(Piece::getColor(pieceFrom), side);
 		int rookNewPos = Board::getSquareID(Board::getRank(from), side ? 5 : 3);
 		capturePiece(rook);
 		movePiece(from, kingNewPos);
-		addPiece(rookNewPos, Piece::Rook | (Piece::getColor(piece) ? Piece::Black : Piece::White));
+		addPiece(rookNewPos, Piece::Rook | (Piece::getColor(pieceFrom) ? Piece::Black : Piece::White));
 		mLastMove |= Castling;
 	} else {
 		if (mBoard.get(to) != 0) {
@@ -241,8 +243,8 @@ void GameLogic::pureMove(Move move) {
 		movePiece(from, to);
 	}
 
-	mBoard.updateCastling(piece, (to - from < 0) ? 0 : 1);
-	mBoard.updateHalfMove(from, to);
+	mBoard.updateCastling(pieceFrom, (to - from < 0) ? 0 : 1);
+	mBoard.updateHalfMove(pieceFrom, pieceTo);
 
 	// check for promotion
 	if (mBoard.getType(to) == Piece::Pawn && (Board::getRank(to) == 0 || Board::getRank(to) == 7)) {
@@ -254,6 +256,9 @@ void GameLogic::pureMove(Move move) {
 }
 
 void GameLogic::addPiece(int square, int piece) {
+	if (mBoard.get(square) != 0) {
+		std::cerr << "Square " << square << " is not empty: " << mBoard.get(square) << '\n';
+	}
 	assert(mBoard.get(square) == Piece::None);
 	mBoard.set(square, piece);
 	if (mHandler)
@@ -323,6 +328,11 @@ bool GameLogic::isInsufficientMaterial() {
 		}
 	}
 	return (whiteLight <= 1 && blackLight <= 1);
+}
+
+bool GameLogic::isFiftyMoveRule() {
+	// check for fifty move rule
+	return mBoard.getHalfMove() >= 100;
 }
 
 bool GameLogic::hasLegalMove() const {
@@ -488,4 +498,8 @@ int GameLogic::getPiece(int square) const {
 
 bool GameLogic::getTurn() const {
 	return mBoard.getTurn();
+}
+
+int GameLogic::getHalfMove() const {
+	return mBoard.getHalfMove();
 }
