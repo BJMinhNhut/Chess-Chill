@@ -35,6 +35,8 @@ class GameState : public State {
 	void loadEndGameGUI();
 	void loadResult();
 
+	void rotateBoard();
+
 	void updateClock();
 	static std::string getClockString(float time);
 	std::string getTitle() const;
@@ -45,7 +47,7 @@ class GameState : public State {
 	GUI::Container mGUIContainer;
 	GUI::Container mEndGameContainer;
 	GUI::Label::Ptr mWinner, mDescription;
-	GUI::Label::Ptr mClock[2], mEvaluation;
+	GUI::Label::Ptr mClock[2], mPlayerLabel[2], mEvaluation;
 	sf::Time mCoolDown;
 	bool mReviewMode;
 };

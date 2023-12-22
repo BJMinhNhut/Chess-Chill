@@ -28,6 +28,7 @@ GameState::GameState(StateStack& stack, Context context)
       mDescription(nullptr),
       mPlayers(),
       mClock(),
+      mPlayerLabel(),
       mEndGameContainer(),
       mReviewMode(false),
       mCoolDown(sf::Time::Zero) {
@@ -90,15 +91,15 @@ void GameState::loadGameGUI() {
 	panels->setPosition(BOARD_POSITION);
 	mGUIContainer.pack(panels);
 
-	auto whitePlayer =
+	mPlayerLabel[0] =
 	    std::make_shared<GUI::Label>(GUI::Label::Main, mPlayers[0]->getName(), *context.fonts);
-	whitePlayer->setPosition(1040.f, 696.f + 8.f);
-	mGUIContainer.pack(whitePlayer);
+	mPlayerLabel[0]->setPosition(1040.f, 696.f + 8.f);
+	mGUIContainer.pack(mPlayerLabel[0]);
 
-	auto blackPlayer =
+	mPlayerLabel[1] =
 	    std::make_shared<GUI::Label>(GUI::Label::Main, mPlayers[1]->getName(), *context.fonts);
-	blackPlayer->setPosition(1040.f, 217.f + 8.f);
-	mGUIContainer.pack(blackPlayer);
+	mPlayerLabel[1]->setPosition(1040.f, 217.f + 8.f);
+	mGUIContainer.pack(mPlayerLabel[1]);
 
 	mClock[0] =
 	    std::make_shared<GUI::Label>(GUI::Label::Clock, "--:--", *context.fonts, Constants::mBlack);
@@ -118,11 +119,23 @@ void GameState::loadGameGUI() {
 	mGUIContainer.pack(mEvaluation);
 }
 
+void GameState::rotateBoard() {
+	mGame.rotateBoard();
+
+	sf::Vector2f clockPosition = mClock[0]->getPosition();
+	mClock[0]->setPosition(mClock[1]->getPosition());
+	mClock[1]->setPosition(clockPosition);
+
+	sf::Vector2f playerLabelPosition = mPlayerLabel[0]->getPosition();
+	mPlayerLabel[0]->setPosition(mPlayerLabel[1]->getPosition());
+	mPlayerLabel[1]->setPosition(playerLabelPosition);
+}
+
 void GameState::loadControllerGUI() {
 	auto rotateButton = std::make_shared<GUI::Button>(GUI::Button::Rotate, *getContext().fonts,
 	                                                  *getContext().textures);
 	rotateButton->setPosition(1269.f + 50.f / 2, 366.f + 40.f / 2);
-	rotateButton->setCallback([this]() { mGame.rotateBoard(); });
+	rotateButton->setCallback([this]() { rotateBoard(); });
 	mGUIContainer.pack(rotateButton);
 }
 
