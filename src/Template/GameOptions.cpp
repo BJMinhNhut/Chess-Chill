@@ -14,6 +14,7 @@ const std::vector<std::string> GameOptions::MODE_NAMES = {
 const std::vector<std::pair<std::string, int>> GameOptions::TYPE_NAMES = {
 	std::make_pair("Standard", Textures::ChessStandard),
 	std::make_pair("Chess960", Textures::Chess960),
+    std::make_pair("King of the Hill", Textures::KingOfTheHill),
 };
 
 const std::vector<std::pair<int, int>> GameOptions::TIMES = {

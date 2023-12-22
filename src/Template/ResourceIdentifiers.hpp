@@ -24,6 +24,7 @@ enum ID {
 
 	ChessStandard,
 	Chess960,
+	KingOfTheHill,
 
 	BackButtonNormal,
 	BackButtonSelected,

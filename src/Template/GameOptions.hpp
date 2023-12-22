@@ -21,6 +21,7 @@ class GameOptions {
 	enum Type {
 		Standard,
 		Chess960,
+		KingOfTheHill,
 		NumTypes,
 	};
 
