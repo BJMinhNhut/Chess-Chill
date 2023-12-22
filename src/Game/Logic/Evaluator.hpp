@@ -5,7 +5,7 @@
 #ifndef CHESS_CHILL_EVALUATOR_HPP
 #define CHESS_CHILL_EVALUATOR_HPP
 
-#include "GameLogic.hpp"
+#include "Game/Logic/GameLogic.hpp"
 
 class Evaluator {
    public:

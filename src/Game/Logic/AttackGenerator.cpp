@@ -3,7 +3,7 @@
 //
 
 #include "AttackGenerator.hpp"
-#include "Piece.hpp"
+#include "Game/Piece.hpp"
 
 namespace AttackGenerator {
 int64_t generatePawnAttacks(int square, bool color) {

@@ -5,7 +5,7 @@
 #ifndef CHESS_GAMEHANDLER_HPP
 #define CHESS_GAMEHANDLER_HPP
 
-#include "GameLogic.hpp"
+#include "Game/Logic/GameLogic.hpp"
 #include "Piece.hpp"
 #include "Template/RectNode.hpp"
 #include "Template/ResourceHolder.hpp"

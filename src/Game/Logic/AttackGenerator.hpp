@@ -5,7 +5,7 @@
 #ifndef CHESS_ATTACKGENERATOR_HPP
 #define CHESS_ATTACKGENERATOR_HPP
 
-#include "Board.hpp"
+#include "Game/Board.hpp"
 
 #include <cstdint>
 

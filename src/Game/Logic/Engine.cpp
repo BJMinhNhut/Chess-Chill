@@ -4,10 +4,10 @@
 
 #include "Engine.hpp"
 #include "Evaluator.hpp"
-#include "Piece.hpp"
+#include "Game/Piece.hpp"
 #include "Template/Random.hpp"
 
-#include <SFML/System/Clock.hpp>
+#include "SFML/System/Clock.hpp"
 
 #include <algorithm>
 #include <cassert>

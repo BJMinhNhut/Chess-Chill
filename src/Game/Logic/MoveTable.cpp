@@ -3,8 +3,8 @@
 //
 
 #include "MoveTable.hpp"
-#include "Board.hpp"
-#include "Piece.hpp"
+#include "Game/Board.hpp"
+#include "Game/Piece.hpp"
 
 #include <cassert>
 #include <iostream>

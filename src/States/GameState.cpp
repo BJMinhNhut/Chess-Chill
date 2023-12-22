@@ -198,6 +198,9 @@ void GameState::loadResult() {
 	} else if (mGame.mLogic->status() == GameLogic::FiftyMoveRule) {
 		mWinner->setText("Draw");
 		mDescription->setText("by fifty move rule");
+	} else if (mGame.mLogic->status() == GameLogic::TopOfTheHill) {
+		mWinner->setText(mGame.mLogic->getWinner() + " wins");
+		mDescription->setText("king reach top of the hill");
 	}
 	mWinner->alignCenter();
 	mDescription->alignCenter();

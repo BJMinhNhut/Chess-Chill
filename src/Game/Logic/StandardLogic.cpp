@@ -3,8 +3,8 @@
 //
 
 #include "StandardLogic.hpp"
-#include "GameHandler.hpp"
 #include "FenGenerator.hpp"
+#include "Game/GameHandler.hpp"
 
 StandardLogic::StandardLogic(GameHandler* handler) : GameLogic(FenGenerator::START_FEN, handler) {
 	updateStatus();

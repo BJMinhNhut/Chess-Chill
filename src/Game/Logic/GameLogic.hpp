@@ -6,12 +6,12 @@
 #define CHESS_GAMELOGIC_HPP
 
 #include "AttackBoard.hpp"
-#include "Board.hpp"
-#include "Clock.hpp"
-#include "Move.hpp"
+#include "Game/Board.hpp"
+#include "Game/Clock.hpp"
+#include "Game/Move.hpp"
 #include "Template/GameOptions.hpp"
 
-#include <SFML/System/Time.hpp>
+#include "SFML/System/Time.hpp"
 
 #include <map>
 #include <string>
@@ -30,6 +30,7 @@ class GameLogic {
 		InsufficientMaterial,
 		ThreefoldRepetition,
 		FiftyMoveRule,
+		TopOfTheHill,
 		Resign,
 		Timeout,
 	};

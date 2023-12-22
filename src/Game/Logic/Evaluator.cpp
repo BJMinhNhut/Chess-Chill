@@ -3,7 +3,7 @@
 //
 
 #include "Evaluator.hpp"
-#include "Piece.hpp"
+#include "Game/Piece.hpp"
 
 #include <cassert>
 

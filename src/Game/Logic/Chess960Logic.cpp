@@ -4,7 +4,7 @@
 
 #include "Chess960Logic.hpp"
 #include "FenGenerator.hpp"
-#include "GameHandler.hpp"
+#include "Game/GameHandler.hpp"
 
 #include <iostream>
 

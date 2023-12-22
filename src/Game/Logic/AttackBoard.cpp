@@ -3,8 +3,8 @@
 //
 
 #include "AttackBoard.hpp"
-#include "Piece.hpp"
 #include "AttackGenerator.hpp"
+#include "Game/Piece.hpp"
 
 #include <cassert>
 

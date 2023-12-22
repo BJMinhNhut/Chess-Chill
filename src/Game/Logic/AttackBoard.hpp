@@ -5,7 +5,7 @@
 #ifndef CHESS_CHILL_ATTACKBOARD_HPP
 #define CHESS_CHILL_ATTACKBOARD_HPP
 
-#include "Board.hpp"
+#include "Game/Board.hpp"
 
 class AttackBoard {
    public:

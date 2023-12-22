@@ -37,10 +37,10 @@ add_executable(${TARGET_NAME}
         src/Template/RectNode.hpp
         src/Template/SoundPlayer.hpp
         src/Template/SoundPlayer.cpp
-        src/Game/GameLogic.cpp
-        src/Game/GameLogic.hpp
-        src/Game/AttackGenerator.cpp
-        src/Game/AttackGenerator.hpp
+        src/Game/Logic/GameLogic.cpp
+        src/Game/Logic/GameLogic.hpp
+        src/Game/Logic/AttackGenerator.cpp
+        src/Game/Logic/AttackGenerator.hpp
         src/Game/Board.cpp
         src/Game/Board.hpp
         src/States/MenuState.cpp
@@ -54,8 +54,8 @@ add_executable(${TARGET_NAME}
         src/States/SettingsState.cpp
         src/States/SettingsState.hpp
         src/Template/Settings.cpp
-        src/Game/AttackBoard.cpp
-        src/Game/AttackBoard.hpp
+        src/Game/Logic/AttackBoard.cpp
+        src/Game/Logic/AttackBoard.hpp
         src/Game/Clock.cpp
         src/Game/Clock.hpp
         src/States/GameOptionsState.cpp
@@ -69,20 +69,20 @@ add_executable(${TARGET_NAME}
         src/Game/BotPlayer.cpp
         src/Game/BotPlayer.hpp
         src/Template/Random.cpp
-        src/Game/Evaluator.cpp
-        src/Game/Evaluator.hpp
-        src/Game/Engine.cpp
-        src/Game/Engine.hpp
+        src/Game/Logic/Evaluator.cpp
+        src/Game/Logic/Evaluator.hpp
+        src/Game/Logic/Engine.cpp
+        src/Game/Logic/Engine.hpp
         src/Game/Move.cpp
         src/Game/Move.hpp
-        src/Game/MoveTable.cpp
-        src/Game/MoveTable.hpp
-        src/Game/FenGenerator.cpp
-        src/Game/FenGenerator.hpp
-        src/Game/StandardLogic.cpp
-        src/Game/StandardLogic.hpp
-        src/Game/Chess960Logic.cpp
-        src/Game/Chess960Logic.hpp
+        src/Game/Logic/MoveTable.cpp
+        src/Game/Logic/MoveTable.hpp
+        src/Game/Logic/FenGenerator.cpp
+        src/Game/Logic/FenGenerator.hpp
+        src/Game/Logic/StandardLogic.cpp
+        src/Game/Logic/StandardLogic.hpp
+        src/Game/Logic/Chess960Logic.cpp
+        src/Game/Logic/Chess960Logic.hpp
 )
 target_link_libraries(${TARGET_NAME} PRIVATE sfml-graphics sfml-audio)
 target_compile_features(${TARGET_NAME} PRIVATE cxx_std_17)

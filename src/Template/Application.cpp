@@ -4,10 +4,10 @@
 
 #include "Application.hpp"
 #include "Constants.hpp"
+#include "Game/Logic/MoveTable.hpp"
 #include "State.hpp"
 #include "States/StatesList.hpp"
 #include "Utility.hpp"
-#include "Game/MoveTable.hpp"
 
 #include <iostream>
 

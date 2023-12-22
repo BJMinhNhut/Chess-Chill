@@ -5,9 +5,9 @@
 #include "GameLogic.hpp"
 #include "Evaluator.hpp"
 #include "FenGenerator.hpp"
-#include "GameHandler.hpp"
+#include "Game/GameHandler.hpp"
+#include "Game/Piece.hpp"
 #include "MoveTable.hpp"
-#include "Piece.hpp"
 
 #include <cassert>
 #include <cstring>

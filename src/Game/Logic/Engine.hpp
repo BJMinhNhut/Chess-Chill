@@ -5,9 +5,9 @@
 #ifndef CHESS_CHILL_ENGINE_HPP
 #define CHESS_CHILL_ENGINE_HPP
 
-#include "GameLogic.hpp"
+#include "Game/Logic/GameLogic.hpp"
 
-#include <SFML/System/Time.hpp>
+#include "SFML/System/Time.hpp"
 
 #include <vector>
 #include <tuple>

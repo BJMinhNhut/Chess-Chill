@@ -3,12 +3,12 @@
 //
 
 #include "GameHandler.hpp"
+#include "Game/Logic/Chess960Logic.hpp"
+#include "Game/Logic/FenGenerator.hpp"
+#include "Game/Logic/StandardLogic.hpp"
 #include "Template/Constants.hpp"
 #include "Template/ResourceHolder.hpp"
 #include "Template/Utility.hpp"
-#include "FenGenerator.hpp"
-#include "StandardLogic.hpp"
-#include "Chess960Logic.hpp"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Event.hpp>
