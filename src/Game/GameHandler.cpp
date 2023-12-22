@@ -6,6 +6,7 @@
 #include "Game/Logic/Chess960Logic.hpp"
 #include "Game/Logic/FenGenerator.hpp"
 #include "Game/Logic/StandardLogic.hpp"
+#include "Game/Logic/KothLogic.hpp"
 #include "Template/Constants.hpp"
 #include "Template/ResourceHolder.hpp"
 #include "Template/Utility.hpp"
@@ -48,6 +49,8 @@ GameLogic* GameHandler::getLogic(GameOptions::Type type) {
 	switch (type) {
 		case GameOptions::Chess960:
 			return new Chess960Logic(this);
+		case GameOptions::KingOfTheHill:
+			return new KothLogic(this);
 		default:
 			return new StandardLogic(this);
 	}

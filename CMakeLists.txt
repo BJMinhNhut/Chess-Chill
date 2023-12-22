@@ -83,6 +83,8 @@ add_executable(${TARGET_NAME}
         src/Game/Logic/StandardLogic.hpp
         src/Game/Logic/Chess960Logic.cpp
         src/Game/Logic/Chess960Logic.hpp
+        src/Game/Logic/KothLogic.cpp
+        src/Game/Logic/KothLogic.hpp
 )
 target_link_libraries(${TARGET_NAME} PRIVATE sfml-graphics sfml-audio)
 target_compile_features(${TARGET_NAME} PRIVATE cxx_std_17)
