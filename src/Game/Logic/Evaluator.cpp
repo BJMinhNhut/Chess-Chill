@@ -42,9 +42,29 @@ const int Evaluator::KING_SCORE_POSITIONAL[8][8] = {{47, 49, 5, 10, 10, 5, 53, 5
                                                     {-50, -50, -100, -100, -100, -100, -50, -50},
                                                     {-60, -60, -60, -60, -60, -60, -60, -60}};
 
+const int Evaluator::KING_CENTERED_SCORE_POSITIONAL[8][8] = {
+    {-50, -30, -10, 10, 10, -10, -30, -50},
+    {-30, -10, 10, 30, 30, 10, -10, -30},
+    {-10, 10, 31, 51, 51, 31, 10, -10},
+    {10, 30, 52, 75, 75, 52, 30, 10},
+    {10, 30, 50, 70, 70, 50, 30, 10},
+    {-10, 10, 30, 50, 50, 30, 10, -10},
+    {-30, -10, 10, 30, 30, 10, -10, -30},
+    {-50, -30, -10, 10, 10, -10, -30, -50}};
+
+const int Evaluator::KOTH_SCORE_POSITIONAL[8][8] = {
+    {-50, -30, -10, 10, 10, -10, -30, -50},
+    {-30, -10, 250, 300, 300, 250, -10, -30},
+    {-10, 250, 3700, 5000, 5000, 3700, 10, -10},
+    {10, 300, 5000, 1000000, 1000000, 5000, 300, 10},
+    {10, 300, 5000, 1000000, 1000000, 5000, 300, 10},
+    {-10, 250, 3000, 4000, 4000, 3000, 250, -10},
+    {-30, -10, 250, 300, 300, 250, -10, -30},
+    {-50, -30, -10, 10, 10, -10, -30, -50}};
+
 int Evaluator::evaluateBoard(const GameLogic& board) {
 	// if is king in check, then bonus 60
-	if (board.status() == GameLogic::Checkmate) {
+	if (board.status() == GameLogic::Checkmate || board.status() == GameLogic::TopOfTheHill) {
 		return board.getTurn() ? 1000000 : -1000000;
 	} else if (board.status() & (GameLogic::Stalemate | GameLogic::ThreefoldRepetition |
 	                             GameLogic::InsufficientMaterial | GameLogic::FiftyMoveRule)) {
@@ -63,9 +83,9 @@ int Evaluator::evaluateBoard(const GameLogic& board) {
 			continue;
 
 		if (Piece::getColor(piece))
-			score -= evaluatePiece(piece, i);
+			score -= evaluatePiece(board.getType(), piece, i);
 		else
-			score += evaluatePiece(piece, i);
+			score += evaluatePiece(board.getType(), piece, i);
 
 		if (Piece::getType(piece) == Piece::Bishop)
 			bishops[Piece::getColor(piece)]++;
@@ -127,7 +147,7 @@ int Evaluator::distanceToKing(const GameLogic& board) {
 	return score;
 }
 
-int Evaluator::evaluatePiece(int piece, int square) {
+int Evaluator::evaluatePiece(GameOptions::Type gameType, int piece, int square) {
 	int color = Piece::getColor(piece);
 	int type = Piece::getType(piece);
 	int score = PIECE_MATERIAL[type - 1];
@@ -150,7 +170,10 @@ int Evaluator::evaluatePiece(int piece, int square) {
 			score += ROOK_SCORE_POSITIONAL[rank][file];
 			break;
 		case Piece::King:
-			score += KING_SCORE_POSITIONAL[rank][file];
+			if (gameType == GameOptions::Type::KingOfTheHill)
+				score += KOTH_SCORE_POSITIONAL[rank][file];
+			else
+				score += KING_SCORE_POSITIONAL[rank][file];
 			break;
 		default:
 			break;

@@ -235,6 +235,7 @@ void GameLogic::pureMove(Move move) {
 
 		int rookPiece = mBoard.get(rookPos);
 		int rookNewPos = Board::getSquareID(Board::getRank(from), side ? 5 : 3);
+		assert(rookPiece != 0);
 		capturePiece(rookPos);
 		movePiece(from, kingNewPos);
 		addPiece(rookNewPos, rookPiece);

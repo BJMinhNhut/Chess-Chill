@@ -45,10 +45,16 @@ void StandardLogic::updateStatus() {
 }
 
 bool StandardLogic::isLegalCastling(int from, int to) const {
+	if (mBoard.getType(from) != Piece::King)
+		return false;
 	int diffRank = (to >> 3) - (from >> 3);
 	int diffFile = (to & 7) - (from & 7);
 	int absDiffRank = diffRank < 0 ? -diffRank : diffRank;
 	int absDiffFile = diffFile < 0 ? -diffFile : diffFile;
+
+	int rookPos = getRook(mBoard.getTurn(), diffFile < 0 ? 0 : 1);
+	if (mBoard.getType(rookPos) != Piece::Rook)
+		return false;
 	if (absDiffFile == 2 && absDiffRank == 0) {
 		bool color = mBoard.getTurn();
 		int dir = diffFile < 0 ? -1 : 1;

@@ -33,6 +33,7 @@ void MoveTable::generate() {
 }
 
 int64_t MoveTable::getMoves(GameOptions::Type type, int piece, int square) {
+	if (type == GameOptions::KingOfTheHill) type = GameOptions::Standard;
 	assert(mIsGenerated);
 	switch (Piece::getType(piece)) {
 		case Piece::Pawn:

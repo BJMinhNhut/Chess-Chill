@@ -48,7 +48,9 @@ class GameLogic {
 	GameLogic(const GameLogic& other, GameHandler* handler);
 	GameLogic(const GameLogic& other) = delete;
 	virtual ~GameLogic();
+
 	[[nodiscard]] virtual GameLogic* clone() const = 0;
+	[[nodiscard]] virtual GameOptions::Type getType() const = 0;
 
 	[[nodiscard]] bool isFinished() const;
 	[[nodiscard]] bool isChecked() const;
@@ -92,8 +94,6 @@ class GameLogic {
 	void saveHistory();
 
    private:
-	[[nodiscard]] virtual GameOptions::Type getType() const = 0;
-
 	void pureMove(Move move);
 	void addPiece(int square, int piece);
 	void promotePiece(int square, int piece);

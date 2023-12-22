@@ -15,12 +15,14 @@ class Evaluator {
 	static const int BISHOP_SCORE_POSITIONAL[8][8];
 	static const int ROOK_SCORE_POSITIONAL[8][8];
 	static const int KING_SCORE_POSITIONAL[8][8];
+	static const int KING_CENTERED_SCORE_POSITIONAL[8][8];
+	static const int KOTH_SCORE_POSITIONAL[8][8];
 
    public:
 	static int evaluateBoard(const GameLogic& board);
 
    private:
-	static int evaluatePiece(int piece, int square);
+	static int evaluatePiece(GameOptions::Type type, int piece, int square);
 	static int distanceToKing(const GameLogic& board);
 	static int checkCastling(const GameLogic& board);
 };
