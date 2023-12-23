@@ -10,6 +10,7 @@
 class FenGenerator {
    public:
 	const static std::string START_FEN;
+	const static std::string MATE_IN5_FEN;
 	const static std::string ONLY_KINGS_FEN, PROMOTE_FEN_W, PROMOTE_FEN_B, PROMOTE_MATE;
 
    public:

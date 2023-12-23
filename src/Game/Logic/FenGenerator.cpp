@@ -11,6 +11,7 @@
 
 const std::string FenGenerator::START_FEN =
     "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+const std::string FenGenerator::MATE_IN5_FEN = "2r3k1/p4p2/3Rp2p/1p2P1pK/8/1P4P1/P3Q2P/1q6 b - - 0 1";
 const std::string FenGenerator::ONLY_KINGS_FEN = "k7/8/8/8/8/8/8/7K w - - 0 1";
 const std::string FenGenerator::PROMOTE_FEN_W = "8/7P/8/k7/7K/8/8/8 w - - 0 1";
 const std::string FenGenerator::PROMOTE_FEN_B = "8/8/8/7k/K7/8/7p/8 b - - 0 1";
