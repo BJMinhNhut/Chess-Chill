@@ -415,7 +415,7 @@ void GameHandler::saveSnapShot() {
 
 	std::string notation;
 	if (mLastMove != -1) {
-		int from = mLastMove & 0x3f, to = mLastMove >> 6;
+		int to = mLastMove >> 6;
 		notation = Piece::getPieceName(Piece::getType(mLogic->getPiece(to))) +
 		           (captured ? "x" : "") + Board::getSquareName(to);
 	}
