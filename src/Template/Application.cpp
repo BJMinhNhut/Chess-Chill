@@ -134,6 +134,23 @@ void Application::loadImages() {
 	               Constants::DATA_PREFIX + "resources/images/buttons/close_normal.png");
 	mTextures.load(Textures::CloseButtonSelected,
 	               Constants::DATA_PREFIX + "resources/images/buttons/close_selected.png");
+
+	mTextures.load(Textures::FirstButtonNormal,
+	               Constants::DATA_PREFIX + "resources/images/buttons/first_normal.png");
+	mTextures.load(Textures::FirstButtonSelected,
+	               Constants::DATA_PREFIX + "resources/images/buttons/first_selected.png");
+	mTextures.load(Textures::LastButtonNormal,
+	               Constants::DATA_PREFIX + "resources/images/buttons/last_normal.png");
+	mTextures.load(Textures::LastButtonSelected,
+	               Constants::DATA_PREFIX + "resources/images/buttons/last_selected.png");
+	mTextures.load(Textures::PreviousButtonNormal,
+	               Constants::DATA_PREFIX + "resources/images/buttons/previous_normal.png");
+	mTextures.load(Textures::PreviousButtonSelected,
+	               Constants::DATA_PREFIX + "resources/images/buttons/previous_selected.png");
+	mTextures.load(Textures::NextButtonNormal,
+	               Constants::DATA_PREFIX + "resources/images/buttons/next_normal.png");
+	mTextures.load(Textures::NextButtonSelected,
+	               Constants::DATA_PREFIX + "resources/images/buttons/next_selected.png");
 }
 
 void Application::run() {

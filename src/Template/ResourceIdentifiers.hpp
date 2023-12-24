@@ -41,6 +41,15 @@ enum ID {
 	CloseButtonNormal,
 	CloseButtonSelected,
 
+	FirstButtonNormal,
+	FirstButtonSelected,
+	LastButtonNormal,
+	LastButtonSelected,
+	PreviousButtonNormal,
+	PreviousButtonSelected,
+	NextButtonNormal,
+	NextButtonSelected,
+
 	Board,
 	PieceSet,
 	GameGUI,
