@@ -396,13 +396,11 @@ sf::Vector2f GameHandler::getBoxPosition(int box) const {
 
 void GameHandler::saveSnapShot() {
 	SoundEffect::ID sound;
-	bool captured = false;
 
 	if (mLogic->isChecked())
 		sound = SoundEffect::Check;
 	else if (mLogic->isCaptured()) {
 		sound = SoundEffect::Capture;
-		captured = true;
 	} else if (mLogic->isCastled())
 		sound = SoundEffect::Castling;
 	else if (mLogic->isPromoted())
@@ -416,8 +414,18 @@ void GameHandler::saveSnapShot() {
 	std::string notation;
 	if (mLastMove != -1) {
 		int to = mLastMove >> 6;
-		notation = Piece::getPieceName(Piece::getType(mLogic->getPiece(to))) +
-		           (captured ? "x" : "") + Board::getSquareName(to);
+		if (!mLogic->isPromoted())
+			notation += Piece::getPieceName(Piece::getType(mLogic->getPiece(to)));
+		if (mLogic->isCaptured())
+			notation += "x";
+		notation += Board::getSquareName(to);
+		if (mLogic->isPromoted())
+			notation += "=" + Piece::getPieceName(Piece::getType(mLogic->getPiece(to)));
+		if (mLogic->status() == GameLogic::Checkmate) {
+			notation += "#";
+		} else if (mLogic->isChecked()) {
+			notation += "+";
+		}
 	}
 
 	mSnapShots.emplace_back(mLogic->getBoard(), mLastMove, notation, sound, checkMate);
