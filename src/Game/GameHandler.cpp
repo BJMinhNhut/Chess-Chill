@@ -45,7 +45,7 @@ GameHandler::GameHandler(State::Context context, sf::Vector2f position)
       mSnapShots() {
 	mWindow.setView(mWindow.getDefaultView());
 	buildScene();
-	mSnapShots.push_back(SnapShot(mLogic->getBoard(), mLastMove));
+	saveSnapShot();
 }
 
 GameLogic* GameHandler::getLogic(GameOptions::Type type) {
@@ -59,8 +59,9 @@ GameLogic* GameHandler::getLogic(GameOptions::Type type) {
 	}
 }
 
-GameHandler::SnapShot::SnapShot(const Board& board, int lastMove)
-    : board(board), lastMove(lastMove) {}
+GameHandler::SnapShot::SnapShot(const Board& board, int lastMove, SoundEffect::ID sound,
+                                int8_t checkMate)
+    : board(board), lastMove(lastMove), sound(sound), checkMate(checkMate) {}
 
 void GameHandler::buildScene() {
 	// Initialize the different layers
@@ -237,8 +238,7 @@ void GameHandler::handleMove(Move move) {
 		highlightMove(mLastMove, false);
 		mLogic->makeMove(move);
 		highlightMove(mLastMove, true);
-		mSnapShots.emplace_back(mLogic->getBoard(), mLastMove);
-		mSnapShotIndex = (int)mSnapShots.size() - 1;
+		saveSnapShot();
 
 		if (mLogic->isFinished()) {
 			setCursor(sf::Cursor::Arrow);
@@ -394,10 +394,31 @@ sf::Vector2f GameHandler::getBoxPosition(int box) const {
 	       sf::Vector2f(float(column * Piece::SIZE), float((7 - row) * Piece::SIZE));
 }
 
+void GameHandler::saveSnapShot() {
+	SoundEffect::ID sound;
+
+	if (mLogic->isChecked())
+		sound = SoundEffect::Check;
+	else if (mLogic->isCaptured())
+		sound = SoundEffect::Capture;
+	else if (mLogic->isCastled())
+		sound = SoundEffect::Castling;
+	else if (mLogic->isPromoted())
+		sound = SoundEffect::Promotion;
+	else
+		sound = SoundEffect::Move;
+
+	int checkMate =
+	    (mLogic->status() == GameLogic::Checkmate) ? mLogic->getKing(mLogic->getTurn()) : -1;
+
+	mSnapShots.emplace_back(mLogic->getBoard(), mLastMove, sound, checkMate);
+	mSnapShotIndex = (int)mSnapShots.size() - 1;
+}
+
 void GameHandler::loadSnapShot(int index) {
 	if (index < 0 || index >= (int)mSnapShots.size())
 		return;
-	for(int i = 0; i < GameLogic::BOARD_SIZE; ++i)
+	for (int i = 0; i < GameLogic::BOARD_SIZE; ++i)
 		highlightSquare(i, Normal);
 	highlightMove(mSnapShots[index].lastMove, true);
 	for (int i = 0; i < GameLogic::BOARD_SIZE; ++i) {
@@ -407,7 +428,9 @@ void GameHandler::loadSnapShot(int index) {
 		if (mSnapShots[index].board.get(i) != 0)
 			addPiece(i, mSnapShots[index].board.get(i));
 	}
-	mSounds.play(SoundEffect::Move);
+	mSounds.play(mSnapShots[index].sound);
+	if (mSnapShots[index].checkMate != -1)
+		highlightSquare(mSnapShots[index].checkMate, Debug);
 	mSnapShotIndex = index;
 }
 

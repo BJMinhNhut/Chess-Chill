@@ -96,13 +96,16 @@ class GameHandler : public sf::NonCopyable {
 	void clearCandidates();
 
 	void loadSnapShot(int index);
+	void saveSnapShot();
 
    private:
 	struct SnapShot {
-		Board board;
+		int8_t checkMate;
 		int lastMove;
+		SoundEffect::ID sound;
+		Board board;
 
-		SnapShot(const Board& board, int lastMove);
+		SnapShot(const Board& board, int lastMove, SoundEffect::ID sound, int8_t checkMate);
 	};
 
    private:
