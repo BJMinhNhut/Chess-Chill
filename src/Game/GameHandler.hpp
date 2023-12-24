@@ -62,6 +62,11 @@ class GameHandler : public sf::NonCopyable {
 
 	bool needPromotion() const;
 
+	void loadPreviousMove();
+	void loadNextMove();
+	void loadLastMove();
+	void loadFirstMove();
+
    private:
 	enum Layer { Background, Pieces, PopUp, LayerCount };
 
@@ -90,6 +95,16 @@ class GameHandler : public sf::NonCopyable {
 	void highlightMove(int move, bool flag);
 	void clearCandidates();
 
+	void loadSnapShot(int index);
+
+   private:
+	struct SnapShot {
+		Board board;
+		int lastMove;
+
+		SnapShot(const Board& board, int lastMove);
+	};
+
    private:
 	sf::RenderWindow& mWindow;
 	TextureHolder& mTextures;
@@ -100,6 +115,9 @@ class GameHandler : public sf::NonCopyable {
 	std::vector<Piece*> mPieces;
 	std::vector<RectNode*> mHighlights;
 	std::vector<int> moveCandidates;
+
+	std::vector<SnapShot> mSnapShots;
+	int mSnapShotIndex;
 
 	Piece* mDragging;
 	int mOldSquare;

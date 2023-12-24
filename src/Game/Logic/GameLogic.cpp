@@ -502,6 +502,10 @@ int GameLogic::getPiece(int square) const {
 	return mBoard.get(square);
 }
 
+Board GameLogic::getBoard() const {
+	return mBoard;
+}
+
 bool GameLogic::getTurn() const {
 	return mBoard.getTurn();
 }

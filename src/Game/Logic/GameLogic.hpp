@@ -66,6 +66,8 @@ class GameLogic {
 	[[nodiscard]] std::vector<Move> getMoveList(int from) const;
 	[[nodiscard]] std::vector<Move> getLegalMoves() const;
 
+
+	[[nodiscard]] Board getBoard() const;
 	[[nodiscard]] bool getTurn() const;
 	[[nodiscard]] int getHalfMove() const;
 

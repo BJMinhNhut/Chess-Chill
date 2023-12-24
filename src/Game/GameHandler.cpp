@@ -5,8 +5,8 @@
 #include "GameHandler.hpp"
 #include "Game/Logic/Chess960Logic.hpp"
 #include "Game/Logic/FenGenerator.hpp"
-#include "Game/Logic/StandardLogic.hpp"
 #include "Game/Logic/KothLogic.hpp"
+#include "Game/Logic/StandardLogic.hpp"
 #include "Template/Constants.hpp"
 #include "Template/ResourceHolder.hpp"
 #include "Template/Utility.hpp"
@@ -40,9 +40,12 @@ GameHandler::GameHandler(State::Context context, sf::Vector2f position)
       mPromoteFrom(-1),
       mPromoteTo(-1),
       mRotated(false),
-      moveCandidates() {
+      moveCandidates(),
+      mSnapShotIndex(0),
+      mSnapShots() {
 	mWindow.setView(mWindow.getDefaultView());
 	buildScene();
+	mSnapShots.push_back(SnapShot(mLogic->getBoard(), mLastMove));
 }
 
 GameLogic* GameHandler::getLogic(GameOptions::Type type) {
@@ -55,6 +58,9 @@ GameLogic* GameHandler::getLogic(GameOptions::Type type) {
 			return new StandardLogic(this);
 	}
 }
+
+GameHandler::SnapShot::SnapShot(const Board& board, int lastMove)
+    : board(board), lastMove(lastMove) {}
 
 void GameHandler::buildScene() {
 	// Initialize the different layers
@@ -227,9 +233,12 @@ void GameHandler::handleMove(Move move) {
 			displayPromoteWindow();
 			return;
 		}
+		assert(mSnapShotIndex == (int)mSnapShots.size() - 1);
 		highlightMove(mLastMove, false);
 		mLogic->makeMove(move);
 		highlightMove(mLastMove, true);
+		mSnapShots.emplace_back(mLogic->getBoard(), mLastMove);
+		mSnapShotIndex = (int)mSnapShots.size() - 1;
 
 		if (mLogic->isFinished()) {
 			setCursor(sf::Cursor::Arrow);
@@ -239,7 +248,7 @@ void GameHandler::handleMove(Move move) {
 		}
 	} else {
 		highlightMove(mLastMove, true);
-//		std::cerr << "Illegal pureMove\n";
+		//		std::cerr << "Illegal pureMove\n";
 	}
 }
 
@@ -329,11 +338,16 @@ void GameHandler::movePiece(int from, int to) {
 }
 
 void GameHandler::postMove() {
-	if (mLogic->isChecked()) mSounds.play(SoundEffect::Check);
-	else if (mLogic->isCaptured()) mSounds.play(SoundEffect::Capture);
-	else if (mLogic->isCastled()) mSounds.play(SoundEffect::Castling);
-	else if (mLogic->isPromoted()) mSounds.play(SoundEffect::Promotion);
-	else mSounds.play(SoundEffect::Move);
+	if (mLogic->isChecked())
+		mSounds.play(SoundEffect::Check);
+	else if (mLogic->isCaptured())
+		mSounds.play(SoundEffect::Capture);
+	else if (mLogic->isCastled())
+		mSounds.play(SoundEffect::Castling);
+	else if (mLogic->isPromoted())
+		mSounds.play(SoundEffect::Promotion);
+	else
+		mSounds.play(SoundEffect::Move);
 
 #ifdef DEBUG_ATTACK
 	for (int i = 0; i < 64; ++i) {
@@ -380,3 +394,37 @@ sf::Vector2f GameHandler::getBoxPosition(int box) const {
 	       sf::Vector2f(float(column * Piece::SIZE), float((7 - row) * Piece::SIZE));
 }
 
+void GameHandler::loadSnapShot(int index) {
+	if (index < 0 || index >= (int)mSnapShots.size())
+		return;
+	for(int i = 0; i < GameLogic::BOARD_SIZE; ++i)
+		highlightSquare(i, Normal);
+	highlightMove(mSnapShots[index].lastMove, true);
+	for (int i = 0; i < GameLogic::BOARD_SIZE; ++i) {
+		if (mPieces[i] != nullptr)
+			mSceneLayers[Pieces]->detachChild(*mPieces[i]);
+		mPieces[i] = nullptr;
+		if (mSnapShots[index].board.get(i) != 0)
+			addPiece(i, mSnapShots[index].board.get(i));
+	}
+	mSounds.play(SoundEffect::Move);
+	mSnapShotIndex = index;
+}
+
+void GameHandler::loadPreviousMove() {
+	if (mSnapShotIndex > 0)
+		loadSnapShot(mSnapShotIndex - 1);
+}
+
+void GameHandler::loadNextMove() {
+	if (mSnapShotIndex < (int)mSnapShots.size() - 1)
+		loadSnapShot(mSnapShotIndex + 1);
+}
+
+void GameHandler::loadLastMove() {
+	loadSnapShot((int)mSnapShots.size() - 1);
+}
+
+void GameHandler::loadFirstMove() {
+	loadSnapShot(0);
+}

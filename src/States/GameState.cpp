@@ -21,8 +21,7 @@ const sf::Vector2f GameState::BOARD_POSITION(262.f, 105.f);
 
 GameState::GameState(StateStack& stack, Context context)
     : State(stack, context),
-      mGame(context,
-            BOARD_POSITION + sf::Vector2f(25.f, 25.f)),
+      mGame(context, BOARD_POSITION + sf::Vector2f(25.f, 25.f)),
       mGUIContainer(),
       mWinner(nullptr),
       mDescription(nullptr),
@@ -36,7 +35,7 @@ GameState::GameState(StateStack& stack, Context context)
 
 	if (context.options->getTime() > 0) {
 		mGame.mLogic->setClock(sf::seconds(context.options->getTime()),
-		                      sf::seconds(context.options->getIncrement()));
+		                       sf::seconds(context.options->getIncrement()));
 	}
 
 	if (context.options->getMode() != GameOptions::AIvAI)
@@ -142,25 +141,25 @@ void GameState::loadControllerGUI() {
 	auto firstButton = std::make_shared<GUI::Button>(GUI::Button::First, *getContext().fonts,
 	                                                 *getContext().textures);
 	firstButton->setPosition(1036.f + 40.f / 2, 366.f + 40.f / 2);
-	firstButton->setCallback([]() {  });
+	firstButton->setCallback([this]() { mGame.loadFirstMove(); });
 	mReviewContainer.pack(firstButton);
 
 	auto previousButton = std::make_shared<GUI::Button>(GUI::Button::Previous, *getContext().fonts,
-	                                                     *getContext().textures);
+	                                                    *getContext().textures);
 	previousButton->setPosition(1076.f + 40.f / 2, 366.f + 40.f / 2);
-	previousButton->setCallback([]() {  });
+	previousButton->setCallback([this]() { mGame.loadPreviousMove(); });
 	mReviewContainer.pack(previousButton);
 
 	auto nextButton = std::make_shared<GUI::Button>(GUI::Button::Next, *getContext().fonts,
 	                                                *getContext().textures);
 	nextButton->setPosition(1116.f + 40.f / 2, 366.f + 40.f / 2);
-	nextButton->setCallback([]() {  });
+	nextButton->setCallback([this]() { mGame.loadNextMove(); });
 	mReviewContainer.pack(nextButton);
 
 	auto lastButton = std::make_shared<GUI::Button>(GUI::Button::Last, *getContext().fonts,
 	                                                *getContext().textures);
 	lastButton->setPosition(1156.f + 40.f / 2, 366.f + 40.f / 2);
-	lastButton->setCallback([]() {  });
+	lastButton->setCallback([this]() { mGame.loadLastMove(); });
 	mReviewContainer.pack(lastButton);
 }
 
@@ -269,8 +268,10 @@ void GameState::draw() {
 bool GameState::update(sf::Time dt) {
 	if (mGame.mLogic->isFinished()) {
 		if (!mReviewMode) {
-			if (mCoolDown < sf::milliseconds(100)) mEndGameContainer.update(dt);
-			else mCoolDown -= dt;
+			if (mCoolDown < sf::milliseconds(100))
+				mEndGameContainer.update(dt);
+			else
+				mCoolDown -= dt;
 		} else {
 			mGUIContainer.update(dt);
 			mReviewContainer.update(dt);
@@ -288,7 +289,8 @@ bool GameState::update(sf::Time dt) {
 bool GameState::handleEvent(const sf::Event& event) {
 	if (mGame.mLogic->isFinished()) {
 		if (!mReviewMode) {
-			if (mCoolDown < sf::milliseconds(100)) mEndGameContainer.handleEvent(event);
+			if (mCoolDown < sf::milliseconds(100))
+				mEndGameContainer.handleEvent(event);
 		} else {
 			mGUIContainer.handleEvent(event);
 			mReviewContainer.handleEvent(event);
