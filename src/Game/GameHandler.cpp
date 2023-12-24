@@ -59,9 +59,9 @@ GameLogic* GameHandler::getLogic(GameOptions::Type type) {
 	}
 }
 
-GameHandler::SnapShot::SnapShot(const Board& board, int lastMove, SoundEffect::ID sound,
-                                int8_t checkMate)
-    : board(board), lastMove(lastMove), sound(sound), checkMate(checkMate) {}
+GameHandler::SnapShot::SnapShot(const Board& board, int lastMove, const std::string& notation,
+                                SoundEffect::ID sound, int8_t checkMate)
+    : board(board), move(lastMove), notation(notation), sound(sound), checkMate(checkMate) {}
 
 void GameHandler::buildScene() {
 	// Initialize the different layers
@@ -396,12 +396,14 @@ sf::Vector2f GameHandler::getBoxPosition(int box) const {
 
 void GameHandler::saveSnapShot() {
 	SoundEffect::ID sound;
+	bool captured = false;
 
 	if (mLogic->isChecked())
 		sound = SoundEffect::Check;
-	else if (mLogic->isCaptured())
+	else if (mLogic->isCaptured()) {
 		sound = SoundEffect::Capture;
-	else if (mLogic->isCastled())
+		captured = true;
+	} else if (mLogic->isCastled())
 		sound = SoundEffect::Castling;
 	else if (mLogic->isPromoted())
 		sound = SoundEffect::Promotion;
@@ -411,8 +413,18 @@ void GameHandler::saveSnapShot() {
 	int checkMate =
 	    (mLogic->status() == GameLogic::Checkmate) ? mLogic->getKing(mLogic->getTurn()) : -1;
 
-	mSnapShots.emplace_back(mLogic->getBoard(), mLastMove, sound, checkMate);
+	std::string notation;
+	if (mLastMove != -1) {
+		int from = mLastMove & 0x3f, to = mLastMove >> 6;
+		notation = Piece::getPieceName(Piece::getType(mLogic->getPiece(to))) +
+		           (captured ? "x" : "") + Board::getSquareName(to);
+	}
+
+	mSnapShots.emplace_back(mLogic->getBoard(), mLastMove, notation, sound, checkMate);
 	mSnapShotIndex = (int)mSnapShots.size() - 1;
+
+	if (mSnapShots.back().move != -1)
+		std::cout << "Move: " << mSnapShots.back().notation << "\n";
 }
 
 void GameHandler::loadSnapShot(int index) {
@@ -420,7 +432,7 @@ void GameHandler::loadSnapShot(int index) {
 		return;
 	for (int i = 0; i < GameLogic::BOARD_SIZE; ++i)
 		highlightSquare(i, Normal);
-	highlightMove(mSnapShots[index].lastMove, true);
+	highlightMove(mSnapShots[index].move, true);
 	for (int i = 0; i < GameLogic::BOARD_SIZE; ++i) {
 		if (mPieces[i] != nullptr)
 			mSceneLayers[Pieces]->detachChild(*mPieces[i]);

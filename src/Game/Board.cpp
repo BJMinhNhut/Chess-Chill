@@ -37,6 +37,14 @@ int Board::getSquareID(int rank, int file) {
 	return (rank << 3) | file;
 }
 
+std::string Board::getSquareName(int square) {
+	assert(validSquare(square));
+	std::string name;
+	name += (char)('a' + getFile(square));
+	name += (char)('1' + getRank(square));
+	return name;
+}
+
 bool Board::validSquare(int square) {
 	return square >= 0 && square < 64;
 }

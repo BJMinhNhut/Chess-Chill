@@ -33,6 +33,7 @@ class Piece : public SpriteNode {
 	static int getColor(int piece);
 	static int getType(int piece);
 	static bool valid(int piece);
+	static std::string getPieceName(int type);
 
 	void snap(int x, int y);
 	void setPosition(sf::Vector2f position, bool smooth = false);

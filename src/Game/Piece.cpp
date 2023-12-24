@@ -16,6 +16,25 @@ Piece::Piece(const sf::Texture& textures, int piece)
 	assert(valid(piece));
 }
 
+std::string Piece::getPieceName(int type) {
+	switch (type) {
+		case Pawn:
+			return "";
+		case Knight:
+			return "N";
+		case Bishop:
+			return "B";
+		case Rook:
+			return "R";
+		case Queen:
+			return "Q";
+		case King:
+			return "K";
+		default:
+			assert(false);
+	}
+}
+
 bool Piece::valid(int piece) {
 	return (piece >> 3) < 2 && piece >= 0 && (piece & NAME) <= Pawn;
 }

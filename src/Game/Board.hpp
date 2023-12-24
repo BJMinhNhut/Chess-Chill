@@ -16,6 +16,7 @@ class Board {
 	static int getRank(int square);
 	static int getFile(int square);
 	static int getSquareID(int rank, int file);
+	static std::string getSquareName(int square);
 	static bool validSquare(int square);
 
 	[[nodiscard]] int get(int square) const;

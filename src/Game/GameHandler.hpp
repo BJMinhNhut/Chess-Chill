@@ -101,11 +101,12 @@ class GameHandler : public sf::NonCopyable {
    private:
 	struct SnapShot {
 		int8_t checkMate;
-		int lastMove;
+		int move;
+		std::string notation;
 		SoundEffect::ID sound;
 		Board board;
 
-		SnapShot(const Board& board, int lastMove, SoundEffect::ID sound, int8_t checkMate);
+		SnapShot(const Board& board, int lastMove, const std::string &notation, SoundEffect::ID sound, int8_t checkMate);
 	};
 
    private:
