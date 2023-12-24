@@ -44,8 +44,7 @@ class GameState : public State {
    private:
 	Player::Ptr mPlayers[2];
 	GameHandler mGame;
-	GUI::Container mGUIContainer;
-	GUI::Container mEndGameContainer;
+	GUI::Container mGUIContainer, mEndGameContainer, mReviewContainer;
 	GUI::Label::Ptr mWinner, mDescription;
 	GUI::Label::Ptr mClock[2], mPlayerLabel[2], mEvaluation;
 	sf::Time mCoolDown;

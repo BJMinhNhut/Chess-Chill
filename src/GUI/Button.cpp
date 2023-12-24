@@ -42,6 +42,14 @@ Textures::ID Button::getNormalTextureID(Type type) {
 			return Textures::PlayButtonNormal;
 		case Close:
 			return Textures::CloseButtonNormal;
+		case Last:
+			return Textures::LastButtonNormal;
+		case First:
+			return Textures::FirstButtonNormal;
+		case Previous:
+			return Textures::PreviousButtonNormal;
+		case Next:
+			return Textures::NextButtonNormal;
 		default:
 			return Textures::Background;
 	}
@@ -63,6 +71,14 @@ Textures::ID Button::getSelectedTextureID(Type type) {
 			return Textures::PlayButtonSelected;
 		case Close:
 			return Textures::CloseButtonSelected;
+		case Last:
+			return Textures::LastButtonSelected;
+		case First:
+			return Textures::FirstButtonSelected;
+		case Previous:
+			return Textures::PreviousButtonSelected;
+		case Next:
+			return Textures::NextButtonSelected;
 		default:
 			return Textures::Background;
 	}

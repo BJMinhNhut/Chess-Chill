@@ -30,6 +30,7 @@ GameState::GameState(StateStack& stack, Context context)
       mClock(),
       mPlayerLabel(),
       mEndGameContainer(),
+      mReviewContainer(),
       mReviewMode(false),
       mCoolDown(sf::Time::Zero) {
 
@@ -137,6 +138,30 @@ void GameState::loadControllerGUI() {
 	rotateButton->setPosition(1269.f + 50.f / 2, 366.f + 40.f / 2);
 	rotateButton->setCallback([this]() { rotateBoard(); });
 	mGUIContainer.pack(rotateButton);
+
+	auto firstButton = std::make_shared<GUI::Button>(GUI::Button::First, *getContext().fonts,
+	                                                 *getContext().textures);
+	firstButton->setPosition(1036.f + 40.f / 2, 366.f + 40.f / 2);
+	firstButton->setCallback([]() {  });
+	mReviewContainer.pack(firstButton);
+
+	auto previousButton = std::make_shared<GUI::Button>(GUI::Button::Previous, *getContext().fonts,
+	                                                     *getContext().textures);
+	previousButton->setPosition(1076.f + 40.f / 2, 366.f + 40.f / 2);
+	previousButton->setCallback([]() {  });
+	mReviewContainer.pack(previousButton);
+
+	auto nextButton = std::make_shared<GUI::Button>(GUI::Button::Next, *getContext().fonts,
+	                                                *getContext().textures);
+	nextButton->setPosition(1116.f + 40.f / 2, 366.f + 40.f / 2);
+	nextButton->setCallback([]() {  });
+	mReviewContainer.pack(nextButton);
+
+	auto lastButton = std::make_shared<GUI::Button>(GUI::Button::Last, *getContext().fonts,
+	                                                *getContext().textures);
+	lastButton->setPosition(1156.f + 40.f / 2, 366.f + 40.f / 2);
+	lastButton->setCallback([]() {  });
+	mReviewContainer.pack(lastButton);
 }
 
 void GameState::loadEndGameGUI() {
@@ -230,6 +255,7 @@ void GameState::draw() {
 	window.draw(mGUIContainer);
 	mGame.draw();
 	if (mGame.mLogic->isFinished()) {
+		window.draw(mReviewContainer);
 		if (mWinner->isEmpty()) {
 			getContext().sounds->play(SoundEffect::EndGame);
 			mCoolDown = sf::milliseconds(2000);
@@ -245,8 +271,10 @@ bool GameState::update(sf::Time dt) {
 		if (!mReviewMode) {
 			if (mCoolDown < sf::milliseconds(100)) mEndGameContainer.update(dt);
 			else mCoolDown -= dt;
-		} else
+		} else {
 			mGUIContainer.update(dt);
+			mReviewContainer.update(dt);
+		}
 	} else {
 		mGame.update(dt);
 		updateClock();
@@ -261,8 +289,10 @@ bool GameState::handleEvent(const sf::Event& event) {
 	if (mGame.mLogic->isFinished()) {
 		if (!mReviewMode) {
 			if (mCoolDown < sf::milliseconds(100)) mEndGameContainer.handleEvent(event);
-		} else
+		} else {
 			mGUIContainer.handleEvent(event);
+			mReviewContainer.handleEvent(event);
+		}
 	} else {
 		mPlayers[mGame.mLogic->getTurn()]->handleEvent(event);
 		mGUIContainer.handleEvent(event);
