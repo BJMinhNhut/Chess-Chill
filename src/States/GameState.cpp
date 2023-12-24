@@ -252,9 +252,9 @@ void GameState::draw() {
 	sf::RenderWindow& window = *getContext().window;
 	window.setView(window.getDefaultView());
 	window.draw(mGUIContainer);
+	window.draw(mReviewContainer);
 	mGame.draw();
 	if (mGame.mLogic->isFinished()) {
-		window.draw(mReviewContainer);
 		if (mWinner->isEmpty()) {
 			getContext().sounds->play(SoundEffect::EndGame);
 			mCoolDown = sf::milliseconds(2000);
