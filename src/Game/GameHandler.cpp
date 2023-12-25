@@ -413,18 +413,29 @@ void GameHandler::saveSnapShot() {
 
 	std::string notation;
 	if (mLastMove != -1) {
+		int from = mLastMove & 0x3f;
 		int to = mLastMove >> 6;
-		if (!mLogic->isPromoted())
-			notation += Piece::getPieceName(Piece::getType(mLogic->getPiece(to)));
-		if (mLogic->isCaptured())
-			notation += "x";
-		notation += Board::getSquareName(to);
-		if (mLogic->isPromoted())
-			notation += "=" + Piece::getPieceName(Piece::getType(mLogic->getPiece(to)));
-		if (mLogic->status() == GameLogic::Checkmate) {
-			notation += "#";
-		} else if (mLogic->isChecked()) {
-			notation += "+";
+		if (mLogic->isCastled()) {
+			if (Board::getFile(to) == 6)
+				notation = "O-O";
+			else
+				notation = "O-O-O";
+		} else {
+			if (!mLogic->isPromoted())
+				notation += Piece::getPieceName(Piece::getType(mLogic->getPiece(to)));
+			if (mLogic->isCaptured()) {
+				if (Piece::getType(mLogic->getPiece(to)) == Piece::Pawn)
+					notation += Board::getSquareName(from)[0];
+				notation += "x";
+			}
+			notation += Board::getSquareName(to);
+			if (mLogic->isPromoted())
+				notation += "=" + Piece::getPieceName(Piece::getType(mLogic->getPiece(to)));
+			if (mLogic->status() == GameLogic::Checkmate) {
+				notation += "#";
+			} else if (mLogic->isChecked()) {
+				notation += "+";
+			}
 		}
 	}
 
