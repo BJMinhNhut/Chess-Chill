@@ -38,17 +38,24 @@ class GameState : public State {
 	void rotateBoard();
 
 	void updateClock();
+	void updateMoveList();
 	static std::string getClockString(float time);
 	std::string getTitle() const;
 
    private:
 	Player::Ptr mPlayers[2];
 	GameHandler mGame;
+
 	GUI::Container mGUIContainer, mEndGameContainer, mReviewContainer;
 	GUI::Label::Ptr mWinner, mDescription;
-	GUI::Label::Ptr mClock[2], mPlayerLabel[2], mEvaluation;
+	GUI::Label::Ptr mClock[2], mPlayerLabel[2];
+	GUI::Label::Ptr mMoveList;
+
 	sf::Time mCoolDown;
 	bool mReviewMode;
+#ifdef EVALUATION_DEBUG
+	GUI::Label::Ptr mEvaluation;
+#endif
 };
 
 #endif  //CHESS_GAMESTATE_HPP

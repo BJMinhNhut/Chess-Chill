@@ -62,6 +62,8 @@ class GameHandler : public sf::NonCopyable {
 
 	bool needPromotion() const;
 
+	std::vector<std::string> getLatestMoves(int numMoves, int &id) const;
+
 	void loadPreviousMove();
 	void loadNextMove();
 	void loadLastMove();

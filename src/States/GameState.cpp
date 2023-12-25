@@ -16,6 +16,7 @@
 #include <SFML/System/Sleep.hpp>
 
 #include <iostream>
+#include <sstream>
 
 const sf::Vector2f GameState::BOARD_POSITION(262.f, 105.f);
 
@@ -25,6 +26,7 @@ GameState::GameState(StateStack& stack, Context context)
       mGUIContainer(),
       mWinner(nullptr),
       mDescription(nullptr),
+      mMoveList(nullptr),
       mPlayers(),
       mClock(),
       mPlayerLabel(),
@@ -113,10 +115,16 @@ void GameState::loadGameGUI() {
 	mClock[1]->alignCenter();
 	mGUIContainer.pack(mClock[1]);
 
+	mMoveList = std::make_shared<GUI::Label>(GUI::Label::Mono, "", *context.fonts);
+	mMoveList->setPosition(1040.f, 424.f);
+	mGUIContainer.pack(mMoveList);
+
+#ifdef EVALUATION_DEBUG
 	mEvaluation = std::make_shared<GUI::Label>(GUI::Label::Main, "", *context.fonts);
 	mEvaluation->setPosition(50.f, 450.f);
 	mEvaluation->alignCenter();
 	mGUIContainer.pack(mEvaluation);
+#endif
 }
 
 void GameState::rotateBoard() {
@@ -265,6 +273,30 @@ void GameState::draw() {
 	}
 }
 
+void GameState::updateMoveList() {
+	int start_id;
+	std::vector<std::string> list = mGame.getLatestMoves(6, start_id);
+	std::stringstream display;
+	std::string line;
+	for (int i = 0; i < list.size(); i++) {
+		if (i % 2 == 0)
+			line += std::to_string((start_id + i) / 2 + 1) + ". ";
+		while (line.length() < 4)
+			line += " ";
+		line += list[i];
+		while (line.length() < 16)
+			line += " ";
+		if (i % 2 == 1) {
+			line += "\n";
+			display << line;
+			line.clear();
+		}
+	}
+	if (!line.empty())
+		display << line;
+	mMoveList->setText(display.str());
+}
+
 bool GameState::update(sf::Time dt) {
 	if (mGame.mLogic->isFinished()) {
 		if (!mReviewMode) {
@@ -275,13 +307,17 @@ bool GameState::update(sf::Time dt) {
 		} else {
 			mGUIContainer.update(dt);
 			mReviewContainer.update(dt);
+			updateMoveList();
 		}
 	} else {
 		mGame.update(dt);
 		updateClock();
 		mPlayers[mGame.mLogic->getTurn()]->update(dt);
+		updateMoveList();
 		mGUIContainer.update(dt);
+#ifdef EVALUATION_DEBUG
 		mEvaluation->setText(std::to_string(mGame.mLogic->getEvaluation()));
+#endif
 	}
 	return false;
 }

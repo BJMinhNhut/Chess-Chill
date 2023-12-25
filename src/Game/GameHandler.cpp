@@ -482,3 +482,13 @@ void GameHandler::loadLastMove() {
 void GameHandler::loadFirstMove() {
 	loadSnapShot(0);
 }
+
+std::vector<std::string> GameHandler::getLatestMoves(int numMoves, int &id) const {
+	std::vector<std::string> moves;
+	int start = std::max(1, mSnapShotIndex - numMoves * 2 + 1);
+	if (start % 2 == 0) ++start;
+	for (int i = start; i <= mSnapShotIndex; ++i)
+		moves.push_back(mSnapShots[i].notation);
+	id = start;
+	return moves;
+}

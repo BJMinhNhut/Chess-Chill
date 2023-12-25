@@ -70,7 +70,7 @@ unsigned int Label::getFontSize(Type type) {
 		case Title:
 			return 64u;
 		default:
-			return 16u;
+			return 18u;
 	}
 }
 
