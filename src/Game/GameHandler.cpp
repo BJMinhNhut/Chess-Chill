@@ -255,9 +255,9 @@ void GameHandler::handleMove(Move move) {
 void GameHandler::highlightLegalMoves(int from) {
 	std::vector<Move> moves = mLogic->getMoveList(from);
 	for (Move move : moves) {
-		if (Piece::getType(mLogic->getPiece(move.from())) == Piece::King) {
-			std::cout << "King: " << move.to() << "\n";
-		}
+//		if (Piece::getType(mLogic->getPiece(move.from())) == Piece::King) {
+//			std::cout << "King: " << move.to() << "\n";
+//		}
 		highlightSquare(move.to(), Target);
 		moveCandidates.push_back(move.to());
 	}
@@ -442,8 +442,8 @@ void GameHandler::saveSnapShot() {
 	mSnapShots.emplace_back(mLogic->getBoard(), mLastMove, notation, sound, checkMate);
 	mSnapShotIndex = (int)mSnapShots.size() - 1;
 
-	if (mSnapShots.back().move != -1)
-		std::cout << "Move: " << mSnapShots.back().notation << "\n";
+//	if (mSnapShots.back().move != -1)
+//		std::cout << "Move: " << mSnapShots.back().notation << "\n";
 }
 
 void GameHandler::loadSnapShot(int index) {

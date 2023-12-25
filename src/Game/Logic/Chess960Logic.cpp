@@ -18,7 +18,7 @@ Chess960Logic::Chess960Logic(GameHandler* handler)
 			else
 				hRookFile = i;
 		}
-	std::cerr << "aRookFile = " << (int)aRookFile << ", hRookFile = " << (int)hRookFile << '\n';
+//	std::cerr << "aRookFile = " << (int)aRookFile << ", hRookFile = " << (int)hRookFile << '\n';
 	assert(aRookFile != -1 && hRookFile != -1);
 }
 

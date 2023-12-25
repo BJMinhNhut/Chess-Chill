@@ -261,9 +261,9 @@ void GameLogic::pureMove(Move move) {
 }
 
 void GameLogic::addPiece(int square, int piece) {
-	if (mBoard.get(square) != 0) {
-		std::cerr << "Square " << square << " is not empty: " << mBoard.get(square) << '\n';
-	}
+//	if (mBoard.get(square) != 0) {
+//		std::cerr << "Square " << square << " is not empty: " << mBoard.get(square) << '\n';
+//	}
 	assert(mBoard.get(square) == Piece::None);
 	mBoard.set(square, piece);
 	if (mHandler)
