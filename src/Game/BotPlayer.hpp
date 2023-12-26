@@ -23,10 +23,12 @@ class BotPlayer : public Player {
 	void handleEvent(const sf::Event &event) override;
 
    private:
+	void stopEngine();
 	void makeMove();
 	Move getOptimizeMove();
 
    private:
+	bool mThinkFlag;
 	std::thread mThread;
 	Status mStatus;
 	Move mMove;

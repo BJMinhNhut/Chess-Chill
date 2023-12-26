@@ -15,9 +15,9 @@
 class Engine {
    public:
 //	static std::vector<std::pair<int, int>> getMovesAndScores(const Board& board, int color, int depth = 3);
-	static Move getBestMove(const GameLogic& board, int depth = 3, int extra = 3);
+	static Move getBestMove(const GameLogic& board, bool &flag, int depth = 3, int extra = 3);
    private:
-	static int alphaBeta(const GameLogic& board, int depth, int extra, int alpha, int beta, bool maximizer, int &called);
+	static int alphaBeta(const GameLogic& board, int depth, int extra, int alpha, int beta, bool maximizer, bool &flag);
 	static void sortMoves(const GameLogic& board, std::vector<Move>& moves);
 	static int getMoveScore(const GameLogic& board, Move move);
 };

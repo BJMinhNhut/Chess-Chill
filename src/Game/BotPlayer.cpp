@@ -11,19 +11,23 @@
 #include <iostream>
 
 BotPlayer::BotPlayer(GameHandler& gameHandler, int color)
-    : Player(gameHandler, color), mStatus(Waiting), mMove(0, 0) {
+    : Player(gameHandler, color), mStatus(Waiting), mMove(0, 0), mThinkFlag(false) {
 	setName("Computer");
 }
 
 BotPlayer::~BotPlayer() {
-	if (mStatus == Thinking) {
-		mThread.detach();
-	}
+	if (mThinkFlag) stopEngine();
 }
 void BotPlayer::update(sf::Time dt) {
-	if (mGameHandler.mLogic->status() != GameLogic::OnGoing) return;
+	if (mGameHandler.mLogic->status() != GameLogic::OnGoing) {
+		if (mThinkFlag) stopEngine();
+		return;
+	}
 	if (mGameHandler.mLogic->getTurn() == getColor()) {
 		if (mStatus == Waiting) {
+			assert(!mThinkFlag);
+			mStatus = Thinking;
+			mThinkFlag = true;
 			mThread = std::thread(&BotPlayer::makeMove, this);
 		} else if (mStatus == Finished) {
 			mThread.join();
@@ -33,13 +37,18 @@ void BotPlayer::update(sf::Time dt) {
 	}
 }
 
+void BotPlayer::stopEngine() {
+	std::cout << "Stop engine\n";
+	mThinkFlag = false;
+	sf::sleep(sf::milliseconds(100));
+	mThread.join();
+}
+
 void BotPlayer::handleEvent(const sf::Event& event) {}
 
 void BotPlayer::makeMove() {
-	assert(mStatus != Thinking);
-	mStatus = Thinking;
 	mMove = getOptimizeMove();
-	std::cout << "Best move: " << mMove.from() << ' ' << mMove.to() << '\n';
+	mThinkFlag = false;
 	mStatus = Finished;
 }
 
@@ -47,6 +56,7 @@ Move BotPlayer::getOptimizeMove() {
 	int depth = mGameHandler.mLogic->getRemainingTime(getColor()) > 100.f ? 3 : 2;
 	int extra = 2;
 	GameLogic::Ptr logic(mGameHandler.mLogic->clone());
-	Move move = Engine::getBestMove(*logic, depth, extra);
+	Move move = Engine::getBestMove(*logic, mThinkFlag, depth, extra);
+	std::cout << "Best move: " << move.from() << ' ' << move.to() << '\n';
 	return move;
 }
