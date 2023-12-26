@@ -13,11 +13,12 @@
 #include <cassert>
 #include <iostream>
 
-Move Engine::getBestMove(const GameLogic& board, bool &flag, int depth, int extra) {
+Move Engine::getBestMove(const GameLogic& board, sf::Time limit, bool& flag, int depth, int extra) {
 	assert(board.status() == GameLogic::OnGoing);
 	std::cout << "\n" << (board.getTurn() ? "Black" : "White") << " - Searching for best move...\n";
 	std::vector<Move> moves = board.getLegalMoves();
-	if (moves.size() == 1) return moves[0];
+	if (moves.size() == 1)
+		return moves[0];
 	Move bestMove = moves[0];
 	int bestScore = board.getTurn() ? 1000000 : -1000000;
 	sortMoves(board, moves);
@@ -25,28 +26,58 @@ Move Engine::getBestMove(const GameLogic& board, bool &flag, int depth, int extr
 	sf::Clock clock;
 	int count = 0;
 	for (Move move : moves) {
-		if (!flag) break;
+		if (!flag)
+			break;
+		adjustSettings(limit, time, count, (int)moves.size(), depth, extra);
 		++count;
 		GameLogic::Ptr newBoard(board.clone());
 		newBoard->makeMove(move);
-		int score = alphaBeta(*newBoard, depth - 1, extra, -1000000, 1000000, board.getTurn(), flag);
+		int score =
+		    alphaBeta(*newBoard, depth - 1, extra, -1000000, 1000000, board.getTurn(), flag);
+
 		if ((board.getTurn() ? score < bestScore : score > bestScore) ||
 		    (abs(score - bestScore) <= 2 && Random::getInt(0, 1) == 0)) {
 			bestScore = score;
 			bestMove = move;
 		}
-//		int from = move.from();
-//		int to = move.to();
-//		std::cout << from << ' ' << to << ' ' << score << '\n';
+		//		int from = move.from();
+		//		int to = move.to();
+		//		std::cout << from << ' ' << to << ' ' << score << '\n';
 		time += clock.restart();
 		if (time > sf::seconds(7)) {
 			std::cerr << "Time out: " + std::to_string(time.asSeconds()) + "s\n";
 			break;
 		}
 	}
-	std::cout << "Processed " << count << '/' << moves.size() << " in " << time.asSeconds() << "s, score: " << bestScore
-	          << '\n';
+	std::cout << "Processed " << count << '/' << moves.size() << " in " << time.asSeconds()
+	          << "s, score: " << bestScore << '\n';
 	return bestMove;
+}
+
+void Engine::adjustSettings(sf::Time limit, sf::Time time, int processed, int total, int& depth,
+                            int& extra) {
+	if (processed == 0)
+		return;
+	static const int MIN_DEPTH = 2, MAX_DEPTH = 4;
+	float timePerProcessed = (float)time.asMilliseconds() / (float)processed;
+	float timePerCandidates =
+	    (float)std::max(1, (limit - time).asMilliseconds()) / float(total - processed);
+	float ratio = timePerProcessed / timePerCandidates;
+	//	std::cout << "limit " << limit.asSeconds() << "ratio " << ratio << '\n';
+	if (ratio > 2.f || extra == 1) {
+		depth = std::max(depth - 1, MIN_DEPTH);
+		extra = std::min(extra + 1, MAX_DEPTH);
+		//		std::cerr << "New settings: depth = " << depth << ", extra = " << extra << '\n';
+	} else if (ratio > 1.f || depth == MIN_DEPTH) {
+		extra = std::max(extra - 1, 1);
+	} else if (ratio < 0.1f) {
+		if (extra - depth <= 1)
+			depth = std::min(depth + 1, MAX_DEPTH);
+		else
+			extra = std::min(extra + 1, MAX_DEPTH);
+		//		std::cerr << "New settings: depth = " << depth << ", extra = " << extra << '\n';
+	}
+	assert(depth >= MIN_DEPTH && depth <= MAX_DEPTH);
 }
 
 void Engine::sortMoves(const GameLogic& board, std::vector<Move>& moves) {
@@ -92,35 +123,44 @@ int Engine::alphaBeta(const GameLogic& board, int depth, int extra, int alpha, i
 		score = Evaluator::evaluateBoard(board);
 	} else {
 		std::vector<Move> moves = board.getLegalMoves();
-		if (moves.size() == 1) extra++;
+		if (moves.size() == 1) {
+			if (depth > 0)
+				depth++;
+			else
+				extra++;
+		}
+
 		sortMoves(board, moves);
 		score = maximizer ? -1000000 : 1000000;
 		for (auto move : moves) {
 			GameLogic::Ptr newBoard(board.clone());
 			newBoard->makeMove(move);
 			if (maximizer) {
-				score = std::max(
-				    score, alphaBeta(*newBoard, depth - 1, extra, alpha, beta, false, flag));
+				score = std::max(score,
+				                 alphaBeta(*newBoard, depth - 1, extra, alpha, beta, false, flag));
 				alpha = std::max(alpha, score);
 				if (beta <= score)
 					break;
 			} else {
-				score = std::min(
-				    score, alphaBeta(*newBoard, depth - 1, extra, alpha, beta, true, flag));
+				score = std::min(score,
+				                 alphaBeta(*newBoard, depth - 1, extra, alpha, beta, true, flag));
 				beta = std::min(beta, score);
 				if (score <= alpha)
 					break;
 			}
-
 		}
 	}
 
 	if (maximizer) {
-		if (score > 0) score += depth + 5;
-		if (score < 0) score -= depth + 5;
+		if (score > 0)
+			score += depth + 5;
+		if (score < 0)
+			score -= depth + 5;
 	} else {
-		if (score > 0) score -= depth + 5;
-		if (score < 0) score += depth + 5;
+		if (score > 0)
+			score -= depth + 5;
+		if (score < 0)
+			score += depth + 5;
 	}
 	return score;
 }
