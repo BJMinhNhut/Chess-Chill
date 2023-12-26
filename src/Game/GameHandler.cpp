@@ -43,7 +43,7 @@ GameHandler::GameHandler(State::Context context, sf::Vector2f position)
       mRotated(false),
       moveCandidates(),
       mSnapShotIndex(0),
-      mSnapShots() {
+      mSaver() {
 	mWindow.setView(mWindow.getDefaultView());
 	buildScene();
 	saveSnapShot();
@@ -59,10 +59,6 @@ GameLogic* GameHandler::getLogic(GameOptions::Type type) {
 			return new StandardLogic(this);
 	}
 }
-
-GameHandler::SnapShot::SnapShot(const Board& board, int lastMove, const std::string& notation,
-                                SoundEffect::ID sound, int8_t checkMate)
-    : board(board), move(lastMove), notation(notation), sound(sound), checkMate(checkMate) {}
 
 void GameHandler::buildScene() {
 	// Initialize the different layers
@@ -235,7 +231,7 @@ void GameHandler::handleMove(Move move) {
 			displayPromoteWindow();
 			return;
 		}
-		assert(mSnapShotIndex == (int)mSnapShots.size() - 1);
+		assert(mSnapShotIndex == (int)mSaver.size() - 1);
 		highlightMove(mLastMove, false);
 		mLogic->makeMove(move);
 		highlightMove(mLastMove, true);
@@ -246,12 +242,16 @@ void GameHandler::handleMove(Move move) {
 			if (mLogic->status() == GameLogic::Checkmate) {
 				highlightSquare(mLogic->getKing(mLogic->getTurn()), Debug);
 			}
-			GameSaver::saveGame(mSnapShots);
+			mSaver.save();
 		}
 	} else {
 		highlightMove(mLastMove, true);
 		//		std::cerr << "Illegal pureMove\n";
 	}
+}
+
+int GameHandler::getLastMove() const {
+	return mLastMove;
 }
 
 void GameHandler::highlightLegalMoves(int from) {
@@ -397,73 +397,28 @@ sf::Vector2f GameHandler::getBoxPosition(int box) const {
 }
 
 void GameHandler::saveSnapShot() {
-	SoundEffect::ID sound;
-
-	if (mLogic->isChecked())
-		sound = SoundEffect::Check;
-	else if (mLogic->isCaptured()) {
-		sound = SoundEffect::Capture;
-	} else if (mLogic->isCastled())
-		sound = SoundEffect::Castling;
-	else if (mLogic->isPromoted())
-		sound = SoundEffect::Promotion;
-	else
-		sound = SoundEffect::Move;
-
-	int checkMate =
-	    (mLogic->status() == GameLogic::Checkmate) ? mLogic->getKing(mLogic->getTurn()) : -1;
-
-	std::string notation;
-	if (mLastMove != -1) {
-		int from = mLastMove & 0x3f;
-		int to = mLastMove >> 6;
-		if (mLogic->isCastled()) {
-			if (Board::getFile(to) == 6)
-				notation = "O-O";
-			else
-				notation = "O-O-O";
-		} else {
-			if (!mLogic->isPromoted())
-				notation += Piece::getPieceName(Piece::getType(mLogic->getPiece(to)));
-			if (mLogic->isCaptured()) {
-				if (Piece::getType(mLogic->getPiece(to)) == Piece::Pawn)
-					notation += Board::getSquareName(from)[0];
-				notation += "x";
-			}
-			notation += Board::getSquareName(to);
-			if (mLogic->isPromoted())
-				notation += "=" + Piece::getPieceName(Piece::getType(mLogic->getPiece(to)));
-			if (mLogic->status() == GameLogic::Checkmate) {
-				notation += "#";
-			} else if (mLogic->isChecked()) {
-				notation += "+";
-			}
-		}
-	}
-
-	mSnapShots.emplace_back(mLogic->getBoard(), mLastMove, notation, sound, checkMate);
-	mSnapShotIndex = (int)mSnapShots.size() - 1;
-
-	//	if (mSnapShots.back().move != -1)
-	//		std::cout << "Move: " << mSnapShots.back().notation << "\n";
+	mSaver.capture(*this);
+	mSnapShotIndex = (int)mSaver.size() - 1;
 }
 
 void GameHandler::loadSnapShot(int index) {
-	if (index < 0 || index >= (int)mSnapShots.size())
+	if (index < 0 || index >= (int)mSaver.size())
 		return;
 	for (int i = 0; i < GameLogic::BOARD_SIZE; ++i)
 		highlightSquare(i, Normal);
-	highlightMove(mSnapShots[index].move, true);
+
+	GameSaver::SnapShot snapShot = mSaver.get(index);
+	highlightMove(snapShot.move, true);
 	for (int i = 0; i < GameLogic::BOARD_SIZE; ++i) {
 		if (mPieces[i] != nullptr)
 			mSceneLayers[Pieces]->detachChild(*mPieces[i]);
 		mPieces[i] = nullptr;
-		if (mSnapShots[index].board.get(i) != 0)
-			addPiece(i, mSnapShots[index].board.get(i));
+		if (snapShot.board.get(i) != 0)
+			addPiece(i, snapShot.board.get(i));
 	}
-	mSounds.play(mSnapShots[index].sound);
-	if (mSnapShots[index].checkMate != -1)
-		highlightSquare(mSnapShots[index].checkMate, Debug);
+	mSounds.play(snapShot.sound);
+	if (snapShot.checkMate != -1)
+		highlightSquare(snapShot.checkMate, Debug);
 	mSnapShotIndex = index;
 }
 
@@ -473,12 +428,12 @@ void GameHandler::loadPreviousMove() {
 }
 
 void GameHandler::loadNextMove() {
-	if (mSnapShotIndex < (int)mSnapShots.size() - 1)
+	if (mSnapShotIndex < (int)mSaver.size() - 1)
 		loadSnapShot(mSnapShotIndex + 1);
 }
 
 void GameHandler::loadLastMove() {
-	loadSnapShot((int)mSnapShots.size() - 1);
+	loadSnapShot((int)mSaver.size() - 1);
 }
 
 void GameHandler::loadFirstMove() {
@@ -491,7 +446,7 @@ std::vector<std::string> GameHandler::getLatestMoves(int numMoves, int& id) cons
 	if (start % 2 == 0)
 		++start;
 	for (int i = start; i <= mSnapShotIndex; ++i)
-		moves.push_back(mSnapShots[i].notation);
+		moves.push_back(mSaver.get(i).notation);
 	id = start;
 	return moves;
 }

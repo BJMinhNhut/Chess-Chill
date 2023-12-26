@@ -6,6 +6,7 @@
 #define CHESS_GAMEHANDLER_HPP
 
 #include "Game/Logic/GameLogic.hpp"
+#include "GameSaver.hpp"
 #include "Piece.hpp"
 #include "Template/RectNode.hpp"
 #include "Template/ResourceHolder.hpp"
@@ -36,16 +37,6 @@ class GameHandler : public sf::NonCopyable {
    public:
 	GameLogic::Ptr mLogic;
 
-	struct SnapShot {
-		int8_t checkMate;
-		int move;
-		std::string notation;
-		SoundEffect::ID sound;
-		Board board;
-
-		SnapShot(const Board& board, int lastMove, const std::string &notation, SoundEffect::ID sound, int8_t checkMate);
-	};
-
    public:
 	explicit GameHandler(State::Context context, sf::Vector2f position);
 
@@ -56,6 +47,7 @@ class GameHandler : public sf::NonCopyable {
 	void rotateBoard();
 
 	void handleMove(Move move);
+	int getLastMove() const;
 	void moveFromClickedSquare(int to);
 
 	void pickUpPiece(int square, int x, int y);
@@ -72,7 +64,7 @@ class GameHandler : public sf::NonCopyable {
 
 	bool needPromotion() const;
 
-	std::vector<std::string> getLatestMoves(int numMoves, int &id) const;
+	std::vector<std::string> getLatestMoves(int numMoves, int& id) const;
 
 	void loadPreviousMove();
 	void loadNextMove();
@@ -121,7 +113,7 @@ class GameHandler : public sf::NonCopyable {
 	std::vector<RectNode*> mHighlights;
 	std::vector<int> moveCandidates;
 
-	std::vector<SnapShot> mSnapShots;
+	GameSaver mSaver;
 	int mSnapShotIndex;
 
 	Piece* mDragging;
