@@ -21,14 +21,14 @@ BotPlayer::~BotPlayer() {
 	}
 }
 void BotPlayer::update(sf::Time dt) {
+	if (mGameHandler.mLogic->status() != GameLogic::OnGoing) return;
 	if (mGameHandler.mLogic->getTurn() == getColor()) {
 		if (mStatus == Waiting) {
-			mStatus = Thinking;
 			mThread = std::thread(&BotPlayer::makeMove, this);
 		} else if (mStatus == Finished) {
+			mThread.join();
 			mGameHandler.handleMove(mMove);
 			mStatus = Waiting;
-			mThread.detach();
 		}
 	}
 }
@@ -36,12 +36,8 @@ void BotPlayer::update(sf::Time dt) {
 void BotPlayer::handleEvent(const sf::Event& event) {}
 
 void BotPlayer::makeMove() {
-	if (mGameHandler.mLogic->status() != GameLogic::OnGoing) {
-		mThread.detach();
-		mStatus = Waiting;
-		return;
-	}
-
+	assert(mStatus != Thinking);
+	mStatus = Thinking;
 	mMove = getOptimizeMove();
 	std::cout << "Best move: " << mMove.from() << ' ' << mMove.to() << '\n';
 	mStatus = Finished;

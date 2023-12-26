@@ -36,6 +36,16 @@ class GameHandler : public sf::NonCopyable {
    public:
 	GameLogic::Ptr mLogic;
 
+	struct SnapShot {
+		int8_t checkMate;
+		int move;
+		std::string notation;
+		SoundEffect::ID sound;
+		Board board;
+
+		SnapShot(const Board& board, int lastMove, const std::string &notation, SoundEffect::ID sound, int8_t checkMate);
+	};
+
    public:
 	explicit GameHandler(State::Context context, sf::Vector2f position);
 
@@ -99,17 +109,6 @@ class GameHandler : public sf::NonCopyable {
 
 	void loadSnapShot(int index);
 	void saveSnapShot();
-
-   private:
-	struct SnapShot {
-		int8_t checkMate;
-		int move;
-		std::string notation;
-		SoundEffect::ID sound;
-		Board board;
-
-		SnapShot(const Board& board, int lastMove, const std::string &notation, SoundEffect::ID sound, int8_t checkMate);
-	};
 
    private:
 	sf::RenderWindow& mWindow;

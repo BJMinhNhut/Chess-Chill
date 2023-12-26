@@ -7,6 +7,7 @@
 #include "Game/Logic/FenGenerator.hpp"
 #include "Game/Logic/KothLogic.hpp"
 #include "Game/Logic/StandardLogic.hpp"
+#include "GameSaver.hpp"
 #include "Template/Constants.hpp"
 #include "Template/ResourceHolder.hpp"
 #include "Template/Utility.hpp"
@@ -245,6 +246,7 @@ void GameHandler::handleMove(Move move) {
 			if (mLogic->status() == GameLogic::Checkmate) {
 				highlightSquare(mLogic->getKing(mLogic->getTurn()), Debug);
 			}
+			GameSaver::saveGame(mSnapShots);
 		}
 	} else {
 		highlightMove(mLastMove, true);
@@ -255,9 +257,9 @@ void GameHandler::handleMove(Move move) {
 void GameHandler::highlightLegalMoves(int from) {
 	std::vector<Move> moves = mLogic->getMoveList(from);
 	for (Move move : moves) {
-//		if (Piece::getType(mLogic->getPiece(move.from())) == Piece::King) {
-//			std::cout << "King: " << move.to() << "\n";
-//		}
+		//		if (Piece::getType(mLogic->getPiece(move.from())) == Piece::King) {
+		//			std::cout << "King: " << move.to() << "\n";
+		//		}
 		highlightSquare(move.to(), Target);
 		moveCandidates.push_back(move.to());
 	}
@@ -442,8 +444,8 @@ void GameHandler::saveSnapShot() {
 	mSnapShots.emplace_back(mLogic->getBoard(), mLastMove, notation, sound, checkMate);
 	mSnapShotIndex = (int)mSnapShots.size() - 1;
 
-//	if (mSnapShots.back().move != -1)
-//		std::cout << "Move: " << mSnapShots.back().notation << "\n";
+	//	if (mSnapShots.back().move != -1)
+	//		std::cout << "Move: " << mSnapShots.back().notation << "\n";
 }
 
 void GameHandler::loadSnapShot(int index) {
@@ -483,10 +485,11 @@ void GameHandler::loadFirstMove() {
 	loadSnapShot(0);
 }
 
-std::vector<std::string> GameHandler::getLatestMoves(int numMoves, int &id) const {
+std::vector<std::string> GameHandler::getLatestMoves(int numMoves, int& id) const {
 	std::vector<std::string> moves;
 	int start = std::max(1, mSnapShotIndex - numMoves * 2 + 1);
-	if (start % 2 == 0) ++start;
+	if (start % 2 == 0)
+		++start;
 	for (int i = start; i <= mSnapShotIndex; ++i)
 		moves.push_back(mSnapShots[i].notation);
 	id = start;
