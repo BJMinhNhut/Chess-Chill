@@ -33,6 +33,10 @@ int Board::getFile(int square) {
 }
 
 int Board::getSquareID(int rank, int file) {
+#ifdef DEBUG_BOARD
+	if (!(rank >= 0 && rank < 8 && file >= 0 && file < 8))
+		throw(std::invalid_argument("Invalid rank or file"));
+#endif
 	assert(rank >= 0 && rank < 8 && file >= 0 && file < 8);
 	return (rank << 3) | file;
 }

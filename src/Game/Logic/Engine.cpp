@@ -67,7 +67,7 @@ void Engine::adjustSettings(sf::Time limit, sf::Time time, int processed, int to
 	if (ratio > 3.f || extra == 1) {
 		depth = std::max(depth - 1, MIN_DEPTH);
 		//		std::cerr << "New settings: depth = " << depth << ", extra = " << extra << '\n';
-	} else if (ratio > 1.f || depth == MIN_DEPTH) {
+	} else if (ratio > 1.4f || depth == MIN_DEPTH) {
 		extra = std::max(extra - 1, 1);
 	} else if (ratio < 0.3f) {
 		depth = std::min(depth + 1, MAX_DEPTH);

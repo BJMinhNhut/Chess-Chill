@@ -10,7 +10,6 @@
 
 Chess960Logic::Chess960Logic(GameHandler* handler)
     : GameLogic(FenGenerator::getRandom960(), handler), aRookFile(-1), hRookFile(-1) {
-	updateStatus();
 	for (int8_t i = 0; i < 8; i++)
 		if (mBoard.getType(i) == Piece::Rook) {
 			if (aRookFile == -1)
@@ -20,6 +19,7 @@ Chess960Logic::Chess960Logic(GameHandler* handler)
 		}
 //	std::cerr << "aRookFile = " << (int)aRookFile << ", hRookFile = " << (int)hRookFile << '\n';
 	assert(aRookFile != -1 && hRookFile != -1);
+	updateStatus();
 }
 
 Chess960Logic::Chess960Logic(const Chess960Logic& other, GameHandler* handler)
