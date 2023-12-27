@@ -30,8 +30,7 @@ MenuState::MenuState(StateStack& stack, Context context)
 	historyButton->setPosition(587.f + 166.f / 2.f, 594.f + 25.f);
 	historyButton->setText("History");
 	historyButton->setCallback([this]() {
-		//        requestStackPop();
-		//        requestStackPush(States::Settings);
+		        requestStackPush(States::History);
 	});
 
 	auto puzzlesButton =

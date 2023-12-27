@@ -10,6 +10,9 @@ enum ID {
 	None,
 	Menu,
     Game,
+	History,
+	Review,
+	Puzzles,
 	About,
 	Settings,
 
