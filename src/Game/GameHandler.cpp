@@ -43,7 +43,7 @@ GameHandler::GameHandler(State::Context context, sf::Vector2f position)
       mRotated(false),
       moveCandidates(),
       mSnapShotIndex(0),
-      mSaver() {
+      mSaver(*context.options) {
 	mWindow.setView(mWindow.getDefaultView());
 	buildScene();
 	saveSnapShot();
@@ -242,7 +242,7 @@ void GameHandler::handleMove(Move move) {
 			if (mLogic->status() == GameLogic::Checkmate) {
 				highlightSquare(mLogic->getKing(mLogic->getTurn()), Debug);
 			}
-			mSaver.save();
+			mSaver.save(mLogic->result());
 		}
 	} else {
 		highlightMove(mLastMove, true);

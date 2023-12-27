@@ -209,6 +209,23 @@ GameLogic::Status GameLogic::status() const {
 	return mStatus;
 }
 
+GameLogic::Result GameLogic::result() const {
+	switch (mStatus) {
+		case Checkmate:
+		case Timeout:
+		case Resign:
+			return mBoard.getTurn() ? WhiteWin : BlackWin;
+		case Stalemate:
+		case InsufficientMaterial:
+		case ThreefoldRepetition:
+		case FiftyMoveRule:
+			return Draw;
+		default:
+			assert(false);
+	}
+	return Draw;
+}
+
 std::string GameLogic::getWinner() const {
 	assert(mStatus != OnGoing && mStatus != Stalemate);
 	return mBoard.getTurn() ? "White" : "Black";
@@ -261,9 +278,9 @@ void GameLogic::pureMove(Move move) {
 }
 
 void GameLogic::addPiece(int square, int piece) {
-//	if (mBoard.get(square) != 0) {
-//		std::cerr << "Square " << square << " is not empty: " << mBoard.get(square) << '\n';
-//	}
+	//	if (mBoard.get(square) != 0) {
+	//		std::cerr << "Square " << square << " is not empty: " << mBoard.get(square) << '\n';
+	//	}
 	assert(mBoard.get(square) == Piece::None);
 	mBoard.set(square, piece);
 	if (mHandler)

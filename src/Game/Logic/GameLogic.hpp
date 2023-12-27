@@ -35,6 +35,12 @@ class GameLogic {
 		Timeout,
 	};
 
+	enum Result {
+		WhiteWin,
+		BlackWin,
+		Draw,
+	};
+
 	enum MoveStatus {
 		Normal = 0,
 		Check = 1,
@@ -59,6 +65,7 @@ class GameLogic {
 	[[nodiscard]] bool isPromoted() const;
 
 	[[nodiscard]] Status status() const;
+	[[nodiscard]] Result result() const;
 
 	[[nodiscard]] std::string getWinner() const;
 	[[nodiscard]] float getRemainingTime(bool turn) const;

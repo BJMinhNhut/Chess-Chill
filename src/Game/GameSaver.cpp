@@ -15,6 +15,8 @@ namespace fs = std::filesystem;
 
 const std::string GameSaver::SAVE_PATH = "saved_data/";
 
+GameSaver::GameSaver(GameOptions options): mOptions(options), mTime(), mResult() {}
+
 GameSaver::SnapShot::SnapShot(const Board& board, int lastMove, std::string notation,
                               SoundEffect::ID sound, int8_t checkMate)
     : board(board),
@@ -82,7 +84,8 @@ void GameSaver::capture(const GameHandler& gameHandler) {
 	mSnapShots.emplace_back(logic->getBoard(), lastMove, notation, sound, checkMate);
 }
 
-void GameSaver::save() {
+void GameSaver::save(GameLogic::Result result) {
+	// create directory if not exist
 	if (fs::is_directory(SAVE_PATH)) {
 		std::cout << "Directory " << SAVE_PATH << " already exists\n";
 	} else {
@@ -90,7 +93,12 @@ void GameSaver::save() {
 		fs::create_directory(SAVE_PATH);
 	}
 
-	std::string fileName = getNewFileName();
+	// save time and result
+	mTime = std::time(nullptr);
+	mResult = result;
+
+	// save to file
+	std::string fileName = getFileName(mTime);
 	std::ofstream file(SAVE_PATH + fileName, std::ios::out | std::ios::binary);
 
 	if (!file.is_open()) {
@@ -102,14 +110,13 @@ void GameSaver::save() {
 	std::cout << "New game saved to " << fileName << '\n';
 }
 
-std::string GameSaver::getNewFileName() {
-	// file name format: YYYY-MM-DD-HH-MM-SS.bin
+std::string GameSaver::getFileName(time_t time) {
+	// file name format: YYYY-MM-DD_HH-MM-SS.sv
 	std::string fileName;
-	time_t now = time(nullptr);
-	tm* ltm = localtime(&now);
+	tm* ltm = localtime(&time);
 	fileName += std::to_string(1900 + ltm->tm_year) + "-";
 	fileName += std::to_string(1 + ltm->tm_mon) + "-";
-	fileName += std::to_string(ltm->tm_mday) + "-";
+	fileName += std::to_string(ltm->tm_mday) + "_";
 	fileName += std::to_string(ltm->tm_hour) + "-";
 	fileName += std::to_string(ltm->tm_min) + "-";
 	fileName += std::to_string(ltm->tm_sec) + ".sv";
