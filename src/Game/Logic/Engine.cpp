@@ -44,7 +44,7 @@ Move Engine::getBestMove(const GameLogic& board, sf::Time limit, bool& flag, int
 		//		int to = move.to();
 		//		std::cout << from << ' ' << to << ' ' << score << '\n';
 		time += clock.restart();
-		if (time > sf::seconds(7)) {
+		if (time > limit) {
 			std::cerr << "Time out: " + std::to_string(time.asSeconds()) + "s\n";
 			break;
 		}
@@ -61,21 +61,20 @@ void Engine::adjustSettings(sf::Time limit, sf::Time time, int processed, int to
 	static const int MIN_DEPTH = 2, MAX_DEPTH = 4;
 	float timePerProcessed = (float)time.asMilliseconds() / (float)processed;
 	float timePerCandidates =
-	    (float)std::max(1, (limit - time).asMilliseconds()) / float(total - processed);
+	    (float)std::max(1, (limit - time).asMilliseconds()) / float(total - processed + 4);
 	float ratio = timePerProcessed / timePerCandidates;
 	//	std::cout << "limit " << limit.asSeconds() << "ratio " << ratio << '\n';
-	if (ratio > 2.f || extra == 1) {
+	if (ratio > 3.f || extra == 1) {
 		depth = std::max(depth - 1, MIN_DEPTH);
-		extra = std::min(extra + 1, MAX_DEPTH);
 		//		std::cerr << "New settings: depth = " << depth << ", extra = " << extra << '\n';
 	} else if (ratio > 1.f || depth == MIN_DEPTH) {
 		extra = std::max(extra - 1, 1);
-	} else if (ratio < 0.1f) {
-		if (extra - depth <= 1)
-			depth = std::min(depth + 1, MAX_DEPTH);
-		else
-			extra = std::min(extra + 1, MAX_DEPTH);
+	} else if (ratio < 0.3f) {
+		depth = std::min(depth + 1, MAX_DEPTH);
+		extra = 1;
 		//		std::cerr << "New settings: depth = " << depth << ", extra = " << extra << '\n';
+	} else if (ratio < 0.8f) {
+		extra = std::min(extra + 1, 5);
 	}
 	assert(depth >= MIN_DEPTH && depth <= MAX_DEPTH);
 }
@@ -121,6 +120,10 @@ int Engine::alphaBeta(const GameLogic& board, int depth, int extra, int alpha, i
 	int score = 0;
 	if (isFinished) {
 		score = Evaluator::evaluateBoard(board);
+		if (score > 0)
+			score += depth + 5;
+		if (score < 0)
+			score -= depth + 5;
 	} else {
 		std::vector<Move> moves = board.getLegalMoves();
 		if (moves.size() == 1) {
@@ -149,18 +152,6 @@ int Engine::alphaBeta(const GameLogic& board, int depth, int extra, int alpha, i
 					break;
 			}
 		}
-	}
-
-	if (maximizer) {
-		if (score > 0)
-			score += depth + 5;
-		if (score < 0)
-			score -= depth + 5;
-	} else {
-		if (score > 0)
-			score -= depth + 5;
-		if (score < 0)
-			score += depth + 5;
 	}
 	return score;
 }
