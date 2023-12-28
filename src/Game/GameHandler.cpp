@@ -36,7 +36,7 @@ GameHandler::GameHandler(State::Context context, sf::Vector2f position)
       mBoardPosition(position),
       mOldSquare(-1),
       mLastMove(-1),
-      mLogic(getLogic(context.options->getType())),
+      mLogic(nullptr),
       mPromoteWindow(false),
       mPromoteFrom(-1),
       mPromoteTo(-1),
@@ -45,8 +45,20 @@ GameHandler::GameHandler(State::Context context, sf::Vector2f position)
       mSnapShotIndex(0),
       mSaver(*context.options) {
 	mWindow.setView(mWindow.getDefaultView());
+
 	buildScene();
-	saveSnapShot();
+	if (context.oldGames->pathChosen()) {
+		mSaver.load(context.oldGames->getPath());
+		mLogic = GameLogic::Ptr(getLogic(mSaver.getOptions().getType()));
+		loadFirstMove();
+	} else {
+		saveSnapShot();
+		for (int square = 0; square < GameLogic::BOARD_SIZE; ++square) {
+			int piece = mLogic->getPiece(square);
+			if (piece != 0)
+				addPiece(square, piece);
+		}
+	}
 }
 
 GameLogic* GameHandler::getLogic(GameOptions::Type type) {
@@ -77,12 +89,6 @@ void GameHandler::buildScene() {
 	mBoardSprite->setPosition(mBoardPosition +
 	                          sf::Vector2f(BOARD_DRAW_SIZE / 2.f, BOARD_DRAW_SIZE / 2.f));
 	mSceneLayers[Background]->attachChild(SceneNode::Ptr(mBoardSprite));
-
-	for (int square = 0; square < GameLogic::BOARD_SIZE; ++square) {
-		int piece = mLogic->getPiece(square);
-		if (piece != 0)
-			addPiece(square, piece);
-	}
 }
 
 void GameHandler::draw() {

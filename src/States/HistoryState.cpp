@@ -33,7 +33,7 @@ bool HistoryState::update(sf::Time dt) {
 bool HistoryState::handleEvent(const sf::Event& event) {
 	if (event.type == sf::Event::KeyPressed) {
 		if (event.key.code == sf::Keyboard::C) {
-			requestStackPush(States::Game);
+			requestStackPush(States::Review);
 		}
 	}
 	mGUIContainer.handleEvent(event);

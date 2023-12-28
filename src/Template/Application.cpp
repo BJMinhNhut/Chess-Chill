@@ -57,7 +57,7 @@ void Application::registerStates() {
 	mStateStack.registerState<SettingsState>(States::Settings);
 	mStateStack.registerState<GameOptionsState>(States::GameOptions);
 	mStateStack.registerState<HistoryState>(States::History);
-//	mStateStack.registerState<ReviewState>(States::Review);
+	mStateStack.registerState<ReviewState>(States::Review);
 }
 
 void Application::loadIcon() {
