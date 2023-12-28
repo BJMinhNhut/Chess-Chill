@@ -214,6 +214,7 @@ GameLogic::Result GameLogic::result() const {
 		case Checkmate:
 		case Timeout:
 		case Resign:
+		case TopOfTheHill:
 			return mBoard.getTurn() ? WhiteWin : BlackWin;
 		case Stalemate:
 		case InsufficientMaterial:
@@ -221,6 +222,7 @@ GameLogic::Result GameLogic::result() const {
 		case FiftyMoveRule:
 			return Draw;
 		default:
+			std::cout << "Unexpected status: " << mStatus << '\n';
 			assert(false);
 	}
 	return Draw;
