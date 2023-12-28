@@ -55,7 +55,17 @@ void BotPlayer::makeMove() {
 
 Move BotPlayer::getOptimizeMove() {
 	int depth = 3, extra = 3;
-	float limit = std::max(.01f, std::min(5.f, mGameHandler.mLogic->getRemainingTime(getColor()) / 50.f));
+	float limit =
+	    std::max(.01f, std::min(5.f, mGameHandler.mLogic->getRemainingTime(getColor()) / 50.f));
+
+	if (limit < .5f)
+		depth = 2, extra = 1;
+	else if (limit < 1.f)
+		depth = extra = 2;
+	else if (limit < 2.f)
+		depth = extra = 3;
+	else if (limit < 3.f)
+		depth = 4, extra = 2;
 
 	GameLogic::Ptr logic(mGameHandler.mLogic->clone());
 	Move move = Engine::getBestMove(*logic, sf::seconds(limit), mThinkFlag, depth, extra);
