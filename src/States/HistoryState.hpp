@@ -7,6 +7,7 @@
 
 #include "GUI/Container.hpp"
 #include "Template/State.hpp"
+#include "Game/GameSaver.hpp"
 
 class HistoryState : public State {
    public:

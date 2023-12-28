@@ -14,7 +14,7 @@
 #include <iostream>
 
 HistoryState::HistoryState(StateStack& stack, Context context)
-    : State(stack, context), mGUIContainer() {
+    : State(stack, context), mGUIContainer(), mList(), mPage(0) {
 	loadBasicGUI();
 	loadHistoryList();
 	loadHistoryGUI();
@@ -31,6 +31,11 @@ bool HistoryState::update(sf::Time dt) {
 }
 
 bool HistoryState::handleEvent(const sf::Event& event) {
+	if (event.type == sf::Event::KeyPressed) {
+		if (event.key.code == sf::Keyboard::C) {
+			requestStackPush(States::Game);
+		}
+	}
 	mGUIContainer.handleEvent(event);
 	return false;
 }
@@ -78,11 +83,13 @@ void HistoryState::loadHistoryList() {
 }
 
 void HistoryState::loadHistoryGUI() {
-	std::string label;
-	for (const std::string& str : mList) {
-		label += str + '\n';
-	}
-	auto historyLabel = std::make_shared<GUI::Label>(GUI::Label::Main, label, *getContext().fonts);
-	historyLabel->setPosition(482.f + 20.f, 236.f + 20.f);
-	mGUIContainer.pack(historyLabel);
+	GameSaver saver(mList[0]);
+	std::cout << "Path " << mList[0] << '\n';
+
+	GameOptions options = saver.getOptions();
+	std::cout << "Game mode: " << options.getStringMode() << '\n';
+	std::cout << "Game type: " << options.getStringType() << '\n';
+	std::cout << "Game time: " << options.getStringTime() << '\n';
+	std::cout << "Game result: " << saver.getResult() << '\n';
+	std::cout << "Snapshot size: " << saver.size() << '\n';
 }

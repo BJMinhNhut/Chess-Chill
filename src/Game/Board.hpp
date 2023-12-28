@@ -12,6 +12,7 @@ class Board {
    public:
 	explicit Board(const std::string& fen);
 	Board(const Board& other);
+	Board();
 
 	static int getRank(int square);
 	static int getFile(int square);

@@ -407,7 +407,7 @@ void GameHandler::loadSnapShot(int index) {
 	for (int i = 0; i < GameLogic::BOARD_SIZE; ++i)
 		highlightSquare(i, Normal);
 
-	GameSaver::SnapShot snapShot = mSaver.get(index);
+	GameSaver::SnapShot snapShot = mSaver.getSnapShot(index);
 	highlightMove(snapShot.move, true);
 	for (int i = 0; i < GameLogic::BOARD_SIZE; ++i) {
 		if (mPieces[i] != nullptr)
@@ -446,7 +446,7 @@ std::vector<std::string> GameHandler::getLatestMoves(int numMoves, int& id) cons
 	if (start % 2 == 0)
 		++start;
 	for (int i = start; i <= mSnapShotIndex; ++i)
-		moves.push_back(mSaver.get(i).notation);
+		moves.emplace_back(mSaver.getSnapShot(i).notation);
 	id = start;
 	return moves;
 }

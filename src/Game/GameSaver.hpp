@@ -19,25 +19,29 @@ class GameSaver {
 	static const std::string SAVE_PATH;
 
 	struct SnapShot {
-		int8_t checkMate;
-		int move;
-		std::string notation;
-		SoundEffect::ID sound;
 		Board board;
+		int move;
+		SoundEffect::ID sound;
+		int8_t checkMate;
+		char notation[10];
 
-		SnapShot(const Board& board, int lastMove, std::string notation, SoundEffect::ID sound,
+		SnapShot();
+		SnapShot(const Board& board, int lastMove, const char notation[10], SoundEffect::ID sound,
 		         int8_t checkMate);
 	};
 
    public:
 	explicit GameSaver(GameOptions options);
+	explicit GameSaver(const std::string& path);
 	~GameSaver() = default;
 
 	void capture(const GameHandler& gameHandler);
 	void load(const std::string& path);
 	void save(GameLogic::Result result);
 
-	[[nodiscard]] SnapShot get(int index) const;
+	[[nodiscard]] SnapShot getSnapShot(int index) const;
+	[[nodiscard]] GameOptions getOptions() const;
+	[[nodiscard]] std::string getResult() const;
 	[[nodiscard]] unsigned int size() const;
 
    private:
@@ -45,7 +49,7 @@ class GameSaver {
 
    private:
 	GameOptions mOptions;
-	time_t mTime;
+	time_t mTime{};
 	GameLogic::Result mResult;
 	std::vector<SnapShot> mSnapShots;
 };

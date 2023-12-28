@@ -41,7 +41,6 @@ class GameOptions {
 	[[nodiscard]] Mode getMode() const;
 	[[nodiscard]] Type getType() const;
 
-
 	// as seconds
 	int getTime() const;
 	int getIncrement() const;

@@ -17,19 +17,43 @@ const std::string GameSaver::SAVE_PATH = "saved_data/";
 
 GameSaver::GameSaver(GameOptions options): mOptions(options), mTime(), mResult() {}
 
-GameSaver::SnapShot::SnapShot(const Board& board, int lastMove, std::string notation,
+GameSaver::GameSaver(const std::string& path): mOptions(), mTime(), mResult() {
+	load(path);
+}
+
+GameSaver::SnapShot::SnapShot(): checkMate(-1), move(-1), notation(), sound() {}
+
+GameSaver::SnapShot::SnapShot(const Board& board, int lastMove, const char notation[10],
                               SoundEffect::ID sound, int8_t checkMate)
     : board(board),
       move(lastMove),
-      notation(std::move(notation)),
       sound(sound),
-      checkMate(checkMate) {}
+      checkMate(checkMate) {
+	memcpy(this->notation, notation, sizeof(this->notation));
+}
 
-GameSaver::SnapShot GameSaver::get(int index) const {
+GameSaver::SnapShot GameSaver::getSnapShot(int index) const {
 	if (index < 0 || index >= mSnapShots.size()) {
 		throw std::runtime_error("GameSaver - Index out of range");
 	}
 	return mSnapShots[index];
+}
+
+GameOptions GameSaver::getOptions() const {
+	return mOptions;
+}
+
+std::string GameSaver::getResult() const {
+	switch (mResult) {
+		case GameLogic::Draw:
+			return "Draw";
+		case GameLogic::WhiteWin:
+			return "White win";
+		case GameLogic::BlackWin:
+			return "Black win";
+		default:
+			return "Unknown";
+	}
 }
 
 unsigned int GameSaver::size() const {
@@ -81,7 +105,27 @@ void GameSaver::capture(const GameHandler& gameHandler) {
 			}
 		}
 	}
-	mSnapShots.emplace_back(logic->getBoard(), lastMove, notation, sound, checkMate);
+	mSnapShots.emplace_back(logic->getBoard(), lastMove, &notation[0], sound, checkMate);
+}
+
+void GameSaver::load(const std::string& path) {
+	if (!fs::exists(path)) {
+		throw std::runtime_error("File " + path + " does not exist");
+	}
+	std::ifstream file(path, std::ios::in | std::ios::binary);
+	if (!file.is_open()) {
+		throw std::runtime_error("Cannot open file " + path);
+	}
+	file.seekg(0);
+	file.read((char*)&(mOptions), sizeof(mOptions));
+	file.read((char*)&(mTime), sizeof(mTime));
+	file.read((char*)&(mResult), sizeof(mResult));
+	unsigned int mSize;
+	file.read((char*)&(mSize), sizeof(mSize));
+	mSnapShots.resize(mSize);
+	file.read((char*)&(mSnapShots[0]), sizeof(SnapShot) * mSize);
+	file.close();
+	std::cout << "Game loaded from " << path << '\n';
 }
 
 void GameSaver::save(GameLogic::Result result) {
@@ -90,12 +134,15 @@ void GameSaver::save(GameLogic::Result result) {
 		std::cout << "Directory " << SAVE_PATH << " already exists\n";
 	} else {
 		std::cout << "Creating directory " << SAVE_PATH << '\n';
-		fs::create_directory(SAVE_PATH);
+		if (!fs::create_directory(SAVE_PATH)) {
+			throw std::runtime_error("Cannot create directory " + SAVE_PATH);
+		}
 	}
 
 	// save time and result
 	mTime = std::time(nullptr);
 	mResult = result;
+	unsigned int mSize = mSnapShots.size();
 
 	// save to file
 	std::string fileName = getFileName(mTime);
@@ -105,7 +152,11 @@ void GameSaver::save(GameLogic::Result result) {
 		throw std::runtime_error("Cannot open file " + fileName);
 	}
 	file.seekp(0);
-	file.write((char*)&(*this), sizeof(*this));
+	file.write((char*)&(mOptions), sizeof(mOptions));
+	file.write((char*)&(mTime), sizeof(mTime));
+	file.write((char*)&(mResult), sizeof(mResult));
+	file.write((char*)&(mSize), sizeof(mSize));
+	file.write((char*)&(mSnapShots[0]), sizeof(SnapShot) * mSize);
 	file.close();
 	std::cout << "New game saved to " << fileName << '\n';
 }

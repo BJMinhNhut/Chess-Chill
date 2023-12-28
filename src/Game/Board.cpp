@@ -24,6 +24,11 @@ Board::Board(const Board& other)
 	memcpy(mBoard, other.mBoard, sizeof mBoard);
 }
 
+Board::Board()
+	: mTurn(false), mCastling(0), mEnPassant(-1), mHalfMove(0), mFullMove(0), mBoard() {
+	clear();
+}
+
 int Board::getRank(int square) {
 	return square >> 3;
 }

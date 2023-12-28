@@ -5,6 +5,8 @@
 #include "GameOptions.hpp"
 #include "ResourceIdentifiers.hpp"
 
+#include <cassert>
+
 const std::vector<std::string> GameOptions::MODE_NAMES = {
 	"PvP",
 	"PvAI",
