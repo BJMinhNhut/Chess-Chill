@@ -76,15 +76,15 @@ void HistoryState::loadBasicGUI() {
 }
 
 void HistoryState::loadHistoryList() {
-	for (const auto& entry : std::filesystem::directory_iterator(GameSaver::SAVE_PATH)) {
-		mList.push_back(entry.path().string());
-	}
-	std::cout << "History list size: " << mList.size() << '\n';
+	getContext().oldGames->load();
+	std::cout << "History list size: " << getContext().oldGames->getSize() << '\n';
 }
 
 void HistoryState::loadHistoryGUI() {
-	GameSaver saver(mList[0]);
-	std::cout << "Path " << mList[0] << '\n';
+	getContext().oldGames->setIndex(0);
+	std::string path = getContext().oldGames->getPath();
+	GameSaver saver(path);
+	std::cout << "Path " << path << '\n';
 
 	GameOptions options = saver.getOptions();
 	std::cout << "Game mode: " << options.getStringMode() << '\n';

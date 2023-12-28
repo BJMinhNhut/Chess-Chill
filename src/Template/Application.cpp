@@ -26,7 +26,7 @@ Application::Application()
       mSounds(),
       mSettings(),
       mOptions(),
-      mStateStack(State::Context(mWindow, mTextures, mFonts, mSounds, mSettings, mOptions)) {
+      mStateStack(State::Context(mWindow, mTextures, mFonts, mSounds, mSettings, mOptions, mOldGames)) {
 
 	mWindow.setFramerateLimit(120);
 

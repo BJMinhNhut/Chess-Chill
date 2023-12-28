@@ -6,17 +6,19 @@
 #include "StateStack.hpp"
 
 State::Context::Context(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts,
-                        SoundPlayer& sounds, Settings& settings, GameOptions& options)
+                        SoundPlayer& sounds, Settings& settings, GameOptions& options,
+                        OldGames& oldGames)
     : window(&window),
       textures(&textures),
       fonts(&fonts),
       sounds(&sounds),
       settings(&settings),
-      options(&options) {}
+      options(&options),
+      oldGames(&oldGames) {}
 
 State::State(StateStack& stack, Context context) : mStack(&stack), mContext(context) {}
 
-State::~State() {}
+State::~State() = default;
 
 void State::requestStackPush(States::ID stateID) {
 	mStack->pushState(stateID);

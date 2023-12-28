@@ -42,6 +42,7 @@ class Application {
 	SoundPlayer mSounds;
 	Settings mSettings;
 	GameOptions mOptions;
+	OldGames mOldGames;
 
 	StateStack mStateStack;
 
