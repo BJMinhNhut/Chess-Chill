@@ -79,7 +79,7 @@ void HistoryState::loadHistoryList() {
 
 void HistoryState::loadHistoryGUI() {
 	std::string label;
-	for(auto str : mList) {
+	for (const std::string& str : mList) {
 		label += str + '\n';
 	}
 	auto historyLabel = std::make_shared<GUI::Label>(GUI::Label::Main, label, *getContext().fonts);

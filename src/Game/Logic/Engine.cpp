@@ -61,20 +61,22 @@ void Engine::adjustSettings(sf::Time limit, sf::Time time, int processed, int to
 	static const int MIN_DEPTH = 2, MAX_DEPTH = 4;
 	float timePerProcessed = (float)time.asMilliseconds() / (float)processed;
 	float timePerCandidates =
-	    (float)std::max(1, (limit - time).asMilliseconds()) / float(total - processed + 4);
+	    (float)std::max(1, (limit - time).asMilliseconds()) / float(total - processed + 2);
 	float ratio = timePerProcessed / timePerCandidates;
-	//	std::cout << "limit " << limit.asSeconds() << "ratio " << ratio << '\n';
-	if (ratio > 3.f || extra == 1) {
-		depth = std::max(depth - 1, MIN_DEPTH);
-		//		std::cerr << "New settings: depth = " << depth << ", extra = " << extra << '\n';
-	} else if (ratio > 1.4f || depth == MIN_DEPTH) {
+//	std::cout << "limit " << limit.asSeconds() << "s, ratio " << ratio << '\n';
+	if ((ratio > 3.f || (ratio > 1.7f && extra <= 2)) && depth > MIN_DEPTH) {
+		depth--;
+//		std::cout << "New settings: depth = " << depth << ", extra = " << extra << '\n';
+	} else if (ratio > 1.7f) {
 		extra = std::max(extra - 1, 1);
-	} else if (ratio < 0.3f) {
+//		std::cout << "New settings: depth = " << depth << ", extra = " << extra << '\n';
+	} else if (ratio < 0.08f) {
 		depth = std::min(depth + 1, MAX_DEPTH);
 		extra = 1;
-		//		std::cerr << "New settings: depth = " << depth << ", extra = " << extra << '\n';
-	} else if (ratio < 0.8f) {
+//		std::cout << "New settings: depth = " << depth << ", extra = " << extra << '\n';
+	} else if (ratio < 0.3f) {
 		extra = std::min(extra + 1, 5);
+//		std::cout << "New settings: depth = " << depth << ", extra = " << extra << '\n';
 	}
 	assert(depth >= MIN_DEPTH && depth <= MAX_DEPTH);
 }
