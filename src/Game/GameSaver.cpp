@@ -15,20 +15,17 @@ namespace fs = std::filesystem;
 
 const std::string GameSaver::SAVE_PATH = "saved_data/";
 
-GameSaver::GameSaver(GameOptions options): mOptions(options), mTime(), mResult() {}
+GameSaver::GameSaver(GameOptions options) : mOptions(options), mTime(), mResult() {}
 
-GameSaver::GameSaver(const std::string& path): mOptions(), mTime(), mResult() {
+GameSaver::GameSaver(const std::string& path) : mOptions(), mTime(), mResult() {
 	load(path);
 }
 
-GameSaver::SnapShot::SnapShot(): checkMate(-1), move(-1), notation(), sound() {}
+GameSaver::SnapShot::SnapShot() : checkMate(-1), move(-1), notation(), sound() {}
 
 GameSaver::SnapShot::SnapShot(const Board& board, int lastMove, const char notation[10],
                               SoundEffect::ID sound, int8_t checkMate)
-    : board(board),
-      move(lastMove),
-      sound(sound),
-      checkMate(checkMate) {
+    : board(board), move(lastMove), sound(sound), checkMate(checkMate) {
 	memcpy(this->notation, notation, sizeof(this->notation));
 }
 
@@ -62,8 +59,10 @@ unsigned int GameSaver::size() const {
 
 void GameSaver::capture(const GameHandler& gameHandler) {
 	SoundEffect::ID sound;
-	GameLogic *logic = gameHandler.mLogic.get();
-	if (logic->isChecked())
+	GameLogic* logic = gameHandler.mLogic.get();
+	if (logic->isFinished())
+		sound = SoundEffect::EndGame;
+	else if (logic->isChecked())
 		sound = SoundEffect::Check;
 	else if (logic->isCaptured()) {
 		sound = SoundEffect::Capture;

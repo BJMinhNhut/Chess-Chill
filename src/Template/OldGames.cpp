@@ -7,7 +7,7 @@
 
 #include <filesystem>
 
-OldGames::OldGames() : mIndex(0), mPaths() {
+OldGames::OldGames() : mIndex(-1), mPaths() {
 	load();
 }
 

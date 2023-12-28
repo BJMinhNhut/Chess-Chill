@@ -49,15 +49,16 @@ GameHandler::GameHandler(State::Context context, sf::Vector2f position)
 	buildScene();
 	if (context.oldGames->pathChosen()) {
 		mSaver.load(context.oldGames->getPath());
-		mLogic = GameLogic::Ptr(getLogic(mSaver.getOptions().getType()));
+// TODO		context.oldGames->resetPath();
 		loadFirstMove();
 	} else {
-		saveSnapShot();
+		mLogic = GameLogic::Ptr(getLogic(mSaver.getOptions().getType()));
 		for (int square = 0; square < GameLogic::BOARD_SIZE; ++square) {
 			int piece = mLogic->getPiece(square);
 			if (piece != 0)
 				addPiece(square, piece);
 		}
+		saveSnapShot();
 	}
 }
 
