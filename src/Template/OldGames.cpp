@@ -6,6 +6,7 @@
 #include "Game/GameSaver.hpp"
 
 #include <filesystem>
+#include <iostream>
 
 OldGames::OldGames() : mIndex(-1), mPaths() {
 	load();
@@ -14,13 +15,20 @@ OldGames::OldGames() : mIndex(-1), mPaths() {
 OldGames::~OldGames() = default;
 
 void OldGames::load() {
+	if (!std::filesystem::exists(GameSaver::SAVE_PATH)) {
+		std::filesystem::create_directory(GameSaver::SAVE_PATH);
+		std::cout << "Created directory " << GameSaver::SAVE_PATH << '\n';
+	}
+	mPaths.clear();
 	for (const auto& entry : std::filesystem::directory_iterator(GameSaver::SAVE_PATH)) {
 		mPaths.push_back(entry.path().string());
 	}
 }
 
 void OldGames::setIndex(int index) {
+	assert(index >= 0 && index < mPaths.size());
 	mIndex = index;
+	std::cout << "OldGames - Set index to " << index << '\n';
 }
 
 void OldGames::resetIndex() {

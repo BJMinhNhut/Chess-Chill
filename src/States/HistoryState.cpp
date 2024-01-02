@@ -121,7 +121,7 @@ void HistoryState::loadPanel(int id, int pathID, const std::string& path) {
 	historyPanel->setResult(saver.getResult());
 	historyPanel->setDate(saver.getDate());
 	historyPanel->setPosition(473.f, 117.f + (float)id * PANEL_INDENT);
-	historyPanel->setCallback([&]() {
+	historyPanel->setCallback([&, pathID]() {
 		getContext().oldGames->setIndex(pathID);
 		requestStackPush(States::Review);
 	});

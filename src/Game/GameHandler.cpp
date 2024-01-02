@@ -48,10 +48,12 @@ GameHandler::GameHandler(State::Context context, sf::Vector2f position)
 
 	buildScene();
 	if (context.oldGames->pathChosen()) {
+//		std::cout << "Load from: " << context.oldGames->getPath() << "\n";
 		mSaver.load(context.oldGames->getPath());
 		context.oldGames->resetIndex();
 		loadFirstMove();
 	} else {
+		std::cout << "new game\n";
 		mLogic = GameLogic::Ptr(getLogic(mSaver.getOptions().getType()));
 		for (int square = 0; square < GameLogic::BOARD_SIZE; ++square) {
 			int piece = mLogic->getPiece(square);

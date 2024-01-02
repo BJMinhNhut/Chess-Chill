@@ -27,10 +27,10 @@ ReviewState::ReviewState(StateStack& stack, Context context)
       mPlayerLabel(),
       mMoveList(nullptr),
       mGame(context, BOARD_POSITION + sf::Vector2f(25.f, 25.f)) {
-	if (context.options->getTime() > 0) {
-		mGame.mLogic->setClock(sf::seconds(context.options->getTime()),
-		                       sf::seconds(context.options->getIncrement()));
-	}
+//	if (context.options->getTime() > 0) {
+//		mGame.mLogic->setClock(sf::seconds(context.options->getTime()),
+//		                       sf::seconds(context.options->getIncrement()));
+//	}
 
 	loadBasicGUI();
 	loadGameGUI();
