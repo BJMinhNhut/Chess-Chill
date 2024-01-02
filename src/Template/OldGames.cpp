@@ -23,6 +23,7 @@ void OldGames::load() {
 	for (const auto& entry : std::filesystem::directory_iterator(GameSaver::SAVE_PATH)) {
 		mPaths.push_back(entry.path().string());
 	}
+	std::reverse(mPaths.begin(), mPaths.end());
 }
 
 void OldGames::setIndex(int index) {
