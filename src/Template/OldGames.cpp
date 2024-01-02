@@ -38,3 +38,8 @@ bool OldGames::pathChosen() const {
 std::string OldGames::getPath() const {
 	return mPaths[mIndex];
 }
+
+std::string OldGames::getPathByID(int id) const {
+	assert(id >= 0 && id < mPaths.size());
+	return mPaths[id];
+}

@@ -14,11 +14,17 @@ namespace GUI {
 
 Container::Container() : mChildren(), mSelectedChild(-1), mActivatedChild(-1) {}
 
-void Container::pack(Component::Ptr component) {
+void Container::pack(const Component::Ptr& component) {
 	mChildren.push_back(component);
 }
 
-void Container::activateChild(Component::Ptr component) {
+void Container::clear() {
+	mChildren.clear();
+	mSelectedChild = -1;
+	mActivatedChild = -1;
+}
+
+void Container::activateChild(const Component::Ptr& component) {
 	for (int index = 0; index < mChildren.size(); ++index)
 		if (mChildren[index] == component)
 			activate(index);

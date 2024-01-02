@@ -20,17 +20,21 @@ class HistoryState : public State {
    private:
 	void loadBasicGUI();
 	void loadHistoryList();
-	void loadHistoryGUI();
 
+	void loadPanel(int id, int pathID, const std::string &path);
+
+	void loadCurrentPage();
 	void nextPage();
 	void previousPage();
 
-   private:
-	static const int PAGE_MAX;
+	int getNumPages() const;
 
    private:
-	GUI::Container mGUIContainer;
-	std::vector<std::string> mList;
+	static const int PAGE_MAX;
+	static const float PANEL_INDENT;
+
+   private:
+	GUI::Container mGUIContainer, mPageContainer;
 	int mPage;
 };
 

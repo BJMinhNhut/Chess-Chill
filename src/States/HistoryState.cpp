@@ -14,30 +14,33 @@
 #include <filesystem>
 #include <iostream>
 
+const int HistoryState::PAGE_MAX = 6;
+const float HistoryState::PANEL_INDENT = 115.f;
+
 HistoryState::HistoryState(StateStack& stack, Context context)
-    : State(stack, context), mGUIContainer(), mList(), mPage(0) {
+    : State(stack, context), mGUIContainer(), mPage(0) {
+	context.oldGames->load();
 	loadBasicGUI();
 	loadHistoryList();
-	loadHistoryGUI();
+	loadCurrentPage();
 }
 
 void HistoryState::draw() {
 	auto& window = *getContext().window;
 	window.setView(window.getDefaultView());
 	window.draw(mGUIContainer);
+	window.draw(mPageContainer);
 }
 
 bool HistoryState::update(sf::Time dt) {
+	mGUIContainer.update(dt);
+	mPageContainer.update(dt);
 	return true;
 }
 
 bool HistoryState::handleEvent(const sf::Event& event) {
-	if (event.type == sf::Event::KeyPressed) {
-		if (event.key.code == sf::Keyboard::C) {
-			requestStackPush(States::Review);
-		}
-	}
 	mGUIContainer.handleEvent(event);
+	mPageContainer.handleEvent(event);
 	return false;
 }
 
@@ -81,18 +84,34 @@ void HistoryState::loadHistoryList() {
 	std::cout << "History list size: " << getContext().oldGames->getSize() << '\n';
 }
 
-void HistoryState::loadHistoryGUI() {
-	getContext().oldGames->setIndex(0);
-	std::string path = getContext().oldGames->getPath();
+int HistoryState::getNumPages() const {
+	return ((int)getContext().oldGames->getSize() + PAGE_MAX - 1) / PAGE_MAX;
+}
+
+void HistoryState::nextPage() {
+	if (mPage >= getNumPages() - 1)
+		return;
+	mPage++;
+	loadCurrentPage();
+}
+
+void HistoryState::previousPage() {
+	if (mPage <= 0)
+		return;
+	mPage--;
+	loadCurrentPage();
+}
+
+void HistoryState::loadPanel(int id, int pathID, const std::string& path) {
 	GameSaver saver(path);
-	std::cout << "Path " << path << '\n';
+	//	std::cout << "Path " << path << '\n';
 
 	GameOptions options = saver.getOptions();
-	std::cout << "Game mode: " << options.getStringMode() << '\n';
-	std::cout << "Game type: " << options.getStringType() << '\n';
-	std::cout << "Game time: " << options.getStringTime() << '\n';
-	std::cout << "Game result: " << saver.getResult() << '\n';
-	std::cout << "Snapshot size: " << saver.size() << '\n';
+	//	std::cout << "Game mode: " << options.getStringMode() << '\n';
+	//	std::cout << "Game type: " << options.getStringType() << '\n';
+	//	std::cout << "Game time: " << options.getStringTime() << '\n';
+	//	std::cout << "Game result: " << saver.getResult() << '\n';
+	//	std::cout << "Snapshot size: " << saver.size() << '\n';
 
 	auto historyPanel =
 	    std::make_shared<GUI::HistoryPanel>(*getContext().fonts, *getContext().textures);
@@ -101,7 +120,20 @@ void HistoryState::loadHistoryGUI() {
 	historyPanel->setTime(options.getStringTime());
 	historyPanel->setResult(saver.getResult());
 	historyPanel->setDate(saver.getDate());
-	historyPanel->setPosition(473.f, 117.f);
-	historyPanel->setCallback([this]() {});
-	mGUIContainer.pack(historyPanel);
+	historyPanel->setPosition(473.f, 117.f + (float)id * PANEL_INDENT);
+	historyPanel->setCallback([&]() {
+		getContext().oldGames->setIndex(pathID);
+		requestStackPush(States::Review);
+	});
+	mPageContainer.pack(historyPanel);
+}
+
+void HistoryState::loadCurrentPage() {
+	mPageContainer.clear();
+	assert(mPage >= 0 && mPage < getNumPages());
+	int start = mPage * PAGE_MAX;
+	int end = std::min(start + PAGE_MAX, (int)getContext().oldGames->getSize());
+	for (int i = start; i < end; i++) {
+		loadPanel(i - start, i, getContext().oldGames->getPathByID(i));
+	}
 }

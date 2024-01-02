@@ -21,6 +21,7 @@ class OldGames {
 	[[nodiscard]] size_t getSize() const;
 	[[nodiscard]] bool pathChosen() const;
 	[[nodiscard]] std::string getPath() const;
+	[[nodiscard]] std::string getPathByID(int id) const;
 
    private:
 	int mIndex;

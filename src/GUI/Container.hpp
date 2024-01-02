@@ -18,9 +18,10 @@ namespace GUI {
     public:
         Container();
 
-        void pack(Component::Ptr component);
+        void pack(const Component::Ptr& component);
+	    void clear();
 
-        void activateChild(Component::Ptr component);
+        void activateChild(const Component::Ptr& component);
 
         void reset();
 
