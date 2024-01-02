@@ -53,6 +53,10 @@ std::string GameSaver::getResult() const {
 	}
 }
 
+std::string GameSaver::getDate() const {
+	return std::string(std::ctime(&mTime));
+}
+
 unsigned int GameSaver::size() const {
 	return mSnapShots.size();
 }

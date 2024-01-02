@@ -34,6 +34,7 @@ class Button : public Component {
 		First,
 		Previous,
 		Next,
+		History,
 		ButtonCount
 	};
 
@@ -64,8 +65,11 @@ class Button : public Component {
 
 	virtual bool contains(sf::Vector2i point) const;
 
-   private:
+   protected:
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+	void alignTopLeft();
+
+   private:
 
 	static Textures::ID getNormalTextureID(Type type);
 

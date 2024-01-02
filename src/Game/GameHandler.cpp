@@ -49,7 +49,7 @@ GameHandler::GameHandler(State::Context context, sf::Vector2f position)
 	buildScene();
 	if (context.oldGames->pathChosen()) {
 		mSaver.load(context.oldGames->getPath());
-// TODO		context.oldGames->resetPath();
+		context.oldGames->resetIndex();
 		loadFirstMove();
 	} else {
 		mLogic = GameLogic::Ptr(getLogic(mSaver.getOptions().getType()));

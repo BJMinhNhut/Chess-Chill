@@ -49,6 +49,8 @@ enum ID {
 	PreviousButtonSelected,
 	NextButtonNormal,
 	NextButtonSelected,
+	HistoryButtonNormal,
+	HistoryButtonSelected,
 
 	Board,
 	PieceSet,

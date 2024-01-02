@@ -23,6 +23,10 @@ void OldGames::setIndex(int index) {
 	mIndex = index;
 }
 
+void OldGames::resetIndex() {
+	mIndex = -1;
+}
+
 size_t OldGames::getSize() const {
 	return mPaths.size();
 }

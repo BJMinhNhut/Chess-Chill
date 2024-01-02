@@ -42,6 +42,7 @@ class GameSaver {
 	[[nodiscard]] SnapShot getSnapShot(int index) const;
 	[[nodiscard]] GameOptions getOptions() const;
 	[[nodiscard]] std::string getResult() const;
+	[[nodiscard]] std::string getDate() const;
 	[[nodiscard]] unsigned int size() const;
 
    private:

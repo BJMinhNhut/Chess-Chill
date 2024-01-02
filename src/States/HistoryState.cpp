@@ -4,6 +4,7 @@
 
 #include "HistoryState.hpp"
 #include "GUI/Button.hpp"
+#include "GUI/HistoryPanel.hpp"
 #include "GUI/Label.hpp"
 #include "GUI/Sprite.hpp"
 #include "Game/GameSaver.hpp"
@@ -92,4 +93,15 @@ void HistoryState::loadHistoryGUI() {
 	std::cout << "Game time: " << options.getStringTime() << '\n';
 	std::cout << "Game result: " << saver.getResult() << '\n';
 	std::cout << "Snapshot size: " << saver.size() << '\n';
+
+	auto historyPanel =
+	    std::make_shared<GUI::HistoryPanel>(*getContext().fonts, *getContext().textures);
+	historyPanel->setMode(options.getStringMode());
+	historyPanel->setType(options.getStringType());
+	historyPanel->setTime(options.getStringTime());
+	historyPanel->setResult(saver.getResult());
+	historyPanel->setDate(saver.getDate());
+	historyPanel->setPosition(473.f, 117.f);
+	historyPanel->setCallback([this]() {});
+	mGUIContainer.pack(historyPanel);
 }

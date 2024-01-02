@@ -153,6 +153,10 @@ void Application::loadImages() {
 	               Constants::DATA_PREFIX + "resources/images/buttons/next_normal.png");
 	mTextures.load(Textures::NextButtonSelected,
 	               Constants::DATA_PREFIX + "resources/images/buttons/next_selected.png");
+	mTextures.load(Textures::HistoryButtonNormal,
+	               Constants::DATA_PREFIX + "resources/images/buttons/history_normal.png");
+	mTextures.load(Textures::HistoryButtonSelected,
+	               Constants::DATA_PREFIX + "resources/images/buttons/history_selected.png");
 }
 
 void Application::run() {

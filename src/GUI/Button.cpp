@@ -26,6 +26,10 @@ Button::Button(Type type, const FontHolder& fonts, const TextureHolder& textures
 	Utility::centerOrigin(mSprite);
 }
 
+void Button::alignTopLeft() {
+	mSprite.setOrigin(0.f, 0.f);
+}
+
 Textures::ID Button::getNormalTextureID(Type type) {
 	switch (type) {
 		case Menu:
@@ -50,6 +54,8 @@ Textures::ID Button::getNormalTextureID(Type type) {
 			return Textures::PreviousButtonNormal;
 		case Next:
 			return Textures::NextButtonNormal;
+		case History:
+			return Textures::HistoryButtonNormal;
 		default:
 			return Textures::Background;
 	}
@@ -79,6 +85,8 @@ Textures::ID Button::getSelectedTextureID(Type type) {
 			return Textures::PreviousButtonSelected;
 		case Next:
 			return Textures::NextButtonSelected;
+		case History:
+			return Textures::HistoryButtonSelected;
 		default:
 			return Textures::Background;
 	}
@@ -160,8 +168,9 @@ void Button::deactivate() {
 void Button::handleEvent(const sf::Event& event) {}
 
 bool Button::contains(sf::Vector2i point) const {
-	sf::IntRect bounds(getPosition().x - mSprite.getGlobalBounds().width / 2.f,
-	                   getPosition().y - mSprite.getGlobalBounds().height / 2.f,
+	sf::Vector2f origin = mSprite.getOrigin();
+	sf::IntRect bounds(getPosition().x - origin.x,
+	                   getPosition().y - origin.y,
 	                   mSprite.getGlobalBounds().width, mSprite.getGlobalBounds().height);
 
 	return bounds.contains(point);

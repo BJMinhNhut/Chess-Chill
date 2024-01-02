@@ -16,6 +16,7 @@ class OldGames {
 	void load();
 
 	void setIndex(int index);
+	void resetIndex();
 
 	[[nodiscard]] size_t getSize() const;
 	[[nodiscard]] bool pathChosen() const;
