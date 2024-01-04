@@ -6,8 +6,9 @@
 #define CHESS_CHILL_HISTORYSTATE_HPP
 
 #include "GUI/Container.hpp"
-#include "Template/State.hpp"
+#include "GUI/Label.hpp"
 #include "Game/GameSaver.hpp"
+#include "Template/State.hpp"
 
 class HistoryState : public State {
    public:
@@ -21,7 +22,7 @@ class HistoryState : public State {
 	void loadBasicGUI();
 	void loadHistoryList();
 
-	void loadPanel(int id, int pathID, const std::string &path);
+	void loadPanel(int id, int pathID, const std::string& path);
 
 	void loadCurrentPage();
 	void nextPage();
@@ -35,6 +36,7 @@ class HistoryState : public State {
 
    private:
 	GUI::Container mGUIContainer, mPageContainer;
+	GUI::Label::Ptr mPageLabel;
 	int mPage;
 };
 

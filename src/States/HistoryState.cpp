@@ -18,7 +18,7 @@ const int HistoryState::PAGE_MAX = 6;
 const float HistoryState::PANEL_INDENT = 115.f;
 
 HistoryState::HistoryState(StateStack& stack, Context context)
-    : State(stack, context), mGUIContainer(), mPage(0) {
+    : State(stack, context), mGUIContainer(), mPage(0), mPageContainer(), mPageLabel(nullptr) {
 	context.oldGames->load();
 	loadBasicGUI();
 	loadHistoryList();
@@ -77,6 +77,24 @@ void HistoryState::loadBasicGUI() {
 	titleLabel->setPosition(titleBar->getPosition());
 	titleLabel->alignCenter();
 	mGUIContainer.pack(titleLabel);
+
+	auto nextPageButton =
+	    std::make_shared<GUI::Button>(GUI::Button::Forward, *context.fonts, *context.textures);
+	nextPageButton->setPosition(870.f, 786.f + 54.f / 2);
+	nextPageButton->setCallback([this]() { nextPage(); });
+	mGUIContainer.pack(nextPageButton);
+
+	auto previousPageButton =
+	    std::make_shared<GUI::Button>(GUI::Button::Forward, *context.fonts, *context.textures);
+	previousPageButton->setPosition(730.f, 786.f + 54.f / 2);
+	previousPageButton->setRotation(180.f);
+	previousPageButton->setCallback([this]() { previousPage(); });
+	mGUIContainer.pack(previousPageButton);
+
+	mPageLabel = std::make_shared<GUI::Label>(GUI::Label::Main, "1/1", *context.fonts);
+	mPageLabel->setPosition(800.f, 786.f + 54.f / 2);
+	mPageLabel->alignCenter();
+	mGUIContainer.pack(mPageLabel);
 }
 
 void HistoryState::loadHistoryList() {
@@ -120,7 +138,7 @@ void HistoryState::loadPanel(int id, int pathID, const std::string& path) {
 	historyPanel->setTime(options.getStringTime());
 	historyPanel->setResult(saver.getResult());
 	historyPanel->setDate(saver.getDate());
-	historyPanel->setPosition(473.f, 117.f + (float)id * PANEL_INDENT);
+	historyPanel->setPosition(482.f, 104.f + (float)id * PANEL_INDENT);
 	historyPanel->setCallback([&, pathID]() {
 		getContext().oldGames->setIndex(pathID);
 		requestStackPush(States::Review);
@@ -136,4 +154,6 @@ void HistoryState::loadCurrentPage() {
 	for (int i = start; i < end; i++) {
 		loadPanel(i - start, i, getContext().oldGames->getPathByID(i));
 	}
+	mPageLabel->setText(std::to_string(mPage + 1) + "/" + std::to_string(getNumPages()));
+	mPageLabel->alignCenter();
 }
