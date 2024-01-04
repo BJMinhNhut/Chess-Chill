@@ -197,6 +197,8 @@ std::string ReviewState::getClockString(float time) {
 }
 
 std::string ReviewState::getTitle() const {
-	return "Review - " + getContext().options->getStringType() + " - " + getContext().options->getStringMode();
+	GameSaver saver(getContext().oldGames->getPath());
+	GameOptions options = saver.getOptions();
+	return "Review - " + options.getStringType() + " - " + options.getStringMode();
 
 }

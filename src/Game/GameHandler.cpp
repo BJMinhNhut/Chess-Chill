@@ -50,7 +50,7 @@ GameHandler::GameHandler(State::Context context, sf::Vector2f position)
 	if (context.oldGames->pathChosen()) {
 //		std::cout << "Load from: " << context.oldGames->getPath() << "\n";
 		mSaver.load(context.oldGames->getPath());
-		context.oldGames->resetIndex();
+//		context.oldGames->resetIndex();
 		loadFirstMove();
 	} else {
 		std::cout << "new game\n";
