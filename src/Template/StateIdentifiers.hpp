@@ -9,9 +9,10 @@ namespace States {
 enum ID {
 	None,
 	Menu,
-    Game,
+	Game,
 	History,
 	Review,
+	PuzzleMenu,
 	Puzzles,
 	About,
 	Settings,

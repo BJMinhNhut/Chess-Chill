@@ -5,12 +5,13 @@
 #ifndef CHESS_STATESLIST_HPP
 #define CHESS_STATESLIST_HPP
 
-#include "MenuState.hpp"
-#include "GameState.hpp"
 #include "AboutState.hpp"
+#include "GameOptionsState.hpp"
+#include "GameState.hpp"
 #include "HistoryState.hpp"
+#include "MenuState.hpp"
+#include "PuzzleMenuState.hpp"
 #include "ReviewState.hpp"
 #include "SettingsState.hpp"
-#include "GameOptionsState.hpp"
 
-#endif //CHESS_STATESLIST_HPP
+#endif  //CHESS_STATESLIST_HPP

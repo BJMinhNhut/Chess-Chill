@@ -29,18 +29,13 @@ MenuState::MenuState(StateStack& stack, Context context)
 	    std::make_shared<GUI::Button>(GUI::Button::Menu, *context.fonts, *context.textures);
 	historyButton->setPosition(587.f + 166.f / 2.f, 594.f + 25.f);
 	historyButton->setText("History");
-	historyButton->setCallback([this]() {
-		        requestStackPush(States::History);
-	});
+	historyButton->setCallback([this]() { requestStackPush(States::History); });
 
 	auto puzzlesButton =
 	    std::make_shared<GUI::Button>(GUI::Button::Menu, *context.fonts, *context.textures);
 	puzzlesButton->setPosition(587.f + 166.f / 2.f, 662.f + 25.f);
 	puzzlesButton->setText("Puzzles");
-	puzzlesButton->setCallback([this]() {
-		//        requestStackPop();
-		//        requestStackPush(States::Settings);
-	});
+	puzzlesButton->setCallback([this]() { requestStackPush(States::PuzzleMenu); });
 
 	auto settingsButton =
 	    std::make_shared<GUI::Button>(GUI::Button::Menu, *context.fonts, *context.textures);
