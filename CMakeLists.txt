@@ -97,6 +97,8 @@ add_executable(${TARGET_NAME}
         src/GUI/HistoryPanel.hpp
         src/States/PuzzleMenuState.cpp
         src/States/PuzzleMenuState.hpp
+        src/Game/Puzzle.cpp
+        src/Game/Puzzle.hpp
 )
 target_link_libraries(${TARGET_NAME} PRIVATE sfml-graphics sfml-audio)
 target_compile_features(${TARGET_NAME} PRIVATE cxx_std_17)

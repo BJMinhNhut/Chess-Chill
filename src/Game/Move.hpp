@@ -10,6 +10,7 @@
 class Move {
    public:
 	Move(int from, int to, int promotion = Piece::Type::None);
+	Move(std::string move, int promotion = Piece::Type::None);
 	int from() const;
 	int to() const;
 	int promote() const;

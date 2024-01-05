@@ -8,12 +8,14 @@
 #include "GUI/Label.hpp"
 #include "GUI/Sprite.hpp"
 #include "Game/GameSaver.hpp"
+#include "Template/Constants.hpp"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 
 #include <filesystem>
 #include <iostream>
 
+const std::string PuzzleMenuState::PATH = Constants::DATA_PREFIX + "resources/puzzles.csv";
 const int PuzzleMenuState::PAGE_MAX = 6;
 //const float PuzzleMenuState::PANEL_INDENT_X = 115.f;
 
@@ -21,6 +23,7 @@ PuzzleMenuState::PuzzleMenuState(StateStack& stack, Context context)
     : State(stack, context), mGUIContainer(), mPage(0), mPageContainer(), mPageLabel(nullptr) {
 	context.oldGames->load();
 	loadBasicGUI();
+	mList = Puzzle::loadPuzzles(PATH);
 //	loadHistoryList();
 //	loadCurrentPage();
 }
