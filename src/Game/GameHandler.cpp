@@ -49,13 +49,16 @@ GameHandler::GameHandler(State::Context context, sf::Vector2f position)
 	buildScene();
 	switch (*context.mode) {
 		case State::Context::Normal:
+			std::cout << "Game : Normal Mode\n";
 			initNormalGame();
 			break;
 		case State::Context::Review:
+			std::cout << "Game : Review Mode\n";
 			initReviewGame(context.oldGames->getPath());
 			break;
 		case State::Context::Puzzles:
-			initPuzzleGame();
+			std::cout << "Game : Puzzle Mode\n";
+			initPuzzleGame(*context.puzzle);
 			break;
 		default:
 			throw(std::invalid_argument("Invalid mode"));
@@ -80,7 +83,14 @@ void GameHandler::initReviewGame(const std::string& path) {
 	loadFirstMove();
 }
 
-void GameHandler::initPuzzleGame() {
+void GameHandler::initPuzzleGame(const Puzzle& puzzle) {
+	std::cout << "Load fen: " << puzzle.getFen() << "\n";
+	mLogic = GameLogic::Ptr(new StandardLogic(puzzle.getFen(), this));
+	for (int square = 0; square < GameLogic::BOARD_SIZE; ++square) {
+		int piece = mLogic->getPiece(square);
+		if (piece != 0)
+			addPiece(square, piece);
+	}
 }
 
 GameLogic* GameHandler::getLogic(GameOptions::Type type) {

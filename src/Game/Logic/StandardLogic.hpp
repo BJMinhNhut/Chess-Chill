@@ -9,6 +9,7 @@
 class StandardLogic: public GameLogic {
    public:
 	explicit StandardLogic(GameHandler* handler);
+	StandardLogic(const std::string& fen, GameHandler* handler);
 	StandardLogic(const StandardLogic& other, GameHandler* handler);
 	[[nodiscard]] StandardLogic* clone() const override;
 	~StandardLogic() override;

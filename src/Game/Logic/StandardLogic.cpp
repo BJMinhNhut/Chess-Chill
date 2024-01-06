@@ -10,8 +10,13 @@ StandardLogic::StandardLogic(GameHandler* handler) : GameLogic(FenGenerator::STA
 	updateStatus();
 }
 
-StandardLogic::StandardLogic(const StandardLogic& other, GameHandler* handler) : GameLogic(other, handler) {
+StandardLogic::StandardLogic(const std::string& fen, GameHandler* handler)
+    : GameLogic(fen, handler) {
+	updateStatus();
 }
+
+StandardLogic::StandardLogic(const StandardLogic& other, GameHandler* handler)
+    : GameLogic(other, handler) {}
 
 StandardLogic* StandardLogic::clone() const {
 	return new StandardLogic(*this, nullptr);
@@ -38,8 +43,7 @@ void StandardLogic::updateStatus() {
 	} else if (isFiftyMoveRule()) {
 		mStatus = FiftyMoveRule;
 		//		std::cout << "Fifty move rule\n";
-	}
-	else {
+	} else {
 		mStatus = OnGoing;
 	}
 }

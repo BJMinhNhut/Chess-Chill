@@ -104,7 +104,7 @@ class GameHandler : public sf::NonCopyable {
 
 	void initNormalGame();
 	void initReviewGame(const std::string& path);
-	void initPuzzleGame();
+	void initPuzzleGame(const Puzzle& puzzle);
 
    private:
 	sf::RenderWindow& mWindow;

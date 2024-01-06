@@ -55,6 +55,7 @@ std::vector<Puzzle> Puzzle::loadPuzzles(const std::string& path) {
 	std::string fen, solution, status;
 	std::string line, word;
 	int count = 0;
+	file.seekg(3);
 	while (std::getline(file, line)) {
 		std::stringstream ss(line);
 
@@ -71,7 +72,7 @@ std::vector<Puzzle> Puzzle::loadPuzzles(const std::string& path) {
 				status = word;
 			}
 		}
-		//		std::cout << fen << " " << solution << " " << status << std::endl;
+		std::cout << fen << " " << solution << " " << status << std::endl;
 		puzzles.emplace_back(++count, fen, solution, static_cast<Status>(std::stoi(status)));
 	}
 	std::cout << puzzles.size() << " puzzles loaded\n";
