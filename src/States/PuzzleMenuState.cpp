@@ -16,16 +16,16 @@
 #include <iostream>
 
 const std::string PuzzleMenuState::PATH = Constants::DATA_PREFIX + "resources/puzzles.csv";
-const int PuzzleMenuState::PAGE_MAX = 6;
-//const float PuzzleMenuState::PANEL_INDENT_X = 115.f;
+const int PuzzleMenuState::PAGE_MAX = 20;
+const float PuzzleMenuState::PANEL_INDENT_X = 190.f;
+const float PuzzleMenuState::PANEL_INDENT_Y = 160.f;
 
 PuzzleMenuState::PuzzleMenuState(StateStack& stack, Context context)
     : State(stack, context), mGUIContainer(), mPage(0), mPageContainer(), mPageLabel(nullptr) {
 	context.oldGames->load();
 	loadBasicGUI();
 	mList = Puzzle::loadPuzzles(PATH);
-//	loadHistoryList();
-//	loadCurrentPage();
+	loadCurrentPage();
 }
 
 void PuzzleMenuState::draw() {
@@ -55,9 +55,7 @@ void PuzzleMenuState::loadBasicGUI() {
 	auto backButton =
 	    std::make_shared<GUI::Button>(GUI::Button::Back, *context.fonts, *context.textures);
 	backButton->setPosition(509.f, 53.f);
-	backButton->setCallback([this]() {
-		requestStackPop();
-	});
+	backButton->setCallback([this]() { requestStackPop(); });
 	mGUIContainer.pack(backButton);
 
 	auto homeButton =
@@ -99,8 +97,7 @@ void PuzzleMenuState::loadBasicGUI() {
 }
 
 int PuzzleMenuState::getNumPages() const {
-	return 1;
-//	return ((int)getContext().oldGames->getSize() + PAGE_MAX - 1) / PAGE_MAX;
+	return ((int)mList.size() + PAGE_MAX - 1) / PAGE_MAX;
 }
 
 void PuzzleMenuState::nextPage() {
@@ -117,40 +114,40 @@ void PuzzleMenuState::previousPage() {
 	loadCurrentPage();
 }
 
-//void HistoryState::loadPanel(int id, int pathID, const std::string& path) {
-//	GameSaver saver(path);
-//	//	std::cout << "Path " << path << '\n';
-//
-//	GameOptions options = saver.getOptions();
-//	//	std::cout << "Game mode: " << options.getStringMode() << '\n';
-//	//	std::cout << "Game type: " << options.getStringType() << '\n';
-//	//	std::cout << "Game time: " << options.getStringTime() << '\n';
-//	//	std::cout << "Game result: " << saver.getResult() << '\n';
-//	//	std::cout << "Snapshot size: " << saver.size() << '\n';
-//
-//	auto historyPanel =
-//	    std::make_shared<GUI::HistoryPanel>(*getContext().fonts, *getContext().textures);
-//	historyPanel->setMode(options.getStringMode());
-//	historyPanel->setType(options.getStringType());
-//	historyPanel->setTime(options.getStringTime());
-//	historyPanel->setResult(saver.getResult());
-//	historyPanel->setDate(saver.getDate());
-//	historyPanel->setPosition(482.f, 104.f + (float)id * PANEL_INDENT);
-//	historyPanel->setCallback([&, pathID]() {
-//		getContext().oldGames->setIndex(pathID);
-//		requestStackPush(States::Review);
-//	});
-//	mPageContainer.pack(historyPanel);
-//}
+GUI::Button::Type PuzzleMenuState::getButtonType(Puzzle::Status status) {
+	switch (status) {
+		case Puzzle::Status::Solved:
+			return GUI::Button::PuzzleSolved;
+		case Puzzle::Status::Failed:
+			return GUI::Button::PuzzleFailed;
+		default:
+			return GUI::Button::Puzzle;
+	}
+}
+
+void PuzzleMenuState::loadPanel(int order, int puzzleID) {
+	const Puzzle& puzzle = mList[puzzleID];
+	auto button = std::make_shared<GUI::Button>(getButtonType(puzzle.getStatus()),
+	                                            *getContext().fonts, *getContext().textures);
+	button->setText(std::to_string(puzzleID + 1));
+
+	int row = order / 5, col = order % 5;
+	button->setPosition(360.f + 60.f + (float)col * PANEL_INDENT_X,
+	                    150.f + 60.f + (float)row * PANEL_INDENT_Y);
+	button->setCallback([this]() {
+		//		requestStackPush(States::Puzzle);
+	});
+	mPageContainer.pack(button);
+}
 
 void PuzzleMenuState::loadCurrentPage() {
-//	mPageContainer.clear();
-//	assert(mPage >= 0 && mPage < getNumPages());
-//	int start = mPage * PAGE_MAX;
-//	int end = std::min(start + PAGE_MAX, (int)getContext().oldGames->getSize());
-//	for (int i = start; i < end; i++) {
-//		loadPanel(i - start, i, getContext().oldGames->getPathByID(i));
-//	}
-//	mPageLabel->setText(std::to_string(mPage + 1) + "/" + std::to_string(getNumPages()));
-//	mPageLabel->alignCenter();
+	mPageContainer.clear();
+	assert(mPage >= 0 && mPage < getNumPages());
+	int start = mPage * PAGE_MAX;
+	int end = std::min(start + PAGE_MAX, (int)mList.size());
+	for (int i = start; i < end; i++) {
+		loadPanel(i - start, i);
+	}
+	mPageLabel->setText(std::to_string(mPage + 1) + "/" + std::to_string(getNumPages()));
+	mPageLabel->alignCenter();
 }

@@ -5,6 +5,7 @@
 #ifndef CHESS_CHILL_PUZZLEMENUSTATE_HPP
 #define CHESS_CHILL_PUZZLEMENUSTATE_HPP
 
+#include "GUI/Button.hpp"
 #include "GUI/Container.hpp"
 #include "GUI/Label.hpp"
 #include "Game/Puzzle.hpp"
@@ -21,13 +22,14 @@ class PuzzleMenuState : public State {
    private:
 	void loadBasicGUI();
 
-	//	void loadPanel(int id, int pathID, const std::string& path);
+	void loadPanel(int order, int puzzleID);
 
 	void loadCurrentPage();
 	void nextPage();
 	void previousPage();
 
 	int getNumPages() const;
+	static GUI::Button::Type getButtonType(Puzzle::Status status);
 
    private:
 	static const int PAGE_MAX;

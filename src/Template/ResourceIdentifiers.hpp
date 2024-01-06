@@ -52,6 +52,13 @@ enum ID {
 	HistoryButtonNormal,
 	HistoryButtonSelected,
 
+	PuzzleNormal,
+	PuzzleSelected,
+	PuzzleSolvedNormal,
+	PuzzleSolvedSelected,
+	PuzzleFailedNormal,
+	PuzzleFailedSelected,
+
 	Board,
 	PieceSet,
 	GameGUI,

@@ -35,6 +35,9 @@ class Button : public Component {
 		Previous,
 		Next,
 		History,
+		Puzzle,
+		PuzzleSolved,
+		PuzzleFailed,
 		ButtonCount
 	};
 

@@ -56,6 +56,12 @@ Textures::ID Button::getNormalTextureID(Type type) {
 			return Textures::NextButtonNormal;
 		case History:
 			return Textures::HistoryButtonNormal;
+		case Puzzle:
+			return Textures::PuzzleNormal;
+		case PuzzleSolved:
+			return Textures::PuzzleSolvedNormal;
+		case PuzzleFailed:
+			return Textures::PuzzleFailedNormal;
 		default:
 			return Textures::Background;
 	}
@@ -87,6 +93,12 @@ Textures::ID Button::getSelectedTextureID(Type type) {
 			return Textures::NextButtonSelected;
 		case History:
 			return Textures::HistoryButtonSelected;
+		case Puzzle:
+			return Textures::PuzzleSelected;
+		case PuzzleSolved:
+			return Textures::PuzzleSolvedSelected;
+		case PuzzleFailed:
+			return Textures::PuzzleFailedSelected;
 		default:
 			return Textures::Background;
 	}
@@ -101,6 +113,13 @@ Textures::ID Button::getPressedTextureID(Type type) {
 
 void Button::setFont(Type type, const FontHolder& fonts) {
 	switch (type) {
+		case Puzzle:
+		case PuzzleSolved:
+		case PuzzleFailed:
+			mText.setFont(fonts.get(Fonts::Bold));
+			mText.setCharacterSize(32u);
+			mText.setFillColor(sf::Color::White);
+			break;
 		case Menu:
 			mText.setPosition(0.f, -3.f);
 		default:
@@ -169,8 +188,7 @@ void Button::handleEvent(const sf::Event& event) {}
 
 bool Button::contains(sf::Vector2i point) const {
 	sf::Vector2f origin = mSprite.getOrigin();
-	sf::IntRect bounds(getPosition().x - origin.x,
-	                   getPosition().y - origin.y,
+	sf::IntRect bounds(getPosition().x - origin.x, getPosition().y - origin.y,
 	                   mSprite.getGlobalBounds().width, mSprite.getGlobalBounds().height);
 
 	return bounds.contains(point);

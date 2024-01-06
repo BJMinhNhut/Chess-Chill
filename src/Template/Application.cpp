@@ -158,6 +158,18 @@ void Application::loadImages() {
 	               Constants::DATA_PREFIX + "resources/images/buttons/history_normal.png");
 	mTextures.load(Textures::HistoryButtonSelected,
 	               Constants::DATA_PREFIX + "resources/images/buttons/history_selected.png");
+	mTextures.load(Textures::PuzzleNormal,
+	               Constants::DATA_PREFIX + "resources/images/buttons/puzzle_normal.png");
+	mTextures.load(Textures::PuzzleSelected,
+	               Constants::DATA_PREFIX + "resources/images/buttons/puzzle_selected.png");
+	mTextures.load(Textures::PuzzleSolvedNormal,
+	               Constants::DATA_PREFIX + "resources/images/buttons/puzzle_solved_normal.png");
+	mTextures.load(Textures::PuzzleSolvedSelected,
+	               Constants::DATA_PREFIX + "resources/images/buttons/puzzle_solved_selected.png");
+	mTextures.load(Textures::PuzzleFailedNormal,
+	               Constants::DATA_PREFIX + "resources/images/buttons/puzzle_failed_normal.png");
+	mTextures.load(Textures::PuzzleFailedSelected,
+	               Constants::DATA_PREFIX + "resources/images/buttons/puzzle_failed_selected.png");
 }
 
 void Application::run() {
