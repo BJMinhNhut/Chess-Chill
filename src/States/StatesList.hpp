@@ -11,6 +11,7 @@
 #include "HistoryState.hpp"
 #include "MenuState.hpp"
 #include "PuzzleMenuState.hpp"
+#include "PuzzleState.hpp"
 #include "ReviewState.hpp"
 #include "SettingsState.hpp"
 

@@ -19,8 +19,7 @@ const float PuzzleMenuState::PANEL_INDENT_X = 190.f;
 const float PuzzleMenuState::PANEL_INDENT_Y = 160.f;
 
 PuzzleMenuState::PuzzleMenuState(StateStack& stack, Context context)
-    : State(stack, context), mGUIContainer(), mPage(0), mPageContainer(), mPageLabel(nullptr) {
-	context.oldGames->load();
+    : State(stack, context), mGUIContainer(), mPage(0), mPageContainer(), mPageLabel(nullptr), mList() {
 	loadBasicGUI();
 	mList = Puzzle::loadPuzzles(PATH);
 	loadCurrentPage();
@@ -60,7 +59,7 @@ void PuzzleMenuState::loadBasicGUI() {
 	    std::make_shared<GUI::Button>(GUI::Button::Home, *context.fonts, *context.textures);
 	homeButton->setPosition(1063.f + 54.f / 2, 53.f);
 	homeButton->setCallback([this]() {
-		requestStateClear();
+		requestStackClear();
 		requestStackPush(States::Menu);
 	});
 	mGUIContainer.pack(homeButton);
@@ -132,9 +131,7 @@ void PuzzleMenuState::loadPanel(int order, int puzzleID) {
 	int row = order / 5, col = order % 5;
 	button->setPosition(360.f + 60.f + (float)col * PANEL_INDENT_X,
 	                    150.f + 60.f + (float)row * PANEL_INDENT_Y);
-	button->setCallback([this]() {
-		//		requestStackPush(States::Puzzle);
-	});
+	button->setCallback([this]() { requestStackPush(States::Puzzles); });
 	mPageContainer.pack(button);
 }
 

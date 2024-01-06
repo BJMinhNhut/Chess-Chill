@@ -40,7 +40,7 @@ void GameOptionsState::loadBasicGUI() {
 	homeButton->setCallback([this]() {
 		getContext().settings->save();
 		getContext().oldGames->resetIndex();
-		requestStateClear();
+		requestStackClear();
 		requestStackPush(States::Menu);
 	});
 	mGUIContainer.pack(homeButton);

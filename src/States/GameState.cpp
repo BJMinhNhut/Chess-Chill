@@ -71,7 +71,7 @@ void GameState::loadBasicGUI() {
 	    std::make_shared<GUI::Button>(GUI::Button::Home, *context.fonts, *context.textures);
 	homeButton->setPosition(1063.f + 54.f / 2, 53.f);
 	homeButton->setCallback([this]() {
-		requestStateClear();
+		requestStackClear();
 		requestStackPush(States::Menu);
 	});
 	mGUIContainer.pack(homeButton);
@@ -194,7 +194,7 @@ void GameState::loadEndGameGUI() {
 	homeButton->setPosition(547.f + 166.f / 2, 540.f + 48.f / 2);
 	homeButton->setText("Home");
 	homeButton->setCallback([this]() {
-		requestStateClear();
+		requestStackClear();
 		requestStackPush(States::Menu);
 	});
 	mEndGameContainer.pack(homeButton);

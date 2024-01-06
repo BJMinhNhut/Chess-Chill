@@ -99,6 +99,8 @@ add_executable(${TARGET_NAME}
         src/States/PuzzleMenuState.hpp
         src/Game/Puzzle.cpp
         src/Game/Puzzle.hpp
+        src/States/PuzzleState.cpp
+        src/States/PuzzleState.hpp
 )
 target_link_libraries(${TARGET_NAME} PRIVATE sfml-graphics sfml-audio)
 target_compile_features(${TARGET_NAME} PRIVATE cxx_std_17)

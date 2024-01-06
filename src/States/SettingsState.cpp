@@ -40,7 +40,7 @@ void SettingsState::loadBasicGUI() {
 	homeButton->setPosition(1063.f + 54.f / 2, 53.f);
 	homeButton->setCallback([this]() {
 		getContext().settings->save();
-		requestStateClear();
+		requestStackClear();
 		requestStackPush(States::Menu);
 	});
 	mGUIContainer.pack(homeButton);

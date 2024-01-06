@@ -55,7 +55,7 @@ class State {
 
 	void requestStackPop();
 
-	void requestStateClear();
+	void requestStackClear();
 
 	[[nodiscard]] Context getContext() const;
 

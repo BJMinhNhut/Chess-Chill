@@ -59,6 +59,7 @@ void Application::registerStates() {
 	mStateStack.registerState<HistoryState>(States::History);
 	mStateStack.registerState<ReviewState>(States::Review);
 	mStateStack.registerState<PuzzleMenuState>(States::PuzzleMenu);
+	mStateStack.registerState<PuzzleState>(States::Puzzles);
 }
 
 void Application::loadIcon() {
