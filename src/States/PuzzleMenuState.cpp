@@ -4,7 +4,6 @@
 
 #include "PuzzleMenuState.hpp"
 #include "GUI/Button.hpp"
-#include "GUI/HistoryPanel.hpp"
 #include "GUI/Label.hpp"
 #include "GUI/Sprite.hpp"
 #include "Game/GameSaver.hpp"
@@ -13,7 +12,6 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 
 #include <filesystem>
-#include <iostream>
 
 const std::string PuzzleMenuState::PATH = Constants::DATA_PREFIX + "resources/puzzles.csv";
 const int PuzzleMenuState::PAGE_MAX = 20;
