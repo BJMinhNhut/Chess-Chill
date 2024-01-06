@@ -102,6 +102,10 @@ class GameHandler : public sf::NonCopyable {
 	void loadSnapShot(int index);
 	void saveSnapShot();
 
+	void initNormalGame();
+	void initReviewGame(const std::string& path);
+	void initPuzzleGame();
+
    private:
 	sf::RenderWindow& mWindow;
 	TextureHolder& mTextures;

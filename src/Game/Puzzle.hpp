@@ -5,10 +5,10 @@
 #ifndef CHESS_CHILL_PUZZLE_HPP
 #define CHESS_CHILL_PUZZLE_HPP
 
+#include "Move.hpp"
+
 #include <string>
 #include <vector>
-
-class Move;
 
 class Puzzle {
    public:
@@ -19,7 +19,8 @@ class Puzzle {
 	};
 
    public:
-	Puzzle(std::string  fen, const std::string& solution, Status status);
+	Puzzle();
+	Puzzle(std::string fen, const std::string& solution, Status status);
 
 	[[nodiscard]] std::string getFen() const;
 	[[nodiscard]] Move getMove(int index) const;

@@ -128,7 +128,7 @@ void GameSaver::load(const std::string& path) {
 	mSnapShots.resize(mSize);
 	file.read((char*)&(mSnapShots[0]), sizeof(SnapShot) * mSize);
 	file.close();
-	std::cout << "Game loaded from " << path << '\n';
+//	std::cout << "Game loaded from " << path << '\n';
 }
 
 void GameSaver::save(GameLogic::Result result) {

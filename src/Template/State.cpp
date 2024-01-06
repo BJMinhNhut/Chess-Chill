@@ -7,14 +7,16 @@
 
 State::Context::Context(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts,
                         SoundPlayer& sounds, Settings& settings, GameOptions& options,
-                        OldGames& oldGames)
+                        OldGames& oldGames, Puzzle& puzzle, Mode& mode)
     : window(&window),
       textures(&textures),
       fonts(&fonts),
       sounds(&sounds),
       settings(&settings),
       options(&options),
-      oldGames(&oldGames) {}
+      oldGames(&oldGames),
+      puzzle(&puzzle),
+      mode(&mode) {}
 
 State::State(StateStack& stack, Context context) : mStack(&stack), mContext(context) {}
 

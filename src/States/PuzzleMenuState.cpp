@@ -131,7 +131,11 @@ void PuzzleMenuState::loadPanel(int order, int puzzleID) {
 	int row = order / 5, col = order % 5;
 	button->setPosition(360.f + 60.f + (float)col * PANEL_INDENT_X,
 	                    150.f + 60.f + (float)row * PANEL_INDENT_Y);
-	button->setCallback([this]() { requestStackPush(States::Puzzles); });
+	button->setCallback([this, puzzleID]() {
+		*getContext().puzzle = mList[puzzleID];
+		*getContext().mode = Context::Puzzles;
+		requestStackPush(States::Puzzles);
+	});
 	mPageContainer.pack(button);
 }
 

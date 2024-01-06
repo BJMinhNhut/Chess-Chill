@@ -11,6 +11,7 @@
 #include "Settings.hpp"
 #include "GameOptions.hpp"
 #include "OldGames.hpp"
+#include "Game/Puzzle.hpp"
 
 #include "SFML/System/Time.hpp"
 #include "SFML/Window/Event.hpp"
@@ -27,8 +28,14 @@ class State {
 	typedef std::unique_ptr<State> Ptr;
 
 	struct Context {
+		enum Mode {
+			None,
+			Normal,
+			Review,
+			Puzzles,
+		};
 		Context(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts,
-		        SoundPlayer& sounds, Settings& settings, GameOptions& options, OldGames& oldGames);
+		        SoundPlayer& sounds, Settings& settings, GameOptions& options, OldGames& oldGames, Puzzle& puzzle, Mode &mode);
 
 		sf::RenderWindow* window;
 		TextureHolder* textures;
@@ -37,6 +44,8 @@ class State {
 		Settings* settings;
 		GameOptions* options;
 		OldGames* oldGames;
+		Puzzle* puzzle;
+		Mode *mode;
 	};
 
    public:

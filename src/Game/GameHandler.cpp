@@ -47,21 +47,40 @@ GameHandler::GameHandler(State::Context context, sf::Vector2f position)
 	mWindow.setView(mWindow.getDefaultView());
 
 	buildScene();
-	if (context.oldGames->pathChosen()) {
-//		std::cout << "Load from: " << context.oldGames->getPath() << "\n";
-		mSaver.load(context.oldGames->getPath());
-//		context.oldGames->resetIndex();
-		loadFirstMove();
-	} else {
-		std::cout << "new game\n";
-		mLogic = GameLogic::Ptr(getLogic(mSaver.getOptions().getType()));
-		for (int square = 0; square < GameLogic::BOARD_SIZE; ++square) {
-			int piece = mLogic->getPiece(square);
-			if (piece != 0)
-				addPiece(square, piece);
-		}
-		saveSnapShot();
+	switch (*context.mode) {
+		case State::Context::Normal:
+			initNormalGame();
+			break;
+		case State::Context::Review:
+			initReviewGame(context.oldGames->getPath());
+			break;
+		case State::Context::Puzzles:
+			initPuzzleGame();
+			break;
+		default:
+			throw(std::invalid_argument("Invalid mode"));
+			break;
 	}
+}
+
+void GameHandler::initNormalGame() {
+	mLogic = GameLogic::Ptr(getLogic(mSaver.getOptions().getType()));
+	for (int square = 0; square < GameLogic::BOARD_SIZE; ++square) {
+		int piece = mLogic->getPiece(square);
+		if (piece != 0)
+			addPiece(square, piece);
+	}
+	saveSnapShot();
+}
+
+void GameHandler::initReviewGame(const std::string& path) {
+	//		std::cout << "Load from: " << context.oldGames->getPath() << "\n";
+	mSaver.load(path);
+	//		context.oldGames->resetIndex();
+	loadFirstMove();
+}
+
+void GameHandler::initPuzzleGame() {
 }
 
 GameLogic* GameHandler::getLogic(GameOptions::Type type) {

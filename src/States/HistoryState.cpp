@@ -139,6 +139,7 @@ void HistoryState::loadPanel(int id, int pathID, const std::string& path) {
 	historyPanel->setPosition(482.f, 104.f + (float)id * PANEL_INDENT);
 	historyPanel->setCallback([&, pathID]() {
 		getContext().oldGames->setIndex(pathID);
+		*getContext().mode = Context::Review;
 		requestStackPush(States::Review);
 	});
 	mPageContainer.pack(historyPanel);

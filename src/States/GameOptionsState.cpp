@@ -39,7 +39,6 @@ void GameOptionsState::loadBasicGUI() {
 	homeButton->setPosition(1063.f + 54.f / 2, 53.f);
 	homeButton->setCallback([this]() {
 		getContext().settings->save();
-		getContext().oldGames->resetIndex();
 		requestStackClear();
 		requestStackPush(States::Menu);
 	});
@@ -63,6 +62,7 @@ void GameOptionsState::loadBasicGUI() {
 	auto playButton = std::make_shared<GUI::Button>(GUI::Button::Play, *context.fonts, *context.textures);
 	playButton->setCallback([this]() {
 		getContext().oldGames->resetIndex();
+		*getContext().mode = Context::Normal;
 		requestStackPush(States::Game);
 	});
 	playButton->setPosition(973.f + 306.f/2, 638.f + 82.f/2);

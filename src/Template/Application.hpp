@@ -43,6 +43,8 @@ class Application {
 	Settings mSettings;
 	GameOptions mOptions;
 	OldGames mOldGames;
+	Puzzle mPuzzle;
+	State::Context::Mode mMode;
 
 	StateStack mStateStack;
 
