@@ -9,8 +9,12 @@
 
 #include <SFML/Graphics/RenderWindow.hpp>
 
+const sf::Vector2f PuzzleState::BOARD_POSITION(262.f, 105.f);
+
 PuzzleState::PuzzleState(StateStack& stack, Context context)
-    : State(stack, context), mGUIContainer() {
+    : State(stack, context),
+      mGUIContainer(),
+      mGame(context, BOARD_POSITION + sf::Vector2f(25.f, 25.f)) {
 	loadBasicGUI();
 }
 
@@ -18,6 +22,7 @@ void PuzzleState::draw() {
 	auto& window = *getContext().window;
 	window.setView(window.getDefaultView());
 	window.draw(mGUIContainer);
+	mGame.draw();
 }
 
 bool PuzzleState::update(sf::Time dt) {
@@ -55,7 +60,8 @@ void PuzzleState::loadBasicGUI() {
 	titleBar->setPosition(800.f, 53.f);
 	mGUIContainer.pack(titleBar);
 
-	auto titleLabel = std::make_shared<GUI::Label>(GUI::Label::Bold, "Puzzle - Level", *context.fonts);
+	auto titleLabel = std::make_shared<GUI::Label>(
+	    GUI::Label::Bold, "Puzzle - Level " + std::to_string(getContext().puzzle->getId()), *context.fonts);
 	titleLabel->setPosition(titleBar->getPosition());
 	titleLabel->alignCenter();
 	mGUIContainer.pack(titleLabel);

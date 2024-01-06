@@ -10,8 +10,8 @@
 #include <sstream>
 #include <string>
 
-Puzzle::Puzzle(std::string fen, const std::string& solution, Status status)
-    : mFen(std::move(fen)), mSolution(), mStatus(status) {
+Puzzle::Puzzle(int id, std::string fen, const std::string& solution, Status status)
+    : mFen(std::move(fen)), mSolution(), mStatus(status), mId(id) {
 	std::string move;
 	for (int i = 0; i < solution.size(); ++i) {
 		if (solution[i] == ' ' || i + 1 == solution.size()) {
@@ -23,7 +23,7 @@ Puzzle::Puzzle(std::string fen, const std::string& solution, Status status)
 	}
 }
 
-Puzzle::Puzzle() : mFen(), mSolution(), mStatus(Unsolved) {}
+Puzzle::Puzzle() : mFen(), mSolution(), mStatus(Unsolved), mId() {}
 
 std::string Puzzle::getFen() const {
 	return mFen;
@@ -37,6 +37,14 @@ Puzzle::Status Puzzle::getStatus() const {
 	return mStatus;
 }
 
+int8_t Puzzle::getId() const {
+	return mId;
+}
+
+size_t Puzzle::getSolutionSize() const {
+	return mSolution.size();
+}
+
 std::vector<Puzzle> Puzzle::loadPuzzles(const std::string& path) {
 	std::vector<Puzzle> puzzles;
 	std::ifstream file(path, std::ios::in);
@@ -46,6 +54,7 @@ std::vector<Puzzle> Puzzle::loadPuzzles(const std::string& path) {
 	}
 	std::string fen, solution, status;
 	std::string line, word;
+	int count = 0;
 	while (std::getline(file, line)) {
 		std::stringstream ss(line);
 
@@ -63,7 +72,7 @@ std::vector<Puzzle> Puzzle::loadPuzzles(const std::string& path) {
 			}
 		}
 		//		std::cout << fen << " " << solution << " " << status << std::endl;
-		puzzles.emplace_back(fen, solution, static_cast<Status>(std::stoi(status)));
+		puzzles.emplace_back(++count, fen, solution, static_cast<Status>(std::stoi(status)));
 	}
 	std::cout << puzzles.size() << " puzzles loaded\n";
 	return puzzles;
