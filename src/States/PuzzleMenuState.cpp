@@ -39,7 +39,23 @@ bool PuzzleMenuState::update(sf::Time dt) {
 bool PuzzleMenuState::handleEvent(const sf::Event& event) {
 	mGUIContainer.handleEvent(event);
 	mPageContainer.handleEvent(event);
+#ifdef SFML_DEBUG
+	if (event.type == sf::Event::KeyPressed) {
+		if (event.key.code == sf::Keyboard::X) {
+			resetStatus();
+			getContext().puzzles->save();
+			requestStackPop();
+			requestStackPush(States::PuzzleMenu);
+		}
+	}
+#endif
 	return false;
+}
+
+void PuzzleMenuState::resetStatus() {
+	for (int i = 0; i < getContext().puzzles->size(); i++) {
+		getContext().puzzles->getPuzzle(i).setStatus(Puzzle::Unsolved);
+	}
 }
 
 void PuzzleMenuState::loadBasicGUI() {
@@ -132,6 +148,7 @@ void PuzzleMenuState::loadPanel(int order, int puzzleID) {
 	button->setCallback([this, puzzleID]() {
 		getContext().puzzles->setPuzzle(puzzleID);
 		*getContext().mode = Context::Puzzles;
+		requestStackPop();
 		requestStackPush(States::Puzzles);
 	});
 	mPageContainer.pack(button);

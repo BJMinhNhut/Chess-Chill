@@ -29,6 +29,10 @@ PuzzleState::PuzzleState(StateStack& stack, Context context)
 	loadFailGUI();
 }
 
+PuzzleState::~PuzzleState() {
+	getContext().puzzles->save();
+}
+
 void PuzzleState::draw() {
 	auto& window = *getContext().window;
 	window.setView(window.getDefaultView());
@@ -78,7 +82,10 @@ void PuzzleState::loadBasicGUI() {
 	auto backButton =
 	    std::make_shared<GUI::Button>(GUI::Button::Back, *context.fonts, *context.textures);
 	backButton->setPosition(509.f, 53.f);
-	backButton->setCallback([this]() { requestStackPop(); });
+	backButton->setCallback([this]() {
+		requestStackPop();
+		requestStackPush(States::PuzzleMenu);
+	});
 	mGUIContainer.pack(backButton);
 
 	auto homeButton =
@@ -183,12 +190,16 @@ void PuzzleState::updateStatus() {
 	if (lastMove == mPuzzle.getMove(currentMove - 1)) {
 		if (currentMove == mPuzzle.getSolutionSize()) {
 			mStatus = Puzzle::Solved;
+			mPuzzle.setStatus(Puzzle::Solved);
 			getContext().sounds->play(SoundEffect::EndGame);
 		} else {
 			mStatus = Puzzle::Unsolved;
 		}
 	} else {
 		getContext().sounds->play(SoundEffect::OutOfBound);
+		if (mPuzzle.getStatus() == Puzzle::Unsolved) {
+			mPuzzle.setStatus(Puzzle::Failed);
+		}
 		mStatus = Puzzle::Failed;
 	}
 }

@@ -29,6 +29,8 @@ class Puzzle {
 	[[nodiscard]] int8_t getId() const;
 	[[nodiscard]] size_t getSolutionSize() const;
 
+	void setStatus(Status status);
+
    private:
 	int8_t mId;
 	std::string mFen, mStringSolution;

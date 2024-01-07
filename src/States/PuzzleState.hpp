@@ -16,6 +16,9 @@ class PuzzleState : public State {
 
    public:
 	PuzzleState(StateStack& stack, Context context);
+	~PuzzleState() override;
+
+   public:
 
 	void draw() override;
 	bool update(sf::Time dt) override;

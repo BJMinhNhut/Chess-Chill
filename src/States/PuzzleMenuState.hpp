@@ -28,6 +28,8 @@ class PuzzleMenuState : public State {
 	void nextPage();
 	void previousPage();
 
+	void resetStatus();
+
 	int getNumPages() const;
 	static GUI::Button::Type getButtonType(Puzzle::Status status);
 

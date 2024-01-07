@@ -39,6 +39,10 @@ Puzzle::Status Puzzle::getStatus() const {
 	return mStatus;
 }
 
+void Puzzle::setStatus(Puzzle::Status status) {
+	mStatus = status;
+}
+
 int8_t Puzzle::getId() const {
 	return mId;
 }
