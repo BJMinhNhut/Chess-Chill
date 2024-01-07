@@ -26,10 +26,10 @@ Application::Application()
       mSounds(),
       mSettings(),
       mOptions(),
-      mPuzzle(),
+      mPuzzles(),
       mMode(State::Context::None),
       mStateStack(State::Context(mWindow, mTextures, mFonts, mSounds, mSettings, mOptions,
-                                 mOldGames, mPuzzle, mMode)) {
+                                 mOldGames, mPuzzles, mMode)) {
 
 	mWindow.setFramerateLimit(120);
 

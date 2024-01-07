@@ -34,11 +34,9 @@ class PuzzleMenuState : public State {
    private:
 	static const int PAGE_MAX;
 	static const float PANEL_INDENT_X, PANEL_INDENT_Y;
-	static const std::string PATH;
 
    private:
 	GUI::Container mGUIContainer, mPageContainer;
-	std::vector<Puzzle> mList;
 	GUI::Label::Ptr mPageLabel;
 	int mPage;
 };

@@ -21,7 +21,8 @@ PuzzleState::PuzzleState(StateStack& stack, Context context)
       mPlayer(mGame, !mGame.mLogic->getTurn()),
       mCoolDown(sf::seconds(1.f)),
       currentMove(0),
-      mStatus(Puzzle::Unsolved) {
+      mStatus(Puzzle::Unsolved),
+      mPuzzle(context.puzzles->getChosenPuzzle()) {
 	loadBasicGUI();
 	loadNormalGUI();
 	loadCorrectGUI();
@@ -42,7 +43,7 @@ bool PuzzleState::update(sf::Time dt) {
 	} else if (mStatus == Puzzle::Unsolved) {
 		if (mCoolDown.asSeconds() < 0.f) {
 			mCoolDown = sf::seconds(1.f);
-			mGame.handleMove(getContext().puzzle->getMove(currentMove++));
+			mGame.handleMove(mPuzzle.getMove(currentMove++));
 		} else {
 			mCoolDown -= dt;
 		}
@@ -95,8 +96,7 @@ void PuzzleState::loadBasicGUI() {
 	mGUIContainer.pack(titleBar);
 
 	auto titleLabel = std::make_shared<GUI::Label>(
-	    GUI::Label::Bold, "Puzzle - Level " + std::to_string(getContext().puzzle->getId()),
-	    *context.fonts);
+	    GUI::Label::Bold, "Puzzle - Level " + std::to_string(mPuzzle.getId()), *context.fonts);
 	titleLabel->setPosition(titleBar->getPosition());
 	titleLabel->alignCenter();
 	mGUIContainer.pack(titleLabel);
@@ -136,19 +136,23 @@ void PuzzleState::loadCorrectGUI() {
 
 	auto nextButton = std::make_shared<GUI::Button>(GUI::Button::Menu, *getContext().fonts,
 	                                                *getContext().textures);
-	nextButton->setPosition(1092.f + 166.f / 2.f, 443.f + 50.f / 2.f);
+	nextButton->setPosition(1092.f + 166.f / 2.f, 508.f + 50.f / 2.f);
 	nextButton->setText("Next level");
 	nextButton->setCallback([this]() {
-		//		mGame.handleMove(getContext().puzzle->getMove(currentMove));
+		getContext().puzzles->nextPuzzle();
+		requestStackPop();
+		if (getContext().puzzles->getChosenPuzzle().getId() < 100)
+			requestStackPush(States::Puzzles);
 	});
 	mStatusContainer[1].pack(nextButton);
 
 	auto tryButton = std::make_shared<GUI::Button>(GUI::Button::Menu, *getContext().fonts,
 	                                               *getContext().textures);
-	tryButton->setPosition(1092.f + 166.f / 2.f, 508.f + 50.f / 2.f);
+	tryButton->setPosition(1092.f + 166.f / 2.f, 443.f + 50.f / 2.f);
 	tryButton->setText("Try again");
 	tryButton->setCallback([this]() {
-		//		mGame.handleMove(getContext().puzzle->getMove(currentMove));
+		requestStackPop();
+		requestStackPush(States::Puzzles);
 	});
 	mStatusContainer[1].pack(tryButton);
 }
@@ -176,8 +180,8 @@ void PuzzleState::updateStatus() {
 	int from = mGame.getLastMove() & 63;
 	int to = (mGame.getLastMove() >> 6) & 63;
 	Move lastMove(from, to);
-	if (lastMove == getContext().puzzle->getMove(currentMove - 1)) {
-		if (currentMove == getContext().puzzle->getSolutionSize()) {
+	if (lastMove == mPuzzle.getMove(currentMove - 1)) {
+		if (currentMove == mPuzzle.getSolutionSize()) {
 			mStatus = Puzzle::Solved;
 			getContext().sounds->play(SoundEffect::EndGame);
 		} else {

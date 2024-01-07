@@ -23,16 +23,15 @@ class Puzzle {
 	Puzzle(int id, std::string fen, const std::string& solution, Status status);
 
 	[[nodiscard]] std::string getFen() const;
+	[[nodiscard]] std::string getStringSolution() const;
 	[[nodiscard]] Move getMove(int index) const;
 	[[nodiscard]] Status getStatus() const;
 	[[nodiscard]] int8_t getId() const;
 	[[nodiscard]] size_t getSolutionSize() const;
 
-	static std::vector<Puzzle> loadPuzzles(const std::string& path);
-
    private:
 	int8_t mId;
-	std::string mFen;
+	std::string mFen, mStringSolution;
 	std::vector<Move> mSolution;
 	Status mStatus;
 };

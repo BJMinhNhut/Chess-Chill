@@ -59,7 +59,7 @@ GameHandler::GameHandler(State::Context context, sf::Vector2f position)
 			break;
 		case State::Context::Puzzles:
 			std::cout << "Game : Puzzle Mode\n";
-			initPuzzleGame(*context.puzzle);
+			initPuzzleGame(context.puzzles->getChosenPuzzle());
 			break;
 		default:
 			throw(std::invalid_argument("Invalid mode"));

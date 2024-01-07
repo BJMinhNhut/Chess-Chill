@@ -32,6 +32,7 @@ class PuzzleState : public State {
 
    private:
 	GUI::Container mGUIContainer, mStatusContainer[3];
+	Puzzle &mPuzzle;
 	GameHandler mGame;
 	HumanPlayer mPlayer;
 	sf::Time mCoolDown;

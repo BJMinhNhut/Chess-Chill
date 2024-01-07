@@ -13,15 +13,13 @@
 
 #include <filesystem>
 
-const std::string PuzzleMenuState::PATH = Constants::DATA_PREFIX + "resources/puzzles.csv";
 const int PuzzleMenuState::PAGE_MAX = 20;
 const float PuzzleMenuState::PANEL_INDENT_X = 190.f;
 const float PuzzleMenuState::PANEL_INDENT_Y = 160.f;
 
 PuzzleMenuState::PuzzleMenuState(StateStack& stack, Context context)
-    : State(stack, context), mGUIContainer(), mPage(0), mPageContainer(), mPageLabel(nullptr), mList() {
+    : State(stack, context), mGUIContainer(), mPage(0), mPageContainer(), mPageLabel(nullptr) {
 	loadBasicGUI();
-	mList = Puzzle::loadPuzzles(PATH);
 	loadCurrentPage();
 }
 
@@ -94,7 +92,7 @@ void PuzzleMenuState::loadBasicGUI() {
 }
 
 int PuzzleMenuState::getNumPages() const {
-	return ((int)mList.size() + PAGE_MAX - 1) / PAGE_MAX;
+	return ((int)getContext().puzzles->size() + PAGE_MAX - 1) / PAGE_MAX;
 }
 
 void PuzzleMenuState::nextPage() {
@@ -123,7 +121,7 @@ GUI::Button::Type PuzzleMenuState::getButtonType(Puzzle::Status status) {
 }
 
 void PuzzleMenuState::loadPanel(int order, int puzzleID) {
-	const Puzzle& puzzle = mList[puzzleID];
+	const Puzzle& puzzle = getContext().puzzles->getPuzzle(puzzleID);
 	auto button = std::make_shared<GUI::Button>(getButtonType(puzzle.getStatus()),
 	                                            *getContext().fonts, *getContext().textures);
 	button->setText(std::to_string(puzzleID + 1));
@@ -132,7 +130,7 @@ void PuzzleMenuState::loadPanel(int order, int puzzleID) {
 	button->setPosition(360.f + 60.f + (float)col * PANEL_INDENT_X,
 	                    150.f + 60.f + (float)row * PANEL_INDENT_Y);
 	button->setCallback([this, puzzleID]() {
-		*getContext().puzzle = mList[puzzleID];
+		getContext().puzzles->setPuzzle(puzzleID);
 		*getContext().mode = Context::Puzzles;
 		requestStackPush(States::Puzzles);
 	});
@@ -143,7 +141,7 @@ void PuzzleMenuState::loadCurrentPage() {
 	mPageContainer.clear();
 	assert(mPage >= 0 && mPage < getNumPages());
 	int start = mPage * PAGE_MAX;
-	int end = std::min(start + PAGE_MAX, (int)mList.size());
+	int end = std::min(start + PAGE_MAX, (int)getContext().puzzles->size());
 	for (int i = start; i < end; i++) {
 		loadPanel(i - start, i);
 	}

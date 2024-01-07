@@ -11,7 +11,7 @@
 #include "Settings.hpp"
 #include "GameOptions.hpp"
 #include "OldGames.hpp"
-#include "Game/Puzzle.hpp"
+#include "Game/PuzzleList.hpp"
 
 #include "SFML/System/Time.hpp"
 #include "SFML/Window/Event.hpp"
@@ -35,7 +35,7 @@ class State {
 			Puzzles,
 		};
 		Context(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts,
-		        SoundPlayer& sounds, Settings& settings, GameOptions& options, OldGames& oldGames, Puzzle& puzzle, Mode &mode);
+		        SoundPlayer& sounds, Settings& settings, GameOptions& options, OldGames& oldGames, PuzzleList& puzzles, Mode &mode);
 
 		sf::RenderWindow* window;
 		TextureHolder* textures;
@@ -44,7 +44,7 @@ class State {
 		Settings* settings;
 		GameOptions* options;
 		OldGames* oldGames;
-		Puzzle* puzzle;
+		PuzzleList* puzzles;
 		Mode *mode;
 	};
 
