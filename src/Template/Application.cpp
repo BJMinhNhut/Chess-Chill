@@ -90,6 +90,8 @@ void Application::loadImages() {
 	               Constants::DATA_PREFIX + "resources/images/gui/settings_panel.png");
 	mTextures.load(Textures::EndGamePanel,
 	               Constants::DATA_PREFIX + "resources/images/gui/panel_500_320.png");
+	mTextures.load(Textures::PuzzlePanel,
+	               Constants::DATA_PREFIX + "resources/images/gui/panel_320_292.png");
 	mTextures.load(Textures::BoardIndexWhite,
 	               Constants::DATA_PREFIX + "resources/images/gui/board_index_white.png");
 	mTextures.load(Textures::BoardIndexBlack,

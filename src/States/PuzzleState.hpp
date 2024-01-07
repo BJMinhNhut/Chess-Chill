@@ -8,6 +8,7 @@
 #include "GUI/Container.hpp"
 #include "Game/GameHandler.hpp"
 #include "Template/State.hpp"
+#include "Game/HumanPlayer.hpp"
 
 class PuzzleState : public State {
    public:
@@ -22,10 +23,14 @@ class PuzzleState : public State {
 
    private:
 	void loadBasicGUI();
+	void loadFinishGUI();
 
    private:
-	GUI::Container mGUIContainer;
+	GUI::Container mGUIContainer, mFinishContainer;
 	GameHandler mGame;
+	HumanPlayer mPlayer;
+	sf::Time mCoolDown;
+	int currentMove;
 };
 
 #endif  //CHESS_CHILL_PUZZLESTATE_HPP

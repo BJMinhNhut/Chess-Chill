@@ -9,12 +9,17 @@
 
 #include <SFML/Graphics/RenderWindow.hpp>
 
+#include <iostream>
+
 const sf::Vector2f PuzzleState::BOARD_POSITION(262.f, 105.f);
 
 PuzzleState::PuzzleState(StateStack& stack, Context context)
     : State(stack, context),
       mGUIContainer(),
-      mGame(context, BOARD_POSITION + sf::Vector2f(25.f, 25.f)) {
+      mGame(context, BOARD_POSITION + sf::Vector2f(25.f, 25.f)),
+      mPlayer(mGame, !mGame.mLogic->getTurn()),
+      mCoolDown(sf::seconds(1.f)),
+      currentMove(0) {
 	loadBasicGUI();
 }
 
@@ -26,11 +31,24 @@ void PuzzleState::draw() {
 }
 
 bool PuzzleState::update(sf::Time dt) {
+	if (mGame.mLogic->getTurn() == mPlayer.getColor()) {
+		mPlayer.update(dt);
+	} else {
+		if (mCoolDown.asSeconds() < 0.f) {
+			mCoolDown = sf::seconds(1.f);
+			mGame.handleMove(getContext().puzzle->getMove(currentMove++));
+		} else {
+			mCoolDown -= dt;
+		}
+	}
 	mGUIContainer.update(dt);
 	return true;
 }
 
 bool PuzzleState::handleEvent(const sf::Event& event) {
+	if (mGame.mLogic->getTurn() == mPlayer.getColor()) {
+		mPlayer.handleEvent(event);
+	}
 	mGUIContainer.handleEvent(event);
 	return false;
 }
@@ -61,8 +79,13 @@ void PuzzleState::loadBasicGUI() {
 	mGUIContainer.pack(titleBar);
 
 	auto titleLabel = std::make_shared<GUI::Label>(
-	    GUI::Label::Bold, "Puzzle - Level " + std::to_string(getContext().puzzle->getId()), *context.fonts);
+	    GUI::Label::Bold, "Puzzle - Level " + std::to_string(getContext().puzzle->getId()),
+	    *context.fonts);
 	titleLabel->setPosition(titleBar->getPosition());
 	titleLabel->alignCenter();
 	mGUIContainer.pack(titleLabel);
+
+	auto sidePanel = std::make_shared<GUI::Sprite>(context.textures->get(Textures::PuzzlePanel));
+	sidePanel->setPosition(1015.f, 324.f);
+	mGUIContainer.pack(sidePanel);
 }

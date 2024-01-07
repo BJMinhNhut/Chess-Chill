@@ -11,16 +11,17 @@
 #include <string>
 
 Puzzle::Puzzle(int id, std::string fen, const std::string& solution, Status status)
-    : mFen(std::move(fen)), mSolution(), mStatus(status), mId(id) {
+    : mFen(std::move(fen)), mSolution(), mStatus(status), mId((int8_t)id) {
 	std::string move;
 	for (int i = 0; i < solution.size(); ++i) {
-		if (solution[i] == ' ' || i + 1 == solution.size()) {
+		if (solution[i] == ' ') {
 			mSolution.emplace_back(move);
 			move.clear();
 		} else {
 			move += solution[i];
 		}
 	}
+	mSolution.emplace_back(move);
 }
 
 Puzzle::Puzzle() : mFen(), mSolution(), mStatus(Unsolved), mId() {}
@@ -74,6 +75,7 @@ std::vector<Puzzle> Puzzle::loadPuzzles(const std::string& path) {
 		}
 		std::cout << fen << " " << solution << " " << status << std::endl;
 		puzzles.emplace_back(++count, fen, solution, static_cast<Status>(std::stoi(status)));
+//		std::cout << puzzles.back().getSolutionSize() << std::endl;
 	}
 	std::cout << puzzles.size() << " puzzles loaded\n";
 	return puzzles;

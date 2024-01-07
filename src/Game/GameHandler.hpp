@@ -110,6 +110,7 @@ class GameHandler : public sf::NonCopyable {
 	sf::RenderWindow& mWindow;
 	TextureHolder& mTextures;
 	SoundPlayer& mSounds;
+	State::Context::Mode& mMode;
 
 	SceneNode mSceneGraph;
 	std::array<SceneNode*, LayerCount> mSceneLayers;

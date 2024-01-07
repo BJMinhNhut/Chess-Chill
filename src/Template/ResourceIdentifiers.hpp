@@ -19,6 +19,7 @@ enum ID {
 	AboutPanel,
 	SettingsPanel,
 	EndGamePanel,
+	PuzzlePanel,
 	GameOptionsPanel,
 	OptionBox,
 

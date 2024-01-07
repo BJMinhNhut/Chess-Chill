@@ -26,6 +26,7 @@ GameHandler::GameHandler(State::Context context, sf::Vector2f position)
     : mWindow(*context.window),
       mSounds(*context.sounds),
       mTextures(*context.textures),
+      mMode(*context.mode),
       mSceneGraph(),
       mSceneLayers(),
       mPieces(GameLogic::BOARD_SIZE, nullptr),
@@ -47,7 +48,7 @@ GameHandler::GameHandler(State::Context context, sf::Vector2f position)
 	mWindow.setView(mWindow.getDefaultView());
 
 	buildScene();
-	switch (*context.mode) {
+	switch (mMode) {
 		case State::Context::Normal:
 			std::cout << "Game : Normal Mode\n";
 			initNormalGame();
@@ -91,6 +92,7 @@ void GameHandler::initPuzzleGame(const Puzzle& puzzle) {
 		if (piece != 0)
 			addPiece(square, piece);
 	}
+	saveSnapShot();
 }
 
 GameLogic* GameHandler::getLogic(GameOptions::Type type) {
