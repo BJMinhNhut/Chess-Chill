@@ -23,14 +23,20 @@ class PuzzleState : public State {
 
    private:
 	void loadBasicGUI();
-	void loadFinishGUI();
+	void loadNormalGUI();
+	void loadCorrectGUI();
+	void loadFailGUI();
+	void updateStatus();
+
+	bool isPlayerTurn() const;
 
    private:
-	GUI::Container mGUIContainer, mFinishContainer;
+	GUI::Container mGUIContainer, mStatusContainer[3];
 	GameHandler mGame;
 	HumanPlayer mPlayer;
 	sf::Time mCoolDown;
 	int currentMove;
+	Puzzle::Status mStatus;
 };
 
 #endif  //CHESS_CHILL_PUZZLESTATE_HPP

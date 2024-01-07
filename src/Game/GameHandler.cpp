@@ -276,9 +276,8 @@ void GameHandler::handleMove(Move move) {
 		mLogic->makeMove(move);
 		highlightMove(mLastMove, true);
 		saveSnapShot();
-
+		setCursor(sf::Cursor::Arrow);
 		if (mLogic->isFinished()) {
-			setCursor(sf::Cursor::Arrow);
 			if (mLogic->status() == GameLogic::Checkmate) {
 				highlightSquare(mLogic->getKing(mLogic->getTurn()), Debug);
 			}

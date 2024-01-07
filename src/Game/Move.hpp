@@ -9,11 +9,14 @@
 
 class Move {
    public:
-	Move(int from, int to, int promotion = Piece::Type::None);
-	Move(std::string move, int promotion = Piece::Type::None);
+	Move(int from, int to, int promotion = Piece::None);
+	Move(std::string move, int promotion = Piece::None);
+
 	int from() const;
 	int to() const;
 	int promote() const;
+
+	bool operator==(const Move& other) const;
 
    private:
 	short mMove;

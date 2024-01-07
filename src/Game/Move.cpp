@@ -24,3 +24,7 @@ int Move::to() const {
 int Move::promote() const {
 	return mPromote;
 }
+
+bool Move::operator==(const Move& other) const {
+	return mMove == other.mMove && mPromote == other.mPromote;
+}

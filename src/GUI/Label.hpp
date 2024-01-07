@@ -23,6 +23,7 @@ class Label : public Component {
 		Title,
 		Small,
 		Clock,
+		Puzzle,
 	};
 
    public:
