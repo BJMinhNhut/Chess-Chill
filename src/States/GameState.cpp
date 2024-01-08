@@ -198,15 +198,16 @@ void GameState::loadEndGameGUI() {
 	panel->setPosition(377.f, 310.f);
 	mEndGameContainer.pack(panel);
 
-	auto closeButton = std::make_shared<GUI::Button>(GUI::Button::Close, *getContext().fonts,
+	auto reviewButton = std::make_shared<GUI::Button>(GUI::Button::Menu, *getContext().fonts,
 	                                                 *getContext().textures);
-	closeButton->setPosition(818.f + 50.f / 2, 317.f + 50.f / 2);
-	closeButton->setCallback([this]() { mReviewMode = true; });
-	mEndGameContainer.pack(closeButton);
+	reviewButton->setPosition(638.f + 166.f / 2, 475.f + 48.f / 2);
+	reviewButton->setText("Review");
+	reviewButton->setCallback([this]() { mReviewMode = true; });
+	mEndGameContainer.pack(reviewButton);
 
 	auto newGameButton = std::make_shared<GUI::Button>(GUI::Button::Menu, *getContext().fonts,
 	                                                   *getContext().textures);
-	newGameButton->setPosition(547.f + 166.f / 2, 476.f + 48.f / 2);
+	newGameButton->setPosition(456.f + 166.f / 2, 475.f + 48.f / 2);
 	newGameButton->setText("New Game");
 	newGameButton->setCallback([this]() { requestStackPop(); });
 	mEndGameContainer.pack(newGameButton);
@@ -282,7 +283,6 @@ void GameState::draw() {
 	sf::RenderWindow& window = *getContext().window;
 	window.setView(window.getDefaultView());
 	window.draw(mGUIContainer);
-	window.draw(mReviewContainer);
 	mGame.draw();
 	if (mGame.mLogic->isFinished()) {
 		if (mWinner->isEmpty()) {
@@ -292,6 +292,7 @@ void GameState::draw() {
 		}
 		if (!mReviewMode && mCoolDown < sf::milliseconds(100))
 			window.draw(mEndGameContainer);
+		else window.draw(mReviewContainer);
 	}
 }
 
