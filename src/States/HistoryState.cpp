@@ -147,6 +147,7 @@ void HistoryState::loadPanel(int id, int pathID, const std::string& path) {
 
 void HistoryState::loadCurrentPage() {
 	mPageContainer.clear();
+	if (getContext().oldGames->getSize() == 0) return;
 	assert(mPage >= 0 && mPage < getNumPages());
 	int start = mPage * PAGE_MAX;
 	int end = std::min(start + PAGE_MAX, (int)getContext().oldGames->getSize());
