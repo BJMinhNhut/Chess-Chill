@@ -31,6 +31,8 @@ GameHandler::GameHandler(State::Context context, sf::Vector2f position)
       mSceneLayers(),
       mPieces(GameLogic::BOARD_SIZE, nullptr),
       mHighlights(GameLogic::BOARD_SIZE, nullptr),
+      mArrows(),
+      mMarks(),
       mDragging(nullptr),
       mBoardIndex(nullptr),
       mBoardSprite(nullptr),
@@ -297,6 +299,7 @@ void GameHandler::handleMove(Move move) {
 		saveSnapShot();
 		setCursor(sf::Cursor::Arrow);
 		clearArrows();
+		clearMarks();
 		if (mLogic->isFinished()) {
 			if (mLogic->status() == GameLogic::Checkmate) {
 				highlightSquare(mLogic->getKing(mLogic->getTurn()), Debug);
@@ -480,6 +483,9 @@ void GameHandler::loadSnapShot(int index) {
 	if (snapShot.checkMate != -1)
 		highlightSquare(snapShot.checkMate, Debug);
 	mSnapShotIndex = index;
+
+	clearArrows();
+	clearMarks();
 }
 
 void GameHandler::loadPreviousMove() {
@@ -533,4 +539,26 @@ void GameHandler::clearArrows() {
 	for (auto& arrow : mArrows)
 		mSceneLayers[PopUp]->detachChild(*arrow);
 	std::vector<ArrowNode*>().swap(mArrows);
+}
+
+void GameHandler::correctMove(int to) {
+	auto* check = new SpriteNode(mTextures.get(Textures::Check));
+	check->setPosition(getBoxPosition(to) + sf::Vector2f(85.f, 0.f));
+	check->centerOrigin();
+	mMarks.push_back(check);
+	mSceneLayers[PopUp]->attachChild(SceneNode::Ptr(check));
+}
+
+void GameHandler::incorrectMove(int to) {
+	auto* cross = new SpriteNode(mTextures.get(Textures::XMark));
+	cross->setPosition(getBoxPosition(to) + sf::Vector2f(85.f, 0.f));
+	cross->centerOrigin();
+	mMarks.push_back(cross);
+	mSceneLayers[PopUp]->attachChild(SceneNode::Ptr(cross));
+}
+
+void GameHandler::clearMarks() {
+	for (auto& mark : mMarks)
+		mSceneLayers[PopUp]->detachChild(*mark);
+	std::vector<SpriteNode*>().swap(mMarks);
 }

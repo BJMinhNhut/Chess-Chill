@@ -67,6 +67,9 @@ enum ID {
 	BoardIndexBlack,
 	PromoteWindow,
 
+	Check,
+	XMark,
+
 	NumTextures,
 };
 }

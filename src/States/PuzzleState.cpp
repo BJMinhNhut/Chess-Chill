@@ -204,11 +204,13 @@ void PuzzleState::updateStatus() {
 		} else {
 			mStatus = Puzzle::Unsolved;
 		}
+		mGame.correctMove(to);
 	} else {
 		getContext().sounds->play(SoundEffect::OutOfBound);
 		if (mPuzzle.getStatus() == Puzzle::Unsolved) {
 			mPuzzle.setStatus(Puzzle::Failed);
 		}
 		mStatus = Puzzle::Failed;
+		mGame.incorrectMove(to);
 	}
 }

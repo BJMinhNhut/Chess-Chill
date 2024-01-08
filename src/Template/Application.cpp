@@ -176,6 +176,9 @@ void Application::loadImages() {
 	               Constants::DATA_PREFIX + "resources/images/buttons/puzzle_failed_normal.png");
 	mTextures.load(Textures::PuzzleFailedSelected,
 	               Constants::DATA_PREFIX + "resources/images/buttons/puzzle_failed_selected.png");
+
+	mTextures.load(Textures::Check, Constants::DATA_PREFIX + "resources/images/gui/circle_check.png");
+	mTextures.load(Textures::XMark, Constants::DATA_PREFIX + "resources/images/gui/circle_xmark.png");
 }
 
 void Application::run() {

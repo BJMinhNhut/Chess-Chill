@@ -75,6 +75,8 @@ class GameHandler : public sf::NonCopyable {
 	void undoLastMove();
 
 	void hintMove(int from, int to, int level);
+	void correctMove(int to);
+	void incorrectMove(int to);
 
    private:
 	enum Layer { Background, Pieces, PopUp, LayerCount };
@@ -116,6 +118,8 @@ class GameHandler : public sf::NonCopyable {
 	void createArrow(int from, int to);
 	void clearArrows();
 
+	void clearMarks();
+
    private:
 	sf::RenderWindow& mWindow;
 	TextureHolder& mTextures;
@@ -127,6 +131,7 @@ class GameHandler : public sf::NonCopyable {
 	std::vector<Piece*> mPieces;
 	std::vector<RectNode*> mHighlights;
 	std::vector<ArrowNode*> mArrows;
+	std::vector<SpriteNode*> mMarks;
 	std::vector<int> moveCandidates;
 
 	GameLogic::Ptr mBackupLogic;
