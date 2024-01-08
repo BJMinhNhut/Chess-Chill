@@ -513,8 +513,10 @@ std::vector<std::string> GameHandler::getLatestMoves(int numMoves, int& id) cons
 
 void GameHandler::hintMove(int from, int to, int level) {
 	highlightSquare(from, Target);
-	if (level == 2)
+	if (level == 2) {
+		clearArrows();
 		createArrow(from, to);
+	}
 }
 
 void GameHandler::createArrow(int from, int to) {
