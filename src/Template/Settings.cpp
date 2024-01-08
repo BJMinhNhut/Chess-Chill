@@ -21,7 +21,7 @@ const std::vector<std::string> Settings::SOUND_OPTIONS = {"Off", "On"};
 
 const std::string Settings::SETTINGS_FILE = "settings.bin";
 
-Settings::Settings() : mPieceSetID(0), mBoardID(0), mSound(true) {
+Settings::Settings() : mPieceSetID(6), mBoardID(4), mSound(true) {
 	load();
 }
 
