@@ -35,7 +35,7 @@ void ArrowNode::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) c
 
 sf::RectangleShape ArrowNode::getLineShape(sf::Vector2f line) {
 	sf::RectangleShape shape;
-	shape.setSize(sf::Vector2f(std::sqrt(line.x * line.x + line.y * line.y) - std::floor(HEAD_RADIUS * 0.5f), THICKNESS));
+	shape.setSize(sf::Vector2f(std::sqrt(line.x * line.x + line.y * line.y) - std::floor(HEAD_RADIUS * 1.5f), THICKNESS));
 	shape.setOrigin(0.f, THICKNESS / 2.f);
 	shape.setPosition(0.f, 0.f);
 	shape.setRotation(std::atan2(line.y, line.x) * 180.f / 3.141592f);
@@ -47,7 +47,7 @@ sf::CircleShape ArrowNode::getHeadShape(sf::Vector2f line) {
 	sf::CircleShape shape;
 	shape.setPointCount(3);
 	shape.setRadius(HEAD_RADIUS);
-	shape.setOrigin(HEAD_RADIUS, HEAD_RADIUS);
+	shape.setOrigin(HEAD_RADIUS, 0.f);
 	shape.setPosition(line);
 	shape.setRotation(std::atan2(line.y, line.x) * 180.f / 3.141592f + 90.f);
 	shape.setFillColor(sf::Color::White);
