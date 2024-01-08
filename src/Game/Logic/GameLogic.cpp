@@ -233,6 +233,12 @@ std::string GameLogic::getWinner() const {
 	return mBoard.getTurn() ? "White" : "Black";
 }
 
+void GameLogic::attachHandler(GameHandler* handler) {
+	assert(mHandler == nullptr);
+	assert(handler != nullptr);
+	mHandler = handler;
+}
+
 void GameLogic::pureMove(Move move) {
 	assert(mStatus == OnGoing);
 	mLastMove = Normal;

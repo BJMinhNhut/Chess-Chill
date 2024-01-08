@@ -39,6 +39,7 @@ class GameHandler : public sf::NonCopyable {
 
    public:
 	explicit GameHandler(State::Context context, sf::Vector2f position);
+	GameHandler(const GameHandler& other);
 
 	void update(sf::Time dt);
 	void handleEvent(const sf::Event& event);
@@ -70,6 +71,8 @@ class GameHandler : public sf::NonCopyable {
 	void loadNextMove();
 	void loadLastMove();
 	void loadFirstMove();
+
+	void undoLastMove();
 
    private:
 	enum Layer { Background, Pieces, PopUp, LayerCount };
@@ -106,6 +109,8 @@ class GameHandler : public sf::NonCopyable {
 	void initReviewGame(const std::string& path);
 	void initPuzzleGame(const Puzzle& puzzle);
 
+	void backupLogic();
+
    private:
 	sf::RenderWindow& mWindow;
 	TextureHolder& mTextures;
@@ -117,6 +122,8 @@ class GameHandler : public sf::NonCopyable {
 	std::vector<Piece*> mPieces;
 	std::vector<RectNode*> mHighlights;
 	std::vector<int> moveCandidates;
+
+	GameLogic::Ptr mBackupLogic;
 
 	GameSaver mSaver;
 	int mSnapShotIndex;

@@ -38,6 +38,7 @@ GameHandler::GameHandler(State::Context context, sf::Vector2f position)
       mOldSquare(-1),
       mLastMove(-1),
       mLogic(nullptr),
+      mBackupLogic(nullptr),
       mPromoteWindow(false),
       mPromoteFrom(-1),
       mPromoteTo(-1),
@@ -257,6 +258,22 @@ void GameHandler::displayPromoteWindow() {
 	mSceneLayers[PopUp]->attachChild(SceneNode::Ptr(pieces));
 }
 
+void GameHandler::undoLastMove() {
+	if (mSnapShotIndex == 0) return;
+	mSnapShotIndex--;
+	loadSnapShot(mSnapShotIndex);
+	mSaver.undo();
+
+	mLogic = std::move(mBackupLogic);
+	mOldSquare = -1;
+	mLastMove = mSaver.getSnapShot(mSnapShotIndex).move;
+}
+
+void GameHandler::backupLogic() {
+	mBackupLogic.reset(mLogic->clone());
+	mBackupLogic->attachHandler(this);
+}
+
 void GameHandler::handleMove(Move move) {
 	bool legal = mLogic->isLegalMove(move);
 
@@ -271,6 +288,7 @@ void GameHandler::handleMove(Move move) {
 			displayPromoteWindow();
 			return;
 		}
+		backupLogic();
 		assert(mSnapShotIndex == (int)mSaver.size() - 1);
 		highlightMove(mLastMove, false);
 		mLogic->makeMove(move);
@@ -281,7 +299,7 @@ void GameHandler::handleMove(Move move) {
 			if (mLogic->status() == GameLogic::Checkmate) {
 				highlightSquare(mLogic->getKing(mLogic->getTurn()), Debug);
 			}
-			mSaver.save(mLogic->result());
+			if (mMode == State::Context::Normal) mSaver.save(mLogic->result());
 		}
 	} else {
 		highlightMove(mLastMove, true);

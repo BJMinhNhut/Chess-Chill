@@ -173,9 +173,14 @@ void PuzzleState::loadFailGUI() {
 	auto tryButton = std::make_shared<GUI::Button>(GUI::Button::Menu, *getContext().fonts,
 	                                               *getContext().textures);
 	tryButton->setPosition(1092.f + 166.f / 2.f, 472.f + 50.f / 2.f);
-	tryButton->setText("Try again");
+	tryButton->setText("Undo");
 	tryButton->setCallback([this]() {
-		//		mGame.handleMove(getContext().puzzle->getMove(currentMove));
+		assert(mStatus == Puzzle::Failed);
+		if (!isPlayerTurn()) {
+			mGame.undoLastMove();
+			mStatus = Puzzle::Unsolved;
+			currentMove--;
+		}
 	});
 	mStatusContainer[2].pack(tryButton);
 }

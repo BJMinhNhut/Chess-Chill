@@ -85,6 +85,7 @@ class GameLogic {
 	[[nodiscard]] int getLastMovePiece() const;
 	[[nodiscard]] int getCastling() const;
 
+	void attachHandler(GameHandler* handler);
 	void makeMove(Move move);
 	void setClock(sf::Time time, sf::Time bonus = sf::seconds(0));
 

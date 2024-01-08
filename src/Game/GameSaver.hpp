@@ -36,6 +36,7 @@ class GameSaver {
 	~GameSaver() = default;
 
 	void capture(const GameHandler& gameHandler);
+	void undo();
 	void load(const std::string& path);
 	void save(GameLogic::Result result);
 

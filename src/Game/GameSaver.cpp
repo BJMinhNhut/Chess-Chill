@@ -61,6 +61,13 @@ unsigned int GameSaver::size() const {
 	return mSnapShots.size();
 }
 
+void GameSaver::undo() {
+	if (mSnapShots.empty()) {
+		throw std::runtime_error("GameSaver - Cannot undo");
+	}
+	mSnapShots.pop_back();
+}
+
 void GameSaver::capture(const GameHandler& gameHandler) {
 	SoundEffect::ID sound;
 	GameLogic* logic = gameHandler.mLogic.get();
