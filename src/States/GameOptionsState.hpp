@@ -29,14 +29,16 @@ class GameOptionsState : public State {
 	void loadTypeGUI();
 	void loadTimeGUI();
 	void loadDescriptionGUI();
+	void loadSideGUI();
 
 	void updateType();
 	void updateMode();
 	void updateTime();
+	void updateSide();
 
    private:
-	GUI::Container mGUIContainer;
-	GUI::Label::Ptr mType, mMode, mTime;
+	GUI::Container mGUIContainer, mSideContainer;
+	GUI::Label::Ptr mType, mMode, mTime, mSide;
 	GUI::Sprite::Ptr mDescription;
 };
 

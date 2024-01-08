@@ -9,6 +9,7 @@
 #include "Game/BotPlayer.hpp"
 #include "Game/HumanPlayer.hpp"
 #include "Template/Constants.hpp"
+#include "Template/Random.hpp"
 #include "Template/ResourceHolder.hpp"
 #include "Template/Utility.hpp"
 
@@ -40,20 +41,41 @@ GameState::GameState(StateStack& stack, Context context)
 		                       sf::seconds(context.options->getIncrement()));
 	}
 
-	if (context.options->getMode() != GameOptions::AIvAI)
-		mPlayers[0] = std::unique_ptr<Player>(new HumanPlayer(mGame, Player::White));
-	else
-		mPlayers[0] = std::unique_ptr<Player>(new BotPlayer(mGame, Player::White));
-	if (context.options->getMode() != GameOptions::PvP)
-		mPlayers[1] = std::unique_ptr<Player>(new BotPlayer(mGame, Player::Black));
-	else
-		mPlayers[1] = std::unique_ptr<Player>(new HumanPlayer(mGame, Player::Black));
+	bool humanWhite;
+	switch (context.options->getMode()) {
+		case GameOptions::AIvAI:
+			mPlayers[0] = std::unique_ptr<Player>(new BotPlayer(mGame, Player::White));
+			mPlayers[1] = std::unique_ptr<Player>(new BotPlayer(mGame, Player::Black));
+			break;
+		case GameOptions::PvP:
+			mPlayers[0] = std::unique_ptr<Player>(new HumanPlayer(mGame, Player::White));
+			mPlayers[1] = std::unique_ptr<Player>(new HumanPlayer(mGame, Player::Black));
+			break;
+		case GameOptions::PvAI:
+			humanWhite = context.options->getSide() == GameOptions::White;
+			if (context.options->getSide() == GameOptions::Random)
+				humanWhite = Random::getInt(0, 1) == 0;
+			if (humanWhite) {
+				mPlayers[0] = std::unique_ptr<Player>(new HumanPlayer(mGame, Player::White));
+				mPlayers[1] = std::unique_ptr<Player>(new BotPlayer(mGame, Player::Black));
+			} else {
+				mPlayers[0] = std::unique_ptr<Player>(new BotPlayer(mGame, Player::White));
+				mPlayers[1] = std::unique_ptr<Player>(new HumanPlayer(mGame, Player::Black));
+			}
+			break;
+		default:
+			throw std::invalid_argument("Invalid game mode");
+			break;
+	}
 
 	getContext().sounds->play(SoundEffect::StartGame);
 	loadBasicGUI();
 	loadGameGUI();
 	loadControllerGUI();
 	loadEndGameGUI();
+
+	if (getContext().options->getMode() == GameOptions::PvAI && !humanWhite)
+		rotateBoard();
 }
 
 void GameState::loadBasicGUI() {

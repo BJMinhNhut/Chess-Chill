@@ -11,12 +11,18 @@
 
 GameOptionsState::GameOptionsState(StateStack& stack, Context context)
     : State(stack, context),
-      mGUIContainer(), mType(nullptr), mMode(nullptr), mTime(nullptr), mDescription(nullptr) {
+      mGUIContainer(),
+      mType(nullptr),
+      mMode(nullptr),
+      mTime(nullptr),
+      mSide(nullptr),
+      mDescription(nullptr) {
 	loadBasicGUI();
 	loadDescriptionGUI();
 	loadGameModeGUI();
 	loadTypeGUI();
 	loadTimeGUI();
+	loadSideGUI();
 }
 
 void GameOptionsState::loadBasicGUI() {
@@ -49,7 +55,8 @@ void GameOptionsState::loadBasicGUI() {
 	titleBar->setPosition(800.f, 53.f);
 	mGUIContainer.pack(titleBar);
 
-	auto titleLabel = std::make_shared<GUI::Label>(GUI::Label::Bold, "Game Options", *context.fonts);
+	auto titleLabel =
+	    std::make_shared<GUI::Label>(GUI::Label::Bold, "Game Options", *context.fonts);
 	titleLabel->setPosition(titleBar->getPosition());
 	titleLabel->alignCenter();
 	mGUIContainer.pack(titleLabel);
@@ -59,33 +66,37 @@ void GameOptionsState::loadBasicGUI() {
 	optionsPanel->setPosition(322.f, 220.f);
 	mGUIContainer.pack(optionsPanel);
 
-	auto playButton = std::make_shared<GUI::Button>(GUI::Button::Play, *context.fonts, *context.textures);
+	auto playButton =
+	    std::make_shared<GUI::Button>(GUI::Button::Play, *context.fonts, *context.textures);
 	playButton->setCallback([this]() {
 		getContext().oldGames->resetIndex();
 		*getContext().mode = Context::Normal;
 		requestStackPush(States::Game);
 	});
-	playButton->setPosition(973.f + 306.f/2, 638.f + 82.f/2);
+	playButton->setPosition(973.f + 306.f / 2, 638.f + 82.f / 2);
 	mGUIContainer.pack(playButton);
 }
 
 void GameOptionsState::loadGameModeGUI() {
-	auto modeLabel = std::make_shared<GUI::Label>(GUI::Label::Bold, "Game Mode", *getContext().fonts);
+	auto modeLabel =
+	    std::make_shared<GUI::Label>(GUI::Label::Bold, "Game Mode", *getContext().fonts);
 	modeLabel->alignRight();
 	modeLabel->setPosition(383.f + 163.f, 282.f + 7.f);
 	mGUIContainer.pack(modeLabel);
 
 	auto optionBox = std::make_shared<GUI::Sprite>(getContext().textures->get(Textures::OptionBox));
 	optionBox->centerOrigin();
-	optionBox->setPosition(653.f+180.f/2, 276.f + 40.f/2);
+	optionBox->setPosition(653.f + 180.f / 2, 276.f + 40.f / 2);
 	mGUIContainer.pack(optionBox);
 
-	mMode = std::make_shared<GUI::Label>(GUI::Label::Small, getContext().options->getStringMode(), *getContext().fonts);
+	mMode = std::make_shared<GUI::Label>(GUI::Label::Small, getContext().options->getStringMode(),
+	                                     *getContext().fonts);
 	mMode->setPosition(optionBox->getPosition());
 	updateMode();
 	mGUIContainer.pack(mMode);
 
-	auto modeForward = std::make_shared<GUI::Button>(GUI::Button::Forward, *getContext().fonts, *getContext().textures);
+	auto modeForward = std::make_shared<GUI::Button>(GUI::Button::Forward, *getContext().fonts,
+	                                                 *getContext().textures);
 	modeForward->setPosition(878.f - 20.f, 276.f + 20.f);
 	modeForward->setCallback([&]() {
 		getContext().options->nextMode();
@@ -93,7 +104,8 @@ void GameOptionsState::loadGameModeGUI() {
 	});
 	mGUIContainer.pack(modeForward);
 
-	auto modeBackward = std::make_shared<GUI::Button>(GUI::Button::Forward, *getContext().fonts, *getContext().textures);
+	auto modeBackward = std::make_shared<GUI::Button>(GUI::Button::Forward, *getContext().fonts,
+	                                                  *getContext().textures);
 	modeBackward->setPosition(608.f + 20.f, 316.f - 20.f);
 	modeBackward->rotate(180.f);
 	modeBackward->setCallback([&]() {
@@ -109,22 +121,25 @@ void GameOptionsState::updateMode() {
 }
 
 void GameOptionsState::loadTypeGUI() {
-	auto typeLabel = std::make_shared<GUI::Label>(GUI::Label::Bold, "Game Type", *getContext().fonts);
+	auto typeLabel =
+	    std::make_shared<GUI::Label>(GUI::Label::Bold, "Game Type", *getContext().fonts);
 	typeLabel->alignRight();
 	typeLabel->setPosition(383.f + 163.f, 369.f + 7.f);
 	mGUIContainer.pack(typeLabel);
 
 	auto optionBox = std::make_shared<GUI::Sprite>(getContext().textures->get(Textures::OptionBox));
 	optionBox->centerOrigin();
-	optionBox->setPosition(653.f+180.f/2, 363.f + 40.f/2);
+	optionBox->setPosition(653.f + 180.f / 2, 363.f + 40.f / 2);
 	mGUIContainer.pack(optionBox);
 
-	mType = std::make_shared<GUI::Label>(GUI::Label::Small, getContext().options->getStringType(), *getContext().fonts);
+	mType = std::make_shared<GUI::Label>(GUI::Label::Small, getContext().options->getStringType(),
+	                                     *getContext().fonts);
 	mType->setPosition(optionBox->getPosition());
 	updateType();
 	mGUIContainer.pack(mType);
 
-	auto typeForward = std::make_shared<GUI::Button>(GUI::Button::Forward, *getContext().fonts, *getContext().textures);
+	auto typeForward = std::make_shared<GUI::Button>(GUI::Button::Forward, *getContext().fonts,
+	                                                 *getContext().textures);
 	typeForward->setPosition(878.f - 20.f, 363.f + 20.f);
 	typeForward->setCallback([&]() {
 		getContext().options->nextType();
@@ -132,7 +147,8 @@ void GameOptionsState::loadTypeGUI() {
 	});
 	mGUIContainer.pack(typeForward);
 
-	auto typeBackward = std::make_shared<GUI::Button>(GUI::Button::Forward, *getContext().fonts, *getContext().textures);
+	auto typeBackward = std::make_shared<GUI::Button>(GUI::Button::Forward, *getContext().fonts,
+	                                                  *getContext().textures);
 	typeBackward->setPosition(608.f + 20.f, 403.f - 20.f);
 	typeBackward->rotate(180.f);
 	typeBackward->setCallback([&]() {
@@ -157,15 +173,17 @@ void GameOptionsState::loadTimeGUI() {
 
 	auto optionBox = std::make_shared<GUI::Sprite>(getContext().textures->get(Textures::OptionBox));
 	optionBox->centerOrigin();
-	optionBox->setPosition(653.f+180.f/2, 450.f + 40.f/2);
+	optionBox->setPosition(653.f + 180.f / 2, 450.f + 40.f / 2);
 	mGUIContainer.pack(optionBox);
 
-	mTime = std::make_shared<GUI::Label>(GUI::Label::Small, getContext().options->getStringTime(), *getContext().fonts);
+	mTime = std::make_shared<GUI::Label>(GUI::Label::Small, getContext().options->getStringTime(),
+	                                     *getContext().fonts);
 	mTime->setPosition(optionBox->getPosition());
 	updateTime();
 	mGUIContainer.pack(mTime);
 
-	auto timeForward = std::make_shared<GUI::Button>(GUI::Button::Forward, *getContext().fonts, *getContext().textures);
+	auto timeForward = std::make_shared<GUI::Button>(GUI::Button::Forward, *getContext().fonts,
+	                                                 *getContext().textures);
 	timeForward->setPosition(878.f - 20.f, 450.f + 20.f);
 	timeForward->setCallback([&]() {
 		getContext().options->nextTime();
@@ -173,7 +191,8 @@ void GameOptionsState::loadTimeGUI() {
 	});
 	mGUIContainer.pack(timeForward);
 
-	auto timeBackward = std::make_shared<GUI::Button>(GUI::Button::Forward, *getContext().fonts, *getContext().textures);
+	auto timeBackward = std::make_shared<GUI::Button>(GUI::Button::Forward, *getContext().fonts,
+	                                                  *getContext().textures);
 	timeBackward->setPosition(608.f + 20.f, 490.f - 20.f);
 	timeBackward->rotate(180.f);
 	timeBackward->setCallback([&]() {
@@ -181,6 +200,49 @@ void GameOptionsState::loadTimeGUI() {
 		updateTime();
 	});
 	mGUIContainer.pack(timeBackward);
+}
+
+void GameOptionsState::loadSideGUI() {
+	auto sideLabel =
+	    std::make_shared<GUI::Label>(GUI::Label::Bold, "Side", *getContext().fonts);
+	sideLabel->alignRight();
+	sideLabel->setPosition(383.f + 163.f, 543.f + 7.f);
+	mSideContainer.pack(sideLabel);
+
+	auto optionBox = std::make_shared<GUI::Sprite>(getContext().textures->get(Textures::OptionBox));
+	optionBox->centerOrigin();
+	optionBox->setPosition(653.f + 180.f / 2, 537.f + 40.f / 2);
+	mSideContainer.pack(optionBox);
+
+	mSide = std::make_shared<GUI::Label>(GUI::Label::Small, getContext().options->getStringSide(),
+	                                     *getContext().fonts);
+	mSide->setPosition(optionBox->getPosition());
+	updateSide();
+	mSideContainer.pack(mSide);
+
+	auto sideForward = std::make_shared<GUI::Button>(GUI::Button::Forward, *getContext().fonts,
+	                                                 *getContext().textures);
+	sideForward->setPosition(878.f - 20.f, 537.f + 20.f);
+	sideForward->setCallback([&]() {
+		getContext().options->nextSide();
+		updateSide();
+	});
+	mSideContainer.pack(sideForward);
+
+	auto sideBackward = std::make_shared<GUI::Button>(GUI::Button::Forward, *getContext().fonts,
+	                                                  *getContext().textures);
+	sideBackward->setPosition(608.f + 20.f, 577.f - 20.f);
+	sideBackward->rotate(180.f);
+	sideBackward->setCallback([&]() {
+		getContext().options->prevSide();
+		updateSide();
+	});
+	mSideContainer.pack(sideBackward);
+}
+
+void GameOptionsState::updateSide() {
+	mSide->setText(getContext().options->getStringSide());
+	mSide->alignCenter();
 }
 
 void GameOptionsState::loadDescriptionGUI() {
@@ -200,6 +262,8 @@ void GameOptionsState::draw() {
 	window.setView(window.getDefaultView());
 
 	window.draw(mGUIContainer);
+	if (getContext().options->getMode() == GameOptions::PvAI)
+		window.draw(mSideContainer);
 }
 
 bool GameOptionsState::update(sf::Time dt) {
@@ -208,5 +272,7 @@ bool GameOptionsState::update(sf::Time dt) {
 
 bool GameOptionsState::handleEvent(const sf::Event& event) {
 	mGUIContainer.handleEvent(event);
+	if (getContext().options->getMode() == GameOptions::PvAI)
+		mSideContainer.handleEvent(event);
 	return false;
 }
