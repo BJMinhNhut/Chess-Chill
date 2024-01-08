@@ -106,7 +106,7 @@ add_executable(${TARGET_NAME}
         src/Template/ArrowNode.cpp
         src/Template/ArrowNode.hpp
 )
-target_link_libraries(${TARGET_NAME} PRIVATE sfml-graphics sfml-audio)
+target_link_libraries(${TARGET_NAME} PRIVATE -static sfml-graphics sfml-audio)
 target_compile_features(${TARGET_NAME} PRIVATE cxx_std_17)
 
 if(WIN32)
