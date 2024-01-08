@@ -15,6 +15,7 @@
 #include "Template/SoundPlayer.hpp"
 #include "Template/SpriteNode.hpp"
 #include "Template/State.hpp"
+#include "Template/ArrowNode.hpp"
 
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/View.hpp>
@@ -39,7 +40,6 @@ class GameHandler : public sf::NonCopyable {
 
    public:
 	explicit GameHandler(State::Context context, sf::Vector2f position);
-	GameHandler(const GameHandler& other);
 
 	void update(sf::Time dt);
 	void handleEvent(const sf::Event& event);
@@ -113,6 +113,9 @@ class GameHandler : public sf::NonCopyable {
 
 	void backupLogic();
 
+	void createArrow(int from, int to);
+	void clearArrows();
+
    private:
 	sf::RenderWindow& mWindow;
 	TextureHolder& mTextures;
@@ -123,6 +126,7 @@ class GameHandler : public sf::NonCopyable {
 	std::array<SceneNode*, LayerCount> mSceneLayers;
 	std::vector<Piece*> mPieces;
 	std::vector<RectNode*> mHighlights;
+	std::vector<ArrowNode*> mArrows;
 	std::vector<int> moveCandidates;
 
 	GameLogic::Ptr mBackupLogic;

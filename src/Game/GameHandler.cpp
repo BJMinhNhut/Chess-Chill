@@ -259,7 +259,8 @@ void GameHandler::displayPromoteWindow() {
 }
 
 void GameHandler::undoLastMove() {
-	if (mSnapShotIndex == 0) return;
+	if (mSnapShotIndex == 0)
+		return;
 	mSnapShotIndex--;
 	loadSnapShot(mSnapShotIndex);
 	mSaver.undo();
@@ -295,11 +296,13 @@ void GameHandler::handleMove(Move move) {
 		highlightMove(mLastMove, true);
 		saveSnapShot();
 		setCursor(sf::Cursor::Arrow);
+		clearArrows();
 		if (mLogic->isFinished()) {
 			if (mLogic->status() == GameLogic::Checkmate) {
 				highlightSquare(mLogic->getKing(mLogic->getTurn()), Debug);
 			}
-			if (mMode == State::Context::Normal) mSaver.save(mLogic->result());
+			if (mMode == State::Context::Normal)
+				mSaver.save(mLogic->result());
 		}
 	} else {
 		highlightMove(mLastMove, true);
@@ -510,7 +513,22 @@ std::vector<std::string> GameHandler::getLatestMoves(int numMoves, int& id) cons
 
 void GameHandler::hintMove(int from, int to, int level) {
 	highlightSquare(from, Target);
-	if (level == 2) {
-//		highlightSquare(to, Target);
-	}
+	if (level == 2)
+		createArrow(from, to);
+}
+
+void GameHandler::createArrow(int from, int to) {
+	sf::Vector2f line = getBoxPosition(to) - getBoxPosition(from);
+	auto* arrow = new ArrowNode(line);
+	arrow->setPosition(getBoxPosition(from) + sf::Vector2f(84.f / 2.f, 84.f / 2.f));
+	arrow->setFillColor(sf::Color(215, 38, 56));
+	arrow->setOpacity(50);
+	mArrows.push_back(arrow);
+	mSceneLayers[PopUp]->attachChild(SceneNode::Ptr(arrow));
+}
+
+void GameHandler::clearArrows() {
+	for (auto& arrow : mArrows)
+		mSceneLayers[PopUp]->detachChild(*arrow);
+	std::vector<ArrowNode*>().swap(mArrows);
 }

@@ -103,6 +103,8 @@ add_executable(${TARGET_NAME}
         src/States/PuzzleState.hpp
         src/Game/PuzzleList.cpp
         src/Game/PuzzleList.hpp
+        src/Template/ArrowNode.cpp
+        src/Template/ArrowNode.hpp
 )
 target_link_libraries(${TARGET_NAME} PRIVATE sfml-graphics sfml-audio)
 target_compile_features(${TARGET_NAME} PRIVATE cxx_std_17)

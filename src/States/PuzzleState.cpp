@@ -131,7 +131,7 @@ void PuzzleState::loadNormalGUI() {
 	hintButton->setText("Hint");
 	hintButton->setCallback([&]() {
 		Move move = mPuzzle.getMove(currentMove);
-		mGame.hintMove(move.from(), move.to(), 1);
+		mGame.hintMove(move.from(), move.to(), 2);
 	});
 	mStatusContainer[0].pack(hintButton);
 }
