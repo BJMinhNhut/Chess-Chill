@@ -74,6 +74,8 @@ class GameHandler : public sf::NonCopyable {
 
 	void undoLastMove();
 
+	void hintMove(int from, int to, int level);
+
    private:
 	enum Layer { Background, Pieces, PopUp, LayerCount };
 

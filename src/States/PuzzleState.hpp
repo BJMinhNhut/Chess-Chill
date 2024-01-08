@@ -39,7 +39,7 @@ class PuzzleState : public State {
 	GameHandler mGame;
 	HumanPlayer mPlayer;
 	sf::Time mCoolDown;
-	int currentMove;
+	int currentMove, hintLevel;
 	Puzzle::Status mStatus;
 };
 

@@ -129,8 +129,9 @@ void PuzzleState::loadNormalGUI() {
 	                                                *getContext().textures);
 	hintButton->setPosition(1092.f + 166.f / 2.f, 472.f + 50.f / 2.f);
 	hintButton->setText("Hint");
-	hintButton->setCallback([this]() {
-		//		mGame.handleMove(getContext().puzzle->getMove(currentMove));
+	hintButton->setCallback([&]() {
+		Move move = mPuzzle.getMove(currentMove);
+		mGame.hintMove(move.from(), move.to(), 1);
 	});
 	mStatusContainer[0].pack(hintButton);
 }
@@ -192,6 +193,7 @@ void PuzzleState::updateStatus() {
 	int from = mGame.getLastMove() & 63;
 	int to = (mGame.getLastMove() >> 6) & 63;
 	Move lastMove(from, to);
+	hintLevel = 0;
 	if (lastMove == mPuzzle.getMove(currentMove - 1)) {
 		if (currentMove == mPuzzle.getSolutionSize()) {
 			mStatus = Puzzle::Solved;

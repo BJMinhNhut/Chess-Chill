@@ -507,3 +507,10 @@ std::vector<std::string> GameHandler::getLatestMoves(int numMoves, int& id) cons
 	id = start;
 	return moves;
 }
+
+void GameHandler::hintMove(int from, int to, int level) {
+	highlightSquare(from, Target);
+	if (level == 2) {
+//		highlightSquare(to, Target);
+	}
+}
