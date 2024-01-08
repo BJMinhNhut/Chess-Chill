@@ -6,14 +6,17 @@ project(${TARGET_NAME} LANGUAGES CXX)
 
 include(FetchContent)
 FetchContent_Declare(SFML
-    GIT_REPOSITORY https://github.com/SFML/SFML.git
-    GIT_TAG 2.6.x)
+        GIT_REPOSITORY https://github.com/SFML/SFML.git
+        GIT_TAG 2.6.x)
 FetchContent_MakeAvailable(SFML)
 
 if (WIN32)
     enable_language("RC")
-    set (WIN32_RESOURCES src/icon.rc)
-endif()
+    set(WIN32_RESOURCES src/icon.rc)
+    if (CMAKE_BUILD_TYPE EQUAL "RELEASE")
+        set(SUBSYSTEM_LINKER_OPTIONS "-mwindows")
+    endif ()
+endif ()
 
 include_directories(src)
 add_executable(${TARGET_NAME}
@@ -107,14 +110,15 @@ add_executable(${TARGET_NAME}
         src/Template/ArrowNode.hpp
 )
 target_link_libraries(${TARGET_NAME} PRIVATE -static sfml-graphics sfml-audio)
+target_link_options(${TARGET_NAME} PRIVATE ${SUBSYSTEM_LINKER_OPTIONS})
 target_compile_features(${TARGET_NAME} PRIVATE cxx_std_17)
 
-if(WIN32)
+if (WIN32)
     add_custom_command(
-        TARGET ${TARGET_NAME}
-        COMMENT "Copy OpenAL DLL"
-        PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SFML_SOURCE_DIR}/extlibs/bin/$<IF:$<EQUAL:${CMAKE_SIZEOF_VOID_P},8>,x64,x86>/openal32.dll $<TARGET_FILE_DIR:${TARGET_NAME}>
-        VERBATIM)
-endif()
+            TARGET ${TARGET_NAME}
+            COMMENT "Copy OpenAL DLL"
+            PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SFML_SOURCE_DIR}/extlibs/bin/$<IF:$<EQUAL:${CMAKE_SIZEOF_VOID_P},8>,x64,x86>/openal32.dll $<TARGET_FILE_DIR:${TARGET_NAME}>
+            VERBATIM)
+endif ()
 
 install(TARGETS ${TARGET_NAME})
