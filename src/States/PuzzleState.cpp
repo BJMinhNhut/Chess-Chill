@@ -147,10 +147,12 @@ void PuzzleState::loadCorrectGUI() {
 	nextButton->setPosition(1092.f + 166.f / 2.f, 508.f + 50.f / 2.f);
 	nextButton->setText("Next level");
 	nextButton->setCallback([this]() {
-		getContext().puzzles->nextPuzzle();
 		requestStackPop();
-		if (getContext().puzzles->getChosenPuzzle().getId() < 100)
+		if (getContext().puzzles->getChosenPuzzle().getId() < 100) {
 			requestStackPush(States::Puzzles);
+			getContext().puzzles->nextPuzzle();
+		} else
+			requestStackPush(States::PuzzleMenu);
 	});
 	mStatusContainer[1].pack(nextButton);
 
