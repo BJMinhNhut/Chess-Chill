@@ -21,7 +21,7 @@ This is a CS202 Solo Lab Project using C++. The project is a basic chess game wi
    - [x] Sound on/off
 
 ## 3. Screenshots & Demo
-- Youtube demo [here]().
+- Youtube demo [here](https://youtu.be/e0gAHI-9Wgw).
 - Screenshots:
   - Main menu:
 
